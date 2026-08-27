@@ -1,0 +1,60 @@
+{
+  "pieces": [
+    {
+      "id": "damascus-hunter-01",
+      "title": "Damascus hunter",
+      "type": "knives",
+      "image": "img/gallery/damascus-hunter-01.jpg",
+      "status": "available",
+      "featured": true
+    },
+    {
+      "id": "bearded-axe-01",
+      "title": "Bearded axe",
+      "type": "axes",
+      "image": "img/gallery/bearded-axe-01.jpg",
+      "status": "sold",
+      "featured": true
+    },
+    {
+      "id": "arming-sword-01",
+      "title": "Arming sword",
+      "type": "swords",
+      "image": "img/gallery/arming-sword-01.jpg",
+      "status": "commission",
+      "featured": true
+    },
+    {
+      "id": "field-seax-01",
+      "title": "Field seax",
+      "type": "knives",
+      "image": "img/gallery/field-seax-01.jpg",
+      "status": "available",
+      "featured": true
+    },
+    {
+      "id": "leaf-spear-01",
+      "title": "Leaf spear",
+      "type": "axes",
+      "image": "img/gallery/leaf-spear-01.jpg",
+      "status": "available",
+      "featured": false
+    },
+    {
+      "id": "yew-flatbow-01",
+      "title": "Yew flatbow",
+      "type": "bows",
+      "image": "img/gallery/yew-flatbow-01.jpg",
+      "status": "available",
+      "featured": false
+    },
+    {
+      "id": "walnut-blade-box-01",
+      "title": "Walnut blade box",
+      "type": "woodworking",
+      "image": "img/gallery/walnut-blade-box-01.jpg",
+      "status": "sold",
+      "featured": false
+    }
+  ]
+}

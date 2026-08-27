@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hamza's Blades — hand forged in California</title>
+<meta name="description" content="Hand-forged swords, knives, axes and spears, made one at a time between Sacramento and Huntington Beach, California.">
+
+<!-- The crescent-only variant, not the full logo — the calligraphy is
+     illegible at favicon sizes. -->
+<link rel="icon" href="img/crescent.svg" type="image/svg+xml">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400&family=Karla:wght@400;500&display=swap">
+<link rel="stylesheet" href="css/site.css">
+</head>
+
+<body data-embers="home">
+
+<header class="header">
+  <div class="shell header__inner">
+    <!-- No mark here. At header size the calligraphy would fall below the
+         ~48px legibility floor, and SPEC section 7 says omit it rather than
+         render it illegibly. Type carries the brand until the simplified
+         crescent variant exists. -->
+    <a class="brand" href="index.html">
+      <span class="brand__name">Hamza's Blades</span>
+    </a>
+    <nav class="nav" aria-label="Primary">
+      <a class="nav__link" href="gallery.html">Work</a>
+      <a class="nav__link" href="process.html">Process</a>
+      <a class="nav__link" href="experience.html">Experience</a>
+      <a class="nav__link" href="about.html">About</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <!-- Hero ------------------------------------------------------------- -->
+  <section class="hero">
+    <div class="hero__media">
+      <!--
+        Placeholder. Slow-motion hammer strike on hot steel at night, cut so
+        the loop is seamless (matched cut, top-of-swing to top-of-swing).
+        The source is attached after load by js/site.js so the video never
+        blocks first paint; the gradient behind it stands in for the poster
+        until img/hero-poster.jpg exists.
+      -->
+      <video class="hero__video" muted playsinline loop autoplay
+             preload="none"
+             data-src="video/hero-forge.mp4" data-type="video/mp4"
+             poster="img/hero-poster.jpg" aria-hidden="true" tabindex="-1"></video>
+    </div>
+
+    <!-- The seam: bottom quarter dissolves to --forge, ember canvas over it. -->
+    <div class="hero__scrim"></div>
+
+    <div class="shell hero__inner">
+      <!-- The supplied raster logo, displayed at 120px — its ceiling until an
+           SVG trace exists (SPEC section 7). Never upscaled. If the file is
+           missing, js/site.js drops the element and the hero runs on type
+           alone, which section 7 endorses. -->
+      <img class="hero__mark" src="img/logo.png" alt="" width="120" height="120"
+           data-optional>
+      <h1 class="t-hero hero__title">Hamza's Blades</h1>
+      <p class="eyebrow">Hand forged in California</p>
+      <div class="hero__actions">
+        <a class="btn btn--primary" href="gallery.html">View the collection</a>
+        <a class="btn btn--ghost" href="contact.html">Custom order</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Positioning statement --------------------------------------------- -->
+  <section class="section">
+    <div class="shell statement">
+      <p class="eyebrow">The work</p>
+      <!-- Client-approved, verbatim. SPEC section 8. -->
+      <p class="statement__body">
+        Handcrafted blades rooted in faith, tradition, and the outdoors.
+        Hamza's Blades exists to revive traditional craftsmanship and help
+        Muslims reconnect with the beauty of Allah's creation.
+      </p>
+    </div>
+  </section>
+
+  <!-- Featured work ------------------------------------------------------ -->
+  <section class="section section--rule" id="work">
+    <div class="shell">
+      <div class="section__head">
+        <h2 class="t-section">Featured work</h2>
+        <a class="link-through eyebrow" href="gallery.html">
+          See all work <span class="arrow" aria-hidden="true">&rarr;</span>
+        </a>
+      </div>
+
+      <div class="pieces pieces--featured" data-featured>
+        <!-- Filled from data/gallery.json. This line is what a visitor sees
+             if the fetch fails, so the section still reads as finished. -->
+        <p class="muted small">
+          The current pieces are listed in the collection.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Process teaser ----------------------------------------------------- -->
+  <section class="section section--rule" id="process">
+    <div class="shell band">
+      <figure class="band__figure">
+        <div class="band__pending"><span class="eyebrow">Photo pending</span></div>
+      </figure>
+      <div class="band__copy">
+        <p class="eyebrow">The forging process</p>
+        <h2 class="t-section">Raw stock to finished edge</h2>
+        <p class="measure">
+          Six stages, in the order they happen. Heat, shaping, grinding,
+          handle, edge. The order carries the meaning.
+        </p>
+        <a class="link-through eyebrow" href="process.html">
+          See the process <span class="arrow" aria-hidden="true">&rarr;</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Retreats teaser ---------------------------------------------------- -->
+  <section class="section section--rule" id="retreats">
+    <div class="shell band">
+      <figure class="band__figure">
+        <div class="band__pending"><span class="eyebrow">Still frame pending</span></div>
+      </figure>
+      <div class="band__copy">
+        <p class="eyebrow eyebrow--brass">Coming soon</p>
+        <h2 class="t-section">Forge your own blade under open sky</h2>
+        <p class="measure">
+          Day and multi-day trips to the forge in the Sierra Nevada mountains.
+          Shape your own blade from raw steel, archery, camping, and more.
+          Dates are being set.
+        </p>
+        <a class="link-through eyebrow" href="experience.html">
+          About the retreats <span class="arrow" aria-hidden="true">&rarr;</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="shell footer__inner">
+    <div class="footer__col">
+      <a class="brand" href="index.html">
+        <span class="brand__name">Hamza's Blades</span>
+      </a>
+      <p class="small muted measure">
+        Swords, knives, axes and spears, hand forged one at a time in
+        California.
+      </p>
+    </div>
+
+    <div class="footer__col">
+      <p class="eyebrow">Pages</p>
+      <nav class="footer__links" aria-label="Footer">
+        <a href="gallery.html">Work</a>
+        <a href="process.html">Process</a>
+        <a href="experience.html">Experience</a>
+        <a href="about.html">About</a>
+      </nav>
+    </div>
+
+    <div class="footer__col">
+      <p class="eyebrow">The forge</p>
+      <p class="small muted">Sacramento and Huntington Beach, California</p>
+      <p class="small"><a href="contact.html">Send an inquiry</a></p>
+    </div>
+  </div>
+
+  <div class="shell footer__base">
+    <p class="eyebrow">&copy; 2026 Hamza's Blades</p>
+    <p class="eyebrow">Made by hand</p>
+  </div>
+</footer>
+
+<script src="js/site.js" defer></script>
+<script src="js/embers.js" defer></script>
+</body>
+</html>
