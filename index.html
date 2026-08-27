@@ -59,11 +59,12 @@
 
     <div class="shell hero__inner">
       <!-- The supplied raster logo, displayed at 120px — its ceiling until an
-           SVG trace exists (SPEC section 7). Never upscaled. If the file is
-           missing, js/site.js drops the element and the hero runs on type
-           alone, which section 7 endorses. -->
-      <img class="hero__mark" src="img/logo.png" alt="" width="120" height="120"
-           data-optional>
+           SVG trace exists (SPEC section 7). Never upscaled. Served from a
+           240px derivative that covers a 2x display; img/logo.png is the
+           untouched master. Eager and high priority: it sits above the fold
+           beside the title. -->
+      <img class="hero__mark" src="img/logo-240.png" alt="" width="120" height="120"
+           fetchpriority="high" data-optional>
       <h1 class="t-hero hero__title">Hamza's Blades</h1>
       <p class="eyebrow">Hand forged in California</p>
       <div class="hero__actions">

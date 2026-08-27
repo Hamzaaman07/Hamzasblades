@@ -9,15 +9,25 @@ noted.
 
 | File | Status |
 |---|---|
-| `img/logo.png` | **Missing from the repo.** The spec marks the PNG as supplied (✓), but the file has not landed here yet. |
+| `img/logo.png` | Supplied. 618×618 RGBA. The master — kept untouched, not referenced by any page. |
+| `img/logo-240.png` | Derived. What the hero actually loads. |
 | `img/logo.svg` | Not made. Vector trace, needed for crisp scaling. |
 | `img/crescent.svg` | **Drawn, needs approval.** The simplified crescent variant section 7 lists as "not made". |
 
-**The PNG is the one blocker.** Drop it at `img/logo.png` and the hero mark
-appears at 120px with no other change — the markup and the 120px ceiling are
-already in place. Until then `js/site.js` removes the element and the hero runs
-on type alone, which is what section 7 asks for when the mark cannot be shown
-properly.
+`img/logo-240.png` is the master resampled to 240px (Lanczos, 64-colour
+palette): 9 KB against 314 KB, indistinguishable at display size, and the
+downscale from 618px smooths the ragged cutout edges section 7 warns about.
+240px covers a 2× display at the 120px ceiling. Regenerate it if the master
+changes:
+
+```
+python3 -c "from PIL import Image; \
+Image.open('img/logo.png').convert('RGBA').resize((240,240), Image.LANCZOS) \
+.quantize(colors=64, method=Image.FASTOCTREE).save('img/logo-240.png', optimize=True)"
+```
+
+An SVG trace is still worth having — it would replace both files and drop the
+120px ceiling.
 
 `img/crescent.svg` is drawn to the supplied logo's geometry — brass disc,
 crescent in the dark maroon-brown the calligraphy reads as (`#3D1512`). It is

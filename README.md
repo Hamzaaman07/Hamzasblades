@@ -54,9 +54,13 @@ and removes nothing — delete the script tag and the layout is unchanged.
 
 The positioning statement is the client-approved text from spec §8, verbatim.
 
-The logo PNG has not landed in the repo yet. Until it does the hero runs on
-type alone — see ASSETS.md, which tracks spec §7 against what is actually here,
-including where §7's logo rules land in the build.
+The logo is in. Spec §7's rules on it shape where it appears: the hero mark is
+capped at 120px and never upscaled, and the header and footer carry the
+wordmark in Amiri instead of a mark, because at their size the calligraphy
+would fall under the ~48px legibility floor. The favicon uses the simplified
+crescent variant for the same reason.
+
+ASSETS.md tracks spec §7 against what is actually in the repo.
 
 ## The ember continuum
 
