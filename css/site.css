@@ -1,0 +1,695 @@
+/* ==========================================================================
+   Hamza's Blades — design system
+   Tokens and primitives per SPEC section 2. Nothing here is page-specific
+   except the clearly marked home sections at the bottom.
+   ========================================================================== */
+
+/* --- Tokens -------------------------------------------------------------- */
+
+:root {
+  /* Palette. No colours outside this list. Pure white never appears. */
+  --forge: #0a0908;
+  --ash: #16130f;
+  --ash-line: #241e18;
+  --brass: #c89f68;
+  --parchment: #e4d9c6;
+  --smoke: #8b7b64;
+  --ember: #d2662c;
+  --ember-hot: #f0a555;
+
+  /* Type */
+  --display: "Amiri", "Times New Roman", serif;
+  --body: "Karla", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --t-hero: clamp(2.75rem, 7vw, 5.5rem);
+  --t-page: clamp(2rem, 4.5vw, 3.25rem);
+  --t-section: 1.75rem;
+  --t-piece: 1.25rem;
+  --t-body: 1.0625rem;
+  --t-small: 0.9375rem;
+  --t-eyebrow: 0.6875rem;
+
+  /* Rhythm — 8px base */
+  --s-1: 0.5rem;
+  --s-2: 1rem;
+  --s-3: 1.5rem;
+  --s-4: 2rem;
+  --s-5: 3rem;
+  --s-6: 4rem;
+  --s-7: 6rem;
+
+  --shell: 1280px;
+  --measure: 68ch;
+  --section-y: clamp(5rem, 12vh, 9rem);
+
+  --line: 1px solid var(--ash-line);
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* --- Reset --------------------------------------------------------------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body,
+h1,
+h2,
+h3,
+p,
+figure,
+blockquote,
+ul,
+ol {
+  margin: 0;
+}
+
+ul,
+ol {
+  padding: 0;
+  list-style: none;
+}
+
+img,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+button,
+input {
+  font: inherit;
+  color: inherit;
+}
+
+/* --- Base ---------------------------------------------------------------- */
+
+body {
+  background: var(--forge);
+  color: var(--parchment);
+  font-family: var(--body);
+  font-size: var(--t-body);
+  font-weight: 400;
+  line-height: 1.75;
+  /* Establishes the ground the fixed ember canvas screens against. */
+  min-height: 100vh;
+}
+
+h1,
+h2,
+h3,
+.display {
+  font-family: var(--display);
+  font-weight: 400;
+  line-height: 1.15;
+  /* Amiri at 400 with space around it. Never bold display type. */
+}
+
+p + p {
+  margin-top: var(--s-3);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+:focus-visible {
+  outline: 1px solid var(--brass);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: var(--ember);
+  color: var(--forge);
+}
+
+/* --- Layout primitives --------------------------------------------------- */
+
+.shell {
+  width: 100%;
+  max-width: var(--shell);
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 5vw, 3rem);
+}
+
+.section {
+  position: relative;
+  /* Above the ember canvas. The sections themselves stay transparent, so the
+     embers pass behind the type and cards rather than over them. */
+  z-index: 2;
+  padding-block: var(--section-y);
+}
+
+.section--rule {
+  border-top: var(--line);
+}
+
+.measure {
+  max-width: var(--measure);
+}
+
+/* --- Type primitives ----------------------------------------------------- */
+
+/* The letterspaced utility treatment. Used for eyebrows, filter labels and
+   metadata — the site's connective tissue. Nowhere else. */
+.eyebrow {
+  font-family: var(--body);
+  font-size: var(--t-eyebrow);
+  font-weight: 400;
+  line-height: 1.4;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--smoke);
+}
+
+.eyebrow--brass {
+  color: var(--brass);
+}
+
+.t-hero {
+  font-size: var(--t-hero);
+  letter-spacing: 0.02em;
+}
+
+.t-page {
+  font-size: var(--t-page);
+}
+
+.t-section {
+  font-size: var(--t-section);
+  color: var(--brass);
+}
+
+.t-piece {
+  font-size: var(--t-piece);
+}
+
+.small {
+  font-size: var(--t-small);
+}
+
+.muted {
+  color: var(--smoke);
+}
+
+/* --- Buttons ------------------------------------------------------------- */
+/* Square. No radius, no shadow. Depth comes from the ember glow only. */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0 var(--s-4);
+  border: 1px solid transparent;
+  border-radius: 0;
+  background: transparent;
+  font-size: var(--t-small);
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: background-color 0.25s var(--ease), border-color 0.25s var(--ease),
+    color 0.25s var(--ease);
+}
+
+.btn--primary {
+  background: var(--ember);
+  color: var(--forge);
+}
+
+.btn--primary:hover {
+  background: var(--ember-hot);
+}
+
+.btn--ghost {
+  border-color: var(--ash-line);
+  color: var(--parchment);
+}
+
+.btn--ghost:hover {
+  border-color: var(--brass);
+  color: var(--brass);
+}
+
+/* Eyebrow-styled inline link with an arrow — used for every "through" link. */
+.link-through {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6em;
+  padding-block: var(--s-1);
+  color: var(--brass);
+  transition: color 0.25s var(--ease);
+}
+
+.link-through .arrow {
+  transition: transform 0.25s var(--ease);
+}
+
+.link-through:hover {
+  color: var(--ember-hot);
+}
+
+.link-through:hover .arrow {
+  transform: translateX(4px);
+}
+
+/* --- Header -------------------------------------------------------------- */
+
+.header {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 5;
+  transition: background-color 0.35s var(--ease), border-color 0.35s var(--ease);
+  border-bottom: 1px solid transparent;
+}
+
+.header.is-stuck {
+  background: rgba(10, 9, 8, 0.94);
+  backdrop-filter: blur(8px);
+  border-bottom-color: var(--ash-line);
+}
+
+.header__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-4);
+  min-height: 72px;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.brand__mark {
+  width: 34px;
+  height: 34px;
+  flex: none;
+}
+
+.brand__name {
+  font-family: var(--display);
+  font-size: 1.0625rem;
+  letter-spacing: 0.04em;
+  color: var(--parchment);
+  white-space: nowrap;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: clamp(1rem, 2.5vw, 2rem);
+}
+
+.nav__link {
+  font-size: var(--t-small);
+  color: var(--parchment);
+  padding-block: var(--s-1);
+  border-bottom: 1px solid transparent;
+  transition: color 0.25s var(--ease), border-color 0.25s var(--ease);
+}
+
+.nav__link:hover,
+.nav__link[aria-current="page"] {
+  color: var(--brass);
+  border-bottom-color: var(--brass);
+}
+
+/* Narrow: the wordmark gives way to the mark so every page stays reachable
+   from the header. Nothing is hidden behind a menu button. */
+@media (max-width: 720px) {
+  .header .brand__name {
+    display: none;
+  }
+  .nav {
+    gap: clamp(0.75rem, 3.5vw, 1.25rem);
+  }
+  .nav__link {
+    font-size: 0.875rem;
+  }
+}
+
+/* --- Ember canvas -------------------------------------------------------- */
+/* Injected by js/embers.js. The layout is finished without it.
+
+   Stacking, which is the whole seam: the hero sits at z-index 0, the canvas at
+   1, everything after the hero at 2. So the simulated sparks are drawn *over*
+   the hero video — meeting its real sparks inside the bottom gradient — and
+   *behind* the content further down, where they read as atmosphere in the
+   gutters instead of litter across the photographs. */
+
+.embers {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
+/* --- Hero ---------------------------------------------------------------- */
+
+.hero {
+  position: relative;
+  z-index: 0;
+  min-height: 100vh;
+  min-height: 100svh;
+  display: grid;
+  align-items: center;
+  overflow: hidden;
+}
+
+.hero__media {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  /* Stands in for the poster frame until the video file lands, and stays
+     behind it afterwards so there is never a bare black rectangle. */
+  background: radial-gradient(
+      120% 90% at 50% 18%,
+      #2a1c11 0%,
+      #150f0a 45%,
+      var(--forge) 100%
+    );
+}
+
+.hero__video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* The seam: bottom 25% dissolves to --forge, and the ember canvas (z-index 2)
+   sits over it. Top scrim keeps the header and hero type legible. */
+.hero__scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+      to bottom,
+      rgba(10, 9, 8, 0.72) 0%,
+      rgba(10, 9, 8, 0.25) 28%,
+      rgba(10, 9, 8, 0) 50%
+    ),
+    linear-gradient(
+      to bottom,
+      rgba(10, 9, 8, 0) 60%,
+      rgba(10, 9, 8, 0.6) 82%,
+      var(--forge) 100%
+    );
+}
+
+.hero__inner {
+  position: relative;
+  z-index: 2;
+  padding-block: var(--s-7) var(--s-7);
+  text-align: center;
+  display: grid;
+  justify-items: center;
+  gap: var(--s-3);
+}
+
+.hero__mark {
+  width: clamp(84px, 12vw, 124px);
+  height: auto;
+}
+
+.hero__title {
+  margin-top: var(--s-1);
+}
+
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--s-2);
+  margin-top: var(--s-3);
+}
+
+/* --- Positioning statement ----------------------------------------------- */
+
+.statement {
+  text-align: center;
+  display: grid;
+  justify-items: center;
+  gap: var(--s-3);
+}
+
+.statement__body {
+  font-family: var(--display);
+  font-size: clamp(1.25rem, 2.4vw, 1.75rem);
+  line-height: 1.6;
+  color: var(--parchment);
+  max-width: 46ch;
+}
+
+/* --- Section headers ----------------------------------------------------- */
+
+.section__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-2);
+  margin-bottom: var(--s-5);
+}
+
+/* --- Piece grid ---------------------------------------------------------- */
+
+/* Gallery grid. */
+.pieces {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--s-4);
+}
+
+/* Featured work is a fixed four, not an auto-fill — the homepage row should
+   hold its shape rather than reflowing to three and orphaning the fourth. */
+.pieces--featured {
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 620px) {
+  .pieces--featured {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1100px) {
+  .pieces--featured {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.piece {
+  position: relative;
+  display: grid;
+  gap: var(--s-2);
+  padding: var(--s-2);
+  border: var(--line);
+  background: var(--ash);
+  transition: border-color 0.3s var(--ease);
+}
+
+.piece::after {
+  /* The faint ember glow that rises behind the image on hover. */
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 60%;
+  background: linear-gradient(
+    to top,
+    rgba(210, 102, 44, 0.22),
+    rgba(210, 102, 44, 0)
+  );
+  opacity: 0;
+  transition: opacity 0.4s var(--ease);
+  pointer-events: none;
+}
+
+.piece:hover,
+.piece:focus-within {
+  border-color: var(--brass);
+}
+
+.piece:hover::after,
+.piece:focus-within::after {
+  opacity: 1;
+}
+
+.piece__frame {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: linear-gradient(160deg, #1d1811 0%, #100c08 100%);
+}
+
+.piece__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s var(--ease);
+}
+
+.piece:hover .piece__img {
+  transform: scale(1.03);
+}
+
+/* Shown when the photograph has not been dropped in yet. Keeps the grid
+   at full height so nothing shifts when the real file arrives. */
+.piece__pending {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  text-align: center;
+}
+
+/* Title over metadata, always stacked — side by side collapses unevenly once
+   four cards share the row. */
+.piece__meta {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 2px;
+  padding-bottom: var(--s-1);
+}
+
+.piece__name {
+  color: var(--parchment);
+}
+
+.piece--sold {
+  opacity: 0.7;
+}
+
+/* --- Teaser bands -------------------------------------------------------- */
+
+.band {
+  display: grid;
+  gap: var(--s-4);
+  align-items: center;
+}
+
+@media (min-width: 900px) {
+  .band {
+    grid-template-columns: 1.35fr 1fr;
+    gap: var(--s-6);
+  }
+}
+
+.band__figure {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  border: var(--line);
+  background: linear-gradient(160deg, #1d1811 0%, #100c08 100%);
+  overflow: hidden;
+}
+
+.band__figure img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.band__pending {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  text-align: center;
+}
+
+.band__copy {
+  display: grid;
+  gap: var(--s-2);
+  align-content: start;
+}
+
+/* --- Footer -------------------------------------------------------------- */
+
+.footer {
+  position: relative;
+  z-index: 2;
+  border-top: var(--line);
+  padding-block: var(--s-6) var(--s-5);
+}
+
+.footer__inner {
+  display: grid;
+  gap: var(--s-5);
+}
+
+@media (min-width: 760px) {
+  .footer__inner {
+    grid-template-columns: 1.2fr 1fr 1fr;
+  }
+}
+
+.footer__col {
+  display: grid;
+  gap: var(--s-2);
+  align-content: start;
+}
+
+/* The column's own gap sets the rhythm here — the paragraph rule would
+   double it. */
+.footer__col p + p {
+  margin-top: 0;
+}
+
+.footer__links {
+  display: grid;
+  gap: var(--s-1);
+}
+
+.footer__links a {
+  font-size: var(--t-small);
+  color: var(--parchment);
+  transition: color 0.25s var(--ease);
+}
+
+.footer__links a:hover {
+  color: var(--brass);
+}
+
+.footer__base {
+  margin-top: var(--s-5);
+  padding-top: var(--s-3);
+  border-top: var(--line);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--s-2);
+}
+
+/* --- Motion preferences -------------------------------------------------- */
+/* Honoured throughout, not just for particles. */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .piece:hover .piece__img {
+    transform: none;
+  }
+
+  .link-through:hover .arrow {
+    transform: none;
+  }
+}

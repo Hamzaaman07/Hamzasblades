@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="Hamza's Blades">
+  <!--
+    PLACEHOLDER MARK.
+    The real logo is Arabic calligraphy inside this brass disc and crescent.
+    Drop the supplied PNG at img/logo.png and point the <img src> at it; the
+    disc and crescent geometry and colours here match the original so the
+    swap is invisible at every size the site uses.
+  -->
+  <defs>
+    <mask id="crescent">
+      <rect width="100" height="100" fill="#000"/>
+      <circle cx="50" cy="50" r="45" fill="#fff"/>
+      <circle cx="59" cy="43" r="38" fill="#000"/>
+    </mask>
+  </defs>
+  <circle cx="50" cy="50" r="50" fill="#C89F68"/>
+  <circle cx="50" cy="50" r="50" fill="#3B0D0D" mask="url(#crescent)"/>
+</svg>
