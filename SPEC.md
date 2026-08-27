@@ -267,6 +267,137 @@ distinguishable, or a separate list endpoint if Hamza prefers.
 
 ### About
 
+Hamza's story. One portrait if available, otherwise a forge shot. Copy in section 8.
+Instagram link. Both forge locations mentioned — this is a strength, not a
+complication.
+
+### Contact
+
+Minimal. The inquiry box, Instagram, and a short shipping note. No street address,
+no phone.
+
+---
+
+## 5. Inquiry boxes
+
+There is no structured form yet. Every inquiry is a name field, an email field, and a
+message textarea. That's it.
+
+**Suggested message.** Each box shows greyed placeholder text appropriate to context.
+Below the textarea, a small text button: "use this message". Pressing it fills the
+textarea with real, editable text. Works identically on mobile and desktop — no tab
+key, no keyboard shortcut.
+
+Suggested text is templated per context:
+
+- **Gallery piece, available:**
+  "Hi Hamza — I'm interested in the {title}. Is it still available, and what would
+  shipping run?"
+- **Gallery piece, sold:**
+  "Hi Hamza — I know the {title} is sold, but I'd love something similar. Could you
+  make one?"
+- **Custom order:**
+  "Hi Hamza — I'd like to commission a custom piece. Here's what I have in mind:"
+- **Contact page:**
+  "Hi Hamza — "
+
+Gallery inquiries carry the piece title into the payload automatically so Hamza is
+never guessing which piece an email is about. Include it as a hidden field.
+
+**Wiring.** Formspree, forwarding to `hamzasblades@gmail.com`. Put the endpoint in a
+single config constant, clearly marked:
+
+```js
+// Replace with the Formspree endpoint from formspree.io
+export const FORM_ENDPOINT = "https://formspree.io/f/YOUR_ID_HERE";
+```
+
+If the site is hosted on Netlify or Vercel, their native form handling can replace
+Formspree entirely and is free — worth doing if the host is settled before this is
+built.
+
+**Never put the email address in visible page text.** It gets scraped within days.
+The form service keeps it hidden.
+
+**Validation.** Check on submit: empty message, empty name, malformed email. Show the
+error inline next to the offending field in `--ember`, clear it as soon as the field
+is edited. Don't disable the submit button — let it be pressed and respond.
+
+---
+
+## 6. Build order
+
+Build in this order so the site is presentable at every stop.
+
+1. **Foundation.** Tokens, fonts, layout primitives, nav, footer. No particles yet.
+2. **Gallery.** JSON structure, grid, filters, detail view. This is the commercial
+   core — get it right before anything decorative.
+3. **Inquiry boxes.** Suggested messages, validation, Formspree wiring.
+4. **Home, About, Process.** Static content, placeholder images, gradient in the hero
+   region where the video will go.
+5. **Retreats.** Video slot, coming-soon treatment, email capture.
+6. **The ember system.** Only now. Home first, then per-page density, then the
+   video-to-particle dissolve.
+7. **Performance and accessibility pass.** Device tiers, reduced motion, keyboard
+   navigation, focus states, Lighthouse.
+
+Steps 1–5 must produce a site Hamza would be happy to launch. Step 6 is enhancement.
+
+---
+
+## 7. Assets still needed
+
+Marked clearly so placeholders are obvious in the build.
+
+| Asset | Notes | Status |
+|---|---|---|
+| Hero video | Slow-mo hammer on hot steel, night, black background, matched-cut loop | Not shot |
+| Hero poster | Still frame from the above | Not shot |
+| Retreat video | Location footage, golden hour or after sunset, slow movement | Not shot |
+| Retreat poster | Still frame from the above | Not shot |
+| Gallery photos | ~20 pieces, black backdrop, raking side light | Partial |
+| Process photos | 5–6 stages | Not shot |
+| Portrait | Hamza at the forge — optional but strong on About | Not shot |
+| Logo (PNG) | Crescent + Arabic calligraphy, tan on dark, transparent | ✓ |
+| Logo (SVG) | Vector trace of the above — needed for crisp scaling | Not made |
+| Logo mark, simplified | Crescent-only variant for favicon and small nav sizes | Not made |
+
+Use free forge footage from Pexels or Coverr as video placeholders during the build.
+
+### Logo handling
+
+The supplied logo is raster (~617px, transparent PNG) with slightly ragged cutout
+edges that will show against `--forge`. Usable for launch; not final.
+
+- Use the PNG at displayed sizes of 120px or below until an SVG exists.
+- Do not upscale it. If a larger mark is needed in the hero, use type instead.
+- Below ~48px the calligraphy loses legibility — use the simplified crescent variant
+  once available, and until then omit the mark rather than rendering it illegibly.
+- Logo tan reads at roughly `#C89F68`, which is already `--brass`. The calligraphy
+  and crescent read as a very dark maroon-brown, close to `#3D1512` — acceptable as a
+  secondary dark if one is needed, but `--forge` remains the page background.
+- Keep the mark on `--forge` or `--ash`. Never place it on a light or mid-tone fill.
+
+**Shooting notes for the hero:** shoot 15–20 strikes in one continuous take (you need
+matching frames for the loop cut and most takes won't have one), 120fps or higher,
+locked-off tripod, expose for the steel and let the room go fully black.
+
+---
+
+## 8. Copy
+
+### Positioning statement (home)
+
+Client-approved, use verbatim.
+
+> Handcrafted blades rooted in faith, tradition, and the outdoors. Hamza's Blades
+> exists to revive traditional craftsmanship and help Muslims reconnect with the
+> beauty of Allah's creation.
+
+
+
+### About
+
 Client-approved, use verbatim. Four paragraphs.
 
 > I'm a Muslim blacksmith based in California, inspired by the beauty, balance, and

@@ -24,30 +24,39 @@ data/gallery.json   the catalogue — the only place pieces are defined
 img/  video/        assets, see ASSETS.md
 ```
 
-## Step 1 — what is built
+## What is built
 
-- **Design system.** The full palette, both Google Fonts, the type scale, the
-  8px rhythm, square corners, hairline borders, no shadows. Tokens live at the
-  top of `css/site.css`.
-- **The ember continuum.** Canvas 2D particle system, per-page density,
-  interpolated across navigation, with every performance rule from spec §3
-  honoured. See below.
-- **Home.** Hero, positioning statement, featured work from `gallery.json`,
-  process teaser, retreats teaser, footer.
+Against the build order in spec §6:
 
-The site is complete without the canvas. `js/embers.js` appends its own element
-and removes it again on nothing — delete the script tag and the layout is
-unchanged.
+| Step | State |
+|---|---|
+| 1. Foundation | Done — tokens, fonts, layout primitives, nav, footer |
+| 2. Gallery | Not started |
+| 3. Inquiry boxes | Not started |
+| 4. Home, About, Process | Home done; About and Process not started |
+| 5. Retreats | Not started |
+| 6. The ember system | Done for home |
+| 7. Performance and accessibility pass | Partly — see the ember notes below |
 
-## Not built yet
+The ember system came in ahead of its place in that order. It is spec §6 step 6
+and everything before it is meant to land first; it was built during step 1 and
+is staying. Nothing depends on it, so the order it arrived in costs nothing —
+but steps 2–5 are what make the site launchable, and none of them are done.
 
 `gallery.html`, `process.html`, `experience.html`, `about.html` and
 `contact.html` are linked from the header, footer and hero buttons but do not
-exist yet. They are the later steps.
+exist yet.
 
-The inquiry box and the Formspree wiring are spec §5, which was not in the
-document supplied — the "Custom order" button points at `contact.html` as a
-placeholder target.
+The site is complete without the canvas. `js/embers.js` appends its own element
+and removes nothing — delete the script tag and the layout is unchanged.
+
+## Copy and assets
+
+The positioning statement is the client-approved text from spec §8, verbatim.
+
+The logo PNG has not landed in the repo yet. Until it does the hero runs on
+type alone — see ASSETS.md, which tracks spec §7 against what is actually here,
+including where §7's logo rules land in the build.
 
 ## The ember continuum
 

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="Hamza's Blades">
+  <!--
+    Simplified crescent variant — SPEC section 7 lists this as "not made".
+    The disc and crescent only, no calligraphy, for the favicon and any use
+    below the ~48px legibility floor of the full logo.
+
+    Drawn to match the supplied logo's geometry and colours: brass disc
+    (#C89F68, already --brass) with the crescent in the dark maroon-brown the
+    calligraphy reads as (#3D1512). Proposed, not approved — worth Hamza's eye
+    against the original before it ships.
+  -->
+  <defs>
+    <mask id="crescent">
+      <rect width="100" height="100" fill="#000"/>
+      <circle cx="50" cy="50" r="50" fill="#fff"/>
+      <circle cx="60" cy="42" r="41" fill="#000"/>
+    </mask>
+  </defs>
+  <circle cx="50" cy="50" r="50" fill="#C89F68"/>
+  <circle cx="50" cy="50" r="50" fill="#3D1512" mask="url(#crescent)"/>
+</svg>

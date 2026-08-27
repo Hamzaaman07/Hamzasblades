@@ -18,6 +18,23 @@
     onScroll();
   }
 
+  /* --- Optional imagery -------------------------------------------------- */
+  /* An image marked data-optional removes itself if the file is not there
+     yet, rather than leaving a broken-image icon in the layout. The hero mark
+     is one: without it the hero runs on type alone, which is what SPEC
+     section 7 asks for when the mark cannot be shown properly. */
+
+  Array.prototype.forEach.call(
+    document.querySelectorAll("img[data-optional]"),
+    function (img) {
+      img.addEventListener("error", function () {
+        img.remove();
+      });
+      /* Covers a cached failure that fired before this script ran. */
+      if (img.complete && img.naturalWidth === 0) img.remove();
+    }
+  );
+
   /* --- Hero video -------------------------------------------------------- */
   /* Held back until the page has painted so the video never blocks first
      paint. The poster gradient is on screen the whole time. */

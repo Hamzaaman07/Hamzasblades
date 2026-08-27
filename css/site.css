@@ -285,16 +285,11 @@ a {
   min-height: 72px;
 }
 
+/* The brand is type only. The logo mark is not used below ~48px — see the
+   note in index.html and SPEC section 7. */
 .brand {
   display: inline-flex;
   align-items: center;
-  gap: 0.75rem;
-}
-
-.brand__mark {
-  width: 34px;
-  height: 34px;
-  flex: none;
 }
 
 .brand__name {
@@ -325,14 +320,17 @@ a {
   border-bottom-color: var(--brass);
 }
 
-/* Narrow: the wordmark gives way to the mark so every page stays reachable
-   from the header. Nothing is hidden behind a menu button. */
+/* Narrow: the nav wraps to its own row beneath the wordmark. Every page stays
+   reachable — nothing is hidden behind a menu button, and nothing is dropped. */
 @media (max-width: 720px) {
-  .header .brand__name {
-    display: none;
+  .header__inner {
+    flex-direction: column;
+    justify-content: center;
+    gap: 0;
+    padding-block: var(--s-1);
   }
   .nav {
-    gap: clamp(0.75rem, 3.5vw, 1.25rem);
+    gap: clamp(0.875rem, 4vw, 1.5rem);
   }
   .nav__link {
     font-size: 0.875rem;
@@ -418,8 +416,9 @@ a {
   gap: var(--s-3);
 }
 
+/* 120px is the ceiling for the raster logo — never upscaled. */
 .hero__mark {
-  width: clamp(84px, 12vw, 124px);
+  width: clamp(84px, 12vw, 120px);
   height: auto;
 }
 

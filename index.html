@@ -6,7 +6,9 @@
 <title>Hamza's Blades — hand forged in California</title>
 <meta name="description" content="Hand-forged swords, knives, axes and spears, made one at a time between Sacramento and Huntington Beach, California.">
 
-<link rel="icon" href="img/logo.svg" type="image/svg+xml">
+<!-- The crescent-only variant, not the full logo — the calligraphy is
+     illegible at favicon sizes. -->
+<link rel="icon" href="img/crescent.svg" type="image/svg+xml">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,11 +20,12 @@
 
 <header class="header">
   <div class="shell header__inner">
-    <!-- The wordmark is hidden on narrow viewports, so the link carries its
-         own name. -->
-    <a class="brand" href="index.html" aria-label="Hamza's Blades — home">
-      <img class="brand__mark" src="img/logo.svg" alt="" width="34" height="34">
-      <span class="brand__name" aria-hidden="true">Hamza's Blades</span>
+    <!-- No mark here. At header size the calligraphy would fall below the
+         ~48px legibility floor, and SPEC section 7 says omit it rather than
+         render it illegibly. Type carries the brand until the simplified
+         crescent variant exists. -->
+    <a class="brand" href="index.html">
+      <span class="brand__name">Hamza's Blades</span>
     </a>
     <nav class="nav" aria-label="Primary">
       <a class="nav__link" href="gallery.html">Work</a>
@@ -55,7 +58,12 @@
     <div class="hero__scrim"></div>
 
     <div class="shell hero__inner">
-      <img class="hero__mark" src="img/logo.svg" alt="" width="124" height="124">
+      <!-- The supplied raster logo, displayed at 120px — its ceiling until an
+           SVG trace exists (SPEC section 7). Never upscaled. If the file is
+           missing, js/site.js drops the element and the hero runs on type
+           alone, which section 7 endorses. -->
+      <img class="hero__mark" src="img/logo.png" alt="" width="120" height="120"
+           data-optional>
       <h1 class="t-hero hero__title">Hamza's Blades</h1>
       <p class="eyebrow">Hand forged in California</p>
       <div class="hero__actions">
@@ -69,11 +77,11 @@
   <section class="section">
     <div class="shell statement">
       <p class="eyebrow">The work</p>
+      <!-- Client-approved, verbatim. SPEC section 8. -->
       <p class="statement__body">
-        Every piece is forged by hand, one at a time, between Sacramento and
-        Huntington Beach. Steel is heated, drawn, ground, and fitted to a
-        handle meant for the person who will carry it. Nothing here is made
-        twice.
+        Handcrafted blades rooted in faith, tradition, and the outdoors.
+        Hamza's Blades exists to revive traditional craftsmanship and help
+        Muslims reconnect with the beauty of Allah's creation.
       </p>
     </div>
   </section>
@@ -145,7 +153,6 @@
   <div class="shell footer__inner">
     <div class="footer__col">
       <a class="brand" href="index.html">
-        <img class="brand__mark" src="img/logo.svg" alt="" width="34" height="34">
         <span class="brand__name">Hamza's Blades</span>
       </a>
       <p class="small muted measure">
