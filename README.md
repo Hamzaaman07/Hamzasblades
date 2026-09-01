@@ -47,12 +47,11 @@ Against the build order in spec §6:
 | 3. Inquiry boxes | Done — suggested messages, validation, Formspree wiring |
 | 4. Home, About, Process | Done |
 | 5. Retreats | Done — video slot, coming-soon treatment, email capture |
-| 6. The ember system | Done for every page built so far |
+| 6. The ember system | Done — home, per-page density, the video-to-particle dissolve |
 | 7. Performance and accessibility pass | Partly — see the ember notes below |
 
-The ember system came in ahead of its place in that order. It is spec §6 step 6
-and everything before it is meant to land first; it was built during step 1 and
-is staying. Nothing depends on it, so the order it arrived in costs nothing.
+The ember system was started during step 1, ahead of its place in this order,
+and finished in step 6. Nothing depends on it, so arriving early cost nothing.
 
 Every page in the spec is now built and every internal link resolves. What is
 left is step 7, the performance and accessibility pass, and the assets and copy
@@ -163,7 +162,20 @@ over 800ms rather than snapping.
 
 **Density** is set per page by `<body data-embers="home">`. Valid values are
 `home`, `gallery`, `process`, `retreats`, `about` and `contact`; counts and
-character come from spec §3.
+character come from spec §3. Verified against that table at all three device
+tiers — desktop full, tablet 40%, mobile 20%.
+
+**The dissolve** is the handoff spec §3 calls the moment worth getting right.
+Two things carry it. `focus` centres the spawn band on the homepage, so sparks
+read as coming off one piece of steel below the frame rather than as ambient
+dust across the width. `glow` draws a soft warm wash along the bottom edge —
+the forge below the frame — that the sparks rise out of, at an intensity that
+tracks each page's density.
+
+That glow lives on the canvas rather than in CSS on purpose: the canvas is
+fixed to the viewport, so the wash travels with it. Put the same gradient in
+the hero and it gets clipped at the hero's bottom edge, drawing a hard
+horizontal line across the page the moment you scroll.
 
 **Stacking** is the seam the design hangs on. The hero sits at `z-index: 0`, the
 canvas at `1`, everything after the hero at `2`. So simulated sparks are drawn

@@ -416,6 +416,9 @@ a {
   inset: 0;
   z-index: 1;
   background:
+    /* The forge below the frame is drawn by the canvas, not here — a glow in
+       this box would be clipped at the hero's bottom edge and leave a hard
+       line across the page on scroll. See js/embers.js. */
     /* A pool behind the centred type. The hot steel in the still sits at
        roughly half height, right where the title and eyebrow land, and the
        eyebrow in --smoke has no chance against it. Falls off to nothing at

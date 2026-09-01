@@ -20,13 +20,23 @@
   var BLEND_MS = 800;
 
   /* Density and character per page — SPEC section 3. */
+  /* `focus` centres the spawn band instead of spreading it across the full
+     width: sparks that came off one piece of steel below the frame, rather
+     than ambient dust. The homepage uses it because that is where the
+     handoff from the hero footage happens; everywhere else stays even. */
+  /* `glow` is the forge below the frame: a soft warm wash along the bottom
+     edge that the sparks rise out of. It lives on the canvas rather than in
+     CSS because the canvas is fixed to the viewport — put it in the hero and
+     it gets clipped at the hero's bottom edge, leaving a hard line across the
+     page as soon as you scroll. Intensity tracks density, so it is strong on
+     the homepage and barely there on About. */
   var PROFILES = {
-    home: { count: 400, speed: 1.3, wobble: 1, life: [3, 6.5] },
-    gallery: { count: 90, speed: 0.65, wobble: 0.9, life: [5, 9] },
-    process: { count: 250, speed: 1, wobble: 1, life: [3.5, 7] },
-    retreats: { count: 180, speed: 0.85, wobble: 2.1, life: [4.5, 8.5] },
-    about: { count: 70, speed: 0.8, wobble: 1.1, life: [5, 9] },
-    contact: { count: 70, speed: 0.8, wobble: 1.1, life: [5, 9] }
+    home: { count: 400, speed: 1.3, wobble: 1, life: [3, 6.5], focus: 0.9, glow: 0.15 },
+    gallery: { count: 90, speed: 0.65, wobble: 0.9, life: [5, 9], glow: 0.04 },
+    process: { count: 250, speed: 1, wobble: 1, life: [3.5, 7], glow: 0.09 },
+    retreats: { count: 180, speed: 0.85, wobble: 2.1, life: [4.5, 8.5], glow: 0.07 },
+    about: { count: 70, speed: 0.8, wobble: 1.1, life: [5, 9], glow: 0.035 },
+    contact: { count: 70, speed: 0.8, wobble: 1.1, life: [5, 9], glow: 0.035 }
   };
 
   var page = document.body.getAttribute("data-embers") || "about";
@@ -109,13 +119,23 @@
     return a + Math.random() * (b - a);
   }
 
+  /* Where along the bottom edge a spark is born. With `focus`, two uniforms
+     averaged give a triangular distribution peaked at the centre of the
+     frame — denser under the middle, thinning to the edges, the way sparks
+     leave one hot bar rather than the whole width of a room. */
+  function spawnX() {
+    if (!profile.focus) return rand(-40, W + 40);
+    var t = (Math.random() + Math.random()) / 2;
+    return W / 2 + (t - 0.5) * W * profile.focus * 2;
+  }
+
   function spawn(p, prewarm) {
     p.maxLife = rand(profile.life[0], profile.life[1]);
     /* prewarm gives the particle a random age so the field is already full
        on the first frame — no visible cold start after a navigation. */
     p.age = prewarm ? Math.random() * p.maxLife : 0;
 
-    p.x0 = rand(-40, W + 40);
+    p.x0 = spawnX();
     p.y = H + rand(0, 80);
     /* Upward drift with slight acceleration — heat rises. */
     p.vy = -rand(16, 42) * profile.speed;
@@ -165,9 +185,33 @@
     return fadeIn * fadeOut * p.alpha;
   }
 
+  /* Rebuilt on resize only — the gradient is geometry, not animation. */
+  var baseGlow = null;
+
+  function buildGlow() {
+    if (!profile.glow) {
+      baseGlow = null;
+      return;
+    }
+    var r = Math.max(W * 0.42, 320);
+    var cy = H + r * 0.5;
+    baseGlow = ctx.createRadialGradient(W / 2, cy, 0, W / 2, cy, r);
+    baseGlow.addColorStop(0, "hsla(24, 92%, 52%, " + profile.glow + ")");
+    baseGlow.addColorStop(0.45, "hsla(22, 90%, 46%, " + profile.glow * 0.32 + ")");
+    baseGlow.addColorStop(0.75, "hsla(20, 88%, 42%, " + profile.glow * 0.08 + ")");
+    baseGlow.addColorStop(1, "hsla(20, 88%, 40%, 0)");
+  }
+
   function draw(t) {
     ctx.clearRect(0, 0, W, H);
     ctx.globalCompositeOperation = "lighter";
+
+    /* The forge below the frame, under the sparks. */
+    if (baseGlow) {
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = baseGlow;
+      ctx.fillRect(0, H * 0.62, W, H * 0.38);
+    }
 
     for (var i = 0; i < live; i++) {
       var p = particles[i];
@@ -290,6 +334,7 @@
 
   function init() {
     resize();
+    buildGlow();
     buildSprites();
     ensurePool(Math.max(live, target));
     writeStoredDensity(target);
@@ -306,6 +351,7 @@
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(function () {
       resize();
+      buildGlow();
       /* Device class may have changed with the viewport. */
       var next = targetCount();
       if (next !== target) {
