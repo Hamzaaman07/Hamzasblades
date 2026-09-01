@@ -80,7 +80,10 @@ window.HB = (function () {
     article.appendChild(createFrame(piece));
 
     var meta = el("div", "piece__meta");
-    var name = el("h3", "t-piece piece__name");
+    /* The level depends on where the card sits: h3 under the homepage's
+       "Featured work" h2, h2 on the gallery under its h1. Skipping a level
+       is a real failure for anyone navigating by headings. */
+    var name = el(opts.heading || "h3", "t-piece piece__name");
 
     if (opts.interactive === "button") {
       var button = el("button", "piece__open", piece.title);

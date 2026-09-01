@@ -522,6 +522,19 @@ a {
   gap: var(--s-4);
 }
 
+/* The catalogue arrives after a fetch, so the grid starts as one line of
+   fallback text and then becomes several thousand pixels of cards. Without a
+   reservation that shoves the whole page down as it lands — a 0.37 layout
+   shift, enough on its own to put the page under the spec's Lighthouse floor.
+   The class is added once the cards are in, or once the fetch has failed. */
+.pieces[data-gallery]:not(.is-loaded) {
+  min-height: 80vh;
+}
+
+.pieces--featured:not(.is-loaded) {
+  min-height: 60vh;
+}
+
 /* Featured work is a fixed four, not an auto-fill — the homepage row should
    hold its shape rather than reflowing to three and orphaning the fourth. */
 .pieces--featured {

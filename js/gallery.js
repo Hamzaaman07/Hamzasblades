@@ -275,25 +275,33 @@
   HB.load()
     .then(function (list) {
       pieces = list;
-      if (!pieces.length) return;
+      if (!pieces.length) {
+        grid.classList.add("is-loaded");
+        return;
+      }
 
       var available = {};
       var frag = document.createDocumentFragment();
 
       pieces.forEach(function (piece) {
         available[piece.type] = true;
-        var card = HB.createCard(piece, { interactive: "button" });
+        /* h2: these sit directly under the page's h1. */
+        var card = HB.createCard(piece, { interactive: "button", heading: "h2" });
         cards.push(card);
         frag.appendChild(card);
       });
 
       grid.textContent = "";
       grid.appendChild(frag);
+      /* Releases the height reserved against layout shift. */
+      grid.classList.add("is-loaded");
       buildFilters(available);
       markActive();
       updateEmpty();
     })
     .catch(function () {
-      /* The markup's fallback line stays put. */
+      /* The markup's fallback line stays put — but release the reserved
+         height, or it sits in 80vh of nothing. */
+      grid.classList.add("is-loaded");
     });
 })();

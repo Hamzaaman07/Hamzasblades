@@ -23,6 +23,9 @@ experience.html     the retreats — coming soon
 about.html          Hamza's story
 contact.html        the inquiry box
 css/site.css        design tokens and every component
+css/fonts.css       @font-face for the self-hosted Amiri and Karla
+fonts/              the font files themselves, OFL — see fonts/OFL.txt
+_headers            cache policy, read by Cloudflare Pages and Netlify
 js/pieces.js        the catalogue — loading and card rendering, shared
 js/site.js          header, hero video loading, featured work
 js/gallery.js       filters, grid reflow, detail view
@@ -48,14 +51,14 @@ Against the build order in spec §6:
 | 4. Home, About, Process | Done |
 | 5. Retreats | Done — video slot, coming-soon treatment, email capture |
 | 6. The ember system | Done — home, per-page density, the video-to-particle dissolve |
-| 7. Performance and accessibility pass | Partly — see the ember notes below |
+| 7. Performance and accessibility pass | Done |
 
 The ember system was started during step 1, ahead of its place in this order,
 and finished in step 6. Nothing depends on it, so arriving early cost nothing.
 
-Every page in the spec is now built and every internal link resolves. What is
-left is step 7, the performance and accessibility pass, and the assets and copy
-listed in ASSETS.md.
+Every page in the spec is built, every internal link resolves, and the build
+order is complete. What is left is the assets and copy listed in ASSETS.md, and
+the launch step below.
 
 ## Before this can go live
 
@@ -148,6 +151,46 @@ would fall under the ~48px legibility floor. The favicon uses the simplified
 crescent variant for the same reason.
 
 ASSETS.md tracks spec §7 against what is actually in the repo.
+
+## Performance and accessibility
+
+Measured with Lighthouse on mobile, particles enabled, against spec §9's floor
+of 85:
+
+| Page | Perf | A11y | Best practices | SEO |
+|---|---|---|---|---|
+| index | 99 | 100 | 96 | 100 |
+| gallery | 100 | 100 | 96 | 100 |
+| experience | 100 | 100 | 96 | 100 |
+
+Zero axe-core violations on every page, including the gallery with its detail
+view open. Every focusable element on every page is reachable by keyboard and
+visibly focused. Responsive from 360px to 2560px with no horizontal scroll at
+either end.
+
+Two things found and fixed in this pass are worth knowing about, because both
+were invisible until measured:
+
+**The fonts were the single biggest cost.** Loading Amiri and Karla from
+fonts.googleapis.com is a render-blocking request to a third-party origin.
+Removing it took the homepage from 89 to 100 and Speed Index from 19.7s to
+0.9s. They are now self-hosted in `fonts/` — Latin and Latin Extended only,
+about 65 KB, since no page sets Arabic text and Karla 500 was requested but
+never used. The site now makes no third-party requests at all. This also fixes
+a real failure mode: when Google Fonts is slow or blocked, the old build
+stalled and then fell back to Times.
+
+**The gallery grid shifted as it loaded.** The catalogue arrives by fetch, so
+the grid went from one line of fallback text to several thousand pixels of
+cards, shoving the page down — a 0.373 layout shift that put the page at 71,
+below the spec's floor. The grid now reserves its height until the cards land.
+
+Remaining Lighthouse notes, all judged not worth acting on: the console 404s
+are the gallery photographs and hero video that have not been shot; "minify
+CSS/JS" measures uncompressed bytes, and all the CSS and JS together gzip to
+21 KB, so a build step would buy little against the complexity; cache lifetimes
+are handled by `_headers`, which the local test server ignores but Cloudflare
+reads.
 
 ## The ember continuum
 

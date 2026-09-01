@@ -339,11 +339,8 @@
     ensurePool(Math.max(live, target));
     writeStoredDensity(target);
 
-    if (reduced.matches) {
-      renderStatic();
-    } else {
-      start();
-    }
+    if (reduced.matches) renderStatic();
+    else start();
   }
 
   var resizeTimer;

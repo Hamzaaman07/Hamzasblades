@@ -121,7 +121,10 @@
         })
         .slice(0, 4);
 
-      if (!featured.length) return;
+      if (!featured.length) {
+        grid.classList.add("is-loaded");
+        return;
+      }
 
       var frag = document.createDocumentFragment();
       featured.forEach(function (p) {
@@ -131,8 +134,10 @@
       });
       grid.textContent = "";
       grid.appendChild(frag);
+      grid.classList.add("is-loaded");
     })
     .catch(function () {
+      grid.classList.add("is-loaded");
       /* Leave the markup's own fallback line in place. The section still
          reads as finished and the link to the full catalogue still works. */
     });
