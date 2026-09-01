@@ -107,15 +107,36 @@ window.HB = (function () {
     return article;
   }
 
+  /* Every view of a piece: the card photo first, then any extra ones. A piece
+     with no `photos` behaves exactly as before. */
+  function viewsOf(piece) {
+    var first = { image: piece.image, webp: piece.webp, card: piece.card };
+    return piece.photos && piece.photos.length
+      ? [first].concat(piece.photos)
+      : [first];
+  }
+
   /* The photo, in a frame that holds its aspect ratio whether or not the file
-     exists yet — the grid must not shift when photographs land. */
-  function createFrame(piece, large) {
+     exists yet — the grid must not shift when photographs land.
+
+     `view` is { image, webp }. The WebP is only offered when the data says it
+     exists: a <source> pointing at a missing file is committed to by the
+     browser rather than falling back to the <img>, so guessing the sibling
+     path would break the photo instead of degrading. */
+  function createFrame(piece, large, view) {
+    view = view || viewsOf(piece)[0];
+
+    /* A grid card is ~300px wide; the detail photo is ~500. Decoding the big
+       one for a card is the difference between 300ms and 30ms of blocking
+       time on a phone, so use the small copy wherever the data offers it. */
+    var use = !large && view.card ? view.card : view;
+
     var frame = el("div", large ? "piece__frame piece__frame--large" : "piece__frame");
 
     var img = el("img", "piece__img");
-    img.src = piece.image;
+    img.src = use.image;
     /* Alt text is the piece title at minimum. */
-    img.alt = piece.title;
+    img.alt = view.alt || piece.title;
     img.decoding = "async";
     if (!large) {
       img.loading = "lazy";
@@ -128,11 +149,22 @@ window.HB = (function () {
     pending.hidden = true;
 
     img.addEventListener("error", function () {
-      img.remove();
+      holder.remove();
       pending.hidden = false;
     });
 
-    frame.appendChild(img);
+    var holder = img;
+    if (use.webp) {
+      var picture = document.createElement("picture");
+      var source = document.createElement("source");
+      source.type = "image/webp";
+      source.srcset = use.webp;
+      picture.appendChild(source);
+      picture.appendChild(img);
+      holder = picture;
+    }
+
+    frame.appendChild(holder);
     frame.appendChild(pending);
     return frame;
   }
@@ -144,6 +176,7 @@ window.HB = (function () {
     el: el,
     load: load,
     createCard: createCard,
-    createFrame: createFrame
+    createFrame: createFrame,
+    viewsOf: viewsOf
   };
 })();

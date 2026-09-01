@@ -98,28 +98,64 @@ let the room go fully black.
 
 | File | Status |
 |---|---|
+| `img/gallery/al-hajarah-dagger-*` | **In.** Three views, derived from `img/Al-Hajarah Dagger/`. |
 | `img/gallery/*.jpg` | Partial. ~20 pieces, black backdrop, raking side light. |
 | `img/process-teaser.jpg` | Not shot. One wide cinematic frame for the homepage band. |
 | `img/process/*.jpg` | Not shot. **Six**, one per stage on the Process page: raw stock, heat, shaping, grinding, handle, finished edge. 4:3. |
 | `img/portrait.jpg` | Not shot. Hamza at the forge, for About. |
 
 Piece photographs go in `img/gallery/`, named to match each entry's `id` in
-`data/gallery.json`:
+`data/gallery.json`. Portrait crop; the card frame is 4:5 and crops to that.
+Every piece shown must be Hamza's own work — no stock photography. A card whose
+photograph is missing shows "photo pending" at full card height, so a
+half-populated catalogue still lays out cleanly.
+
+### Adding a piece
+
+Drop the originals anywhere under `img/` — a folder per piece is fine, and the
+originals are kept as masters. Then derive the web copies. Al-Hajarah's
+originals were ~3 MB PNGs each; the derived WebP is 79 KB:
 
 ```
-img/gallery/damascus-hunter-01.jpg
+python3 - <<'EOF'
+from PIL import Image
+import os
+SRC, BASE = 'img/Al-Hajarah Dagger', 'al-hajarah-dagger'
+# (source file, view number) — view 01 is the card photo
+for src, n in [('dagger3.png', '01'), ('dagger.png', '02'), ('dagger2.png', '03')]:
+    im0 = Image.open(os.path.join(SRC, src)).convert('RGB')
+    for W, suffix in ((500, '-sm'), (1000, '')):
+        im = im0.resize((W, round(im0.height * W / im0.width)), Image.LANCZOS)
+        im.save(f'img/gallery/{BASE}-{n}{suffix}.jpg', quality=82, optimize=True, progressive=True)
+        im.save(f'img/gallery/{BASE}-{n}{suffix}.webp', quality=80, method=6)
+EOF
 ```
 
-Portrait crop, 4:5. Cards render at up to ~800×1000, so shoot at least that.
-Every piece shown must be Hamza's own work — no stock photography.
+Two sizes matter: the grid card is ~300px wide and the detail photo ~500, so
+serving the big copy to a card costs real blocking time on a phone — 250ms of
+it, measured, for this one piece.
 
-A card whose photograph is missing shows "photo pending" at full card height, so
-a half-populated catalogue still lays out cleanly.
+Then add the entry to `data/gallery.json`. Beyond the spec's fields:
+
+- `webp` — optional, and **only list it if the file exists**. A `<source>`
+  pointing at a missing file is committed to by the browser rather than
+  falling back to the `<img>`, so a wrong path breaks the photo rather than
+  degrading.
+- `card` — optional `{ image, webp }`, the 500px copy used by grid cards and
+  the detail view's thumbnails.
+- `photos` — optional array of extra views for the detail view, each the same
+  shape plus an `alt`. The card photo is always the top-level `image`.
+
+Everything except `image` is optional; a piece with just `image` behaves
+exactly as before.
 
 ## Data
 
-`data/gallery.json` holds **seed entries with placeholder titles** so the
-featured row has something to render. To be replaced with Hamza's real pieces.
+`data/gallery.json` holds one real piece — the Al-Hajarah dagger — followed by
+**seven seed entries with placeholder titles**, so the featured row and the
+filters have something to render. Those seven are to be replaced with Hamza's
+real pieces; their `img/gallery/*.jpg` paths 404 today, which is what puts
+"photo pending" on their cards.
 
 ## Still to be decided
 
