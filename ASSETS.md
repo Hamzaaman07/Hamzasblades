@@ -98,8 +98,7 @@ let the room go fully black.
 
 | File | Status |
 |---|---|
-| `img/gallery/al-hajarah-dagger-*` | **In.** Three views, derived from `img/Knives/Al-Hajarah Dagger/`. |
-| `img/gallery/*.jpg` | Partial. ~20 pieces, black backdrop, raking side light. |
+| `img/gallery/*` | **Complete.** 18 pieces, 63 photographs, derived from the masters under `img/Knives/`, `img/Swords/` and `img/Woodworking/`. |
 | `img/process-teaser.jpg` | Not shot. One wide cinematic frame for the homepage band. |
 | `img/process/*.jpg` | Not shot. **Six**, one per stage on the Process page: raw stock, heat, shaping, grinding, handle, finished edge. 4:3. |
 | `img/portrait.jpg` | Not shot. Hamza at the forge, for About. |
@@ -135,7 +134,14 @@ EOF
 
 Two sizes matter: the grid card is ~300px wide and the detail photo ~500, so
 serving the big copy to a card costs real blocking time on a phone — 250ms of
-it, measured, for this one piece.
+it, measured, on a single piece.
+
+**Nothing is cropped.** Cards keep a 4:5 frame so the grid rows stay even, but
+the photograph is fitted whole inside it, and the detail view uses a fixed box
+with the image contained. Several pieces — Sword of Uthman RA, Zulfiqar Sword,
+Epoxy Woodwork — are photographed landscape, and a centre crop to 4:5 would
+have taken half the blade. Portrait pieces fill their frame almost exactly;
+landscape ones sit letterboxed on `--ash`.
 
 Then add the entry to `data/gallery.json`. Beyond the spec's fields:
 
@@ -153,11 +159,22 @@ exactly as before.
 
 ## Data
 
-`data/gallery.json` holds one real piece — the Al-Hajarah dagger — followed by
-**seven seed entries with placeholder titles**, so the featured row and the
-filters have something to render. Those seven are to be replaced with Hamza's
-real pieces; their `img/gallery/*.jpg` paths 404 today, which is what puts
-"photo pending" on their cards.
+`data/gallery.json` is now the real catalogue: 18 pieces, no placeholders.
+Titles come from the master folder names.
+
+**Two fields still need Hamza:**
+
+- `status` is `available` on every piece because there was no way to know
+  otherwise. Anything already sold needs changing to `sold` — those stay
+  visible at 70% as portfolio, and their inquiry box switches to asking about
+  a commission.
+- `featured` is set on four pieces (Al-Hajarah Dagger, Karambit, Zulfiqar
+  Sword, Wooden Palestine Map), chosen for a spread across the three
+  categories rather than by preference. The homepage shows the first four
+  flagged, in array order.
+
+Display order is the array order. Within a piece, view order follows the
+trailing number in the master filename.
 
 ## Still to be decided
 

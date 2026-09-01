@@ -88,6 +88,12 @@ inside while it is open and returns to the card that opened it. The card's
 title is the control and its hit area is stretched over the whole card, so the
 accessible name is the piece name rather than "image".
 
+The catalogue holds 18 real pieces across knives, swords and woodworking. The
+filter set is built from the data, so Axes & spears and Bows do not appear
+until there is something to put in them.
+
+Photographs are never cropped — see ASSETS.md for why and how.
+
 Sold pieces stay in the catalogue at 70% — they are portfolio. Their detail
 view is marked `data-intent="commission"`, so its inquiry box asks about
 commissioning something similar rather than about buying a piece that is gone.
