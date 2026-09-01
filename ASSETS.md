@@ -103,32 +103,57 @@ let the room go fully black.
 | `img/process/*.jpg` | Not shot. **Six**, one per stage on the Process page: raw stock, heat, shaping, grinding, handle, finished edge. 4:3. |
 | `img/portrait.jpg` | Not shot. Hamza at the forge, for About. |
 
-Piece photographs go in `img/gallery/`, named to match each entry's `id` in
-`data/gallery.json`. Portrait crop; the card frame is 4:5 and crops to that.
-Every piece shown must be Hamza's own work — no stock photography. A card whose
-photograph is missing shows "photo pending" at full card height, so a
-half-populated catalogue still lays out cleanly.
+Derived photographs go in `img/gallery/`, named `<piece-id>-<NN>`. Every piece
+shown is Hamza's own work — no stock photography. A card whose photograph is
+missing shows "photo pending" at full card height, so a half-populated
+catalogue still lays out cleanly.
 
 ### Adding a piece
 
 Masters live at `img/<Category>/<Piece Title>/`, one folder per piece —
 `Knives/`, `Swords/`, `Woodworking/`. The folder name is the piece title and
-the trailing number in each filename is the display order. Originals are kept;
-the web copies are derived into `img/gallery/`. Then derive the web copies. Al-Hajarah's
-originals were ~3 MB PNGs each; the derived WebP is 79 KB:
+the trailing number in each filename is the display order. Originals are kept
+as masters; the web copies are derived into `img/gallery/`.
+
+This regenerates every piece from scratch — run it after adding a folder. It
+reads the categories, derives both sizes in both formats, and prints what it
+made. 150 MB of masters became 22 MB of derived files:
 
 ```
 python3 - <<'EOF'
+import pathlib, re, unicodedata
 from PIL import Image
-import os
-SRC, BASE = 'img/Knives/Al-Hajarah Dagger', 'al-hajarah-dagger'
-# (source file, view number) — view 01 is the card photo
-for src, n in [('dagger3.png', '01'), ('dagger.png', '02'), ('dagger2.png', '03')]:
-    im0 = Image.open(os.path.join(SRC, src)).convert('RGB')
-    for W, suffix in ((500, '-sm'), (1000, '')):
-        im = im0.resize((W, round(im0.height * W / im0.width)), Image.LANCZOS)
-        im.save(f'img/gallery/{BASE}-{n}{suffix}.jpg', quality=82, optimize=True, progressive=True)
-        im.save(f'img/gallery/{BASE}-{n}{suffix}.webp', quality=80, method=6)
+
+root, out = pathlib.Path('img'), pathlib.Path('img/gallery')
+out.mkdir(exist_ok=True)
+
+def slug(n):
+    s = unicodedata.normalize('NFKD', n).encode('ascii', 'ignore').decode()
+    return re.sub(r'[^a-zA-Z0-9]+', '-', s).strip('-').lower()
+
+def order(f):                      # dagger1, dagger 2, dagger3.png.png, dagger (=1)
+    stem = re.sub(r'\.(png|jpg|jpeg|webp)$', '', f.name, flags=re.I)
+    stem = re.sub(r'\.(png|jpg|jpeg|webp)$', '', stem, flags=re.I)
+    m = re.search(r'(\d+)', stem)
+    return int(m.group(1)) if m else 1
+
+for cat in ('Knives', 'Swords', 'Woodworking'):
+    for d in sorted((root / cat).iterdir()):
+        if not d.is_dir():
+            continue
+        files = sorted([f for f in d.iterdir() if f.is_file() and not f.name.startswith('.')],
+                       key=lambda f: (order(f), f.name))
+        base = slug(d.name)
+        for i, f in enumerate(files, 1):
+            im0 = Image.open(f).convert('RGB')
+            for W, suf in ((1000, ''), (500, '-sm')):
+                w = min(W, im0.width)
+                im = im0 if w == im0.width else im0.resize(
+                    (w, round(im0.height * w / im0.width)), Image.LANCZOS)
+                im.save(out / f'{base}-{i:02d}{suf}.jpg', quality=80,
+                        optimize=True, progressive=True)
+                im.save(out / f'{base}-{i:02d}{suf}.webp', quality=78, method=4)
+        print(f'{cat}/{d.name}: {len(files)} views -> {base}')
 EOF
 ```
 

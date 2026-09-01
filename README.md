@@ -166,8 +166,10 @@ of 85:
 | Page | Perf | A11y | Best practices | SEO |
 |---|---|---|---|---|
 | index | 99 | 100 | 96 | 100 |
-| gallery | 100 | 100 | 96 | 100 |
+| gallery | 98 | 100 | 96 | 100 |
 | experience | 100 | 100 | 96 | 100 |
+
+The gallery figure is with all 18 pieces and their real photography loaded.
 
 Zero axe-core violations on every page, including the gallery with its detail
 view open. Every focusable element on every page is reachable by keyboard and
