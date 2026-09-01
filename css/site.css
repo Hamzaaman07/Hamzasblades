@@ -718,6 +718,118 @@ a {
   display: none;
 }
 
+/* --- Process steps ------------------------------------------------------- */
+/* An ordered list, because the order is the point. Images alternate sides. */
+
+.steps {
+  display: grid;
+  gap: var(--s-7);
+  counter-reset: step;
+}
+
+.step {
+  display: grid;
+  gap: var(--s-3);
+  align-items: center;
+}
+
+@media (min-width: 860px) {
+  .step {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s-6);
+  }
+
+  /* Alternating side. The copy leads on every second step. */
+  .step:nth-child(even) .step__figure {
+    order: 2;
+  }
+}
+
+.step__figure {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  border: var(--line);
+  background: linear-gradient(160deg, #1d1811 0%, #100c08 100%);
+  overflow: hidden;
+}
+
+.step__figure img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.step__copy {
+  display: grid;
+  gap: var(--s-2);
+  align-content: center;
+}
+
+/* --- About --------------------------------------------------------------- */
+
+.about {
+  display: grid;
+  gap: var(--s-5);
+  align-items: start;
+}
+
+@media (min-width: 900px) {
+  .about {
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    gap: var(--s-7);
+  }
+
+  .about__media {
+    position: sticky;
+    top: calc(72px + var(--s-4));
+  }
+}
+
+.about__media {
+  display: grid;
+  gap: var(--s-4);
+}
+
+.about__figure {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  border: var(--line);
+  background: linear-gradient(160deg, #1d1811 0%, #100c08 100%);
+  overflow: hidden;
+}
+
+.about__figure img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.about__meta {
+  display: grid;
+  gap: var(--s-3);
+}
+
+.about__copy p + p {
+  margin-top: var(--s-3);
+}
+
+/* --- Closing band -------------------------------------------------------- */
+/* Points at the inquiry box, per SPEC section 8. */
+
+.closer {
+  display: grid;
+  justify-items: start;
+  gap: var(--s-3);
+  margin-top: var(--s-7);
+  padding-top: var(--s-5);
+  border-top: var(--line);
+}
+
+.closer .t-section {
+  max-width: 30ch;
+  color: var(--brass);
+}
+
 /* --- Contact ------------------------------------------------------------- */
 /* Minimal, as SPEC section 4 asks: the inquiry box, Instagram, a shipping
    note. No street address, no phone. */

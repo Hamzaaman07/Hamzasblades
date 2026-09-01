@@ -18,10 +18,15 @@ npx http-server -p 8000
 ```
 index.html          home
 gallery.html        the collection
+process.html        the making, in order
+about.html          Hamza's story
+contact.html        the inquiry box
 css/site.css        design tokens and every component
 js/pieces.js        the catalogue — loading and card rendering, shared
 js/site.js          header, hero video loading, featured work
 js/gallery.js       filters, grid reflow, detail view
+js/inquiry.js       the inquiry box component
+js/config.js        Formspree endpoint and Instagram URL — edit before launch
 js/embers.js        the ember continuum
 data/gallery.json   the only place pieces are defined
 img/  video/        assets, see ASSETS.md
@@ -39,17 +44,17 @@ Against the build order in spec §6:
 | 1. Foundation | Done — tokens, fonts, layout primitives, nav, footer |
 | 2. Gallery | Done — JSON structure, grid, filters, detail view |
 | 3. Inquiry boxes | Done — suggested messages, validation, Formspree wiring |
-| 4. Home, About, Process | Home done; About and Process not started |
+| 4. Home, About, Process | Done |
 | 5. Retreats | Not started |
-| 6. The ember system | Done for home, gallery and contact |
+| 6. The ember system | Done for every page built so far |
 | 7. Performance and accessibility pass | Partly — see the ember notes below |
 
 The ember system came in ahead of its place in that order. It is spec §6 step 6
 and everything before it is meant to land first; it was built during step 1 and
 is staying. Nothing depends on it, so the order it arrived in costs nothing.
 
-`process.html`, `experience.html` and `about.html` are linked from the header
-and footer but do not exist yet.
+`experience.html` is linked from the header and footer but does not exist yet —
+it is step 5, the last page.
 
 ## Before this can go live
 
@@ -57,8 +62,9 @@ and footer but do not exist yet.
 until it is replaced no inquiry is delivered — the form validates, then tells
 the visitor it cannot send rather than swallowing the message, and logs a
 warning naming the file. Create the endpoint at formspree.io forwarding to
-Hamza's address. If the site lands on Netlify or Vercel, their native form
-handling is free and replaces Formspree entirely.
+Hamza's address. Netlify is the one host with native form handling that would
+replace Formspree outright; Cloudflare and Vercel have no equivalent, so on
+those this endpoint is required.
 
 `INSTAGRAM_URL` in the same file is optional: set it and the link renders on
 the contact page, leave it empty and nothing renders. No dead link either way.
@@ -79,7 +85,7 @@ title is the control and its hit area is stretched over the whole card, so the
 accessible name is the piece name rather than "image".
 
 Sold pieces stay in the catalogue at 70% — they are portfolio. Their detail
-view is marked `data-intent="commission"` so build step 3 can ask about
+view is marked `data-intent="commission"`, so its inquiry box asks about
 commissioning something similar rather than about buying a piece that is gone.
 
 ## Inquiry boxes
@@ -115,9 +121,6 @@ the visitor typed.
 The email address appears nowhere in page text — it lives in the form service,
 per spec §5.
 
-The site is complete without the canvas. `js/embers.js` appends its own element
-and removes nothing — delete the script tag and the layout is unchanged.
-
 ## Copy and assets
 
 The positioning statement is the client-approved text from spec §8, verbatim.
@@ -132,7 +135,9 @@ ASSETS.md tracks spec §7 against what is actually in the repo.
 
 ## The ember continuum
 
-One system, one canvas, fixed to the viewport.
+One system, one canvas, fixed to the viewport. The site is complete without it:
+`js/embers.js` appends its own element and removes nothing, so deleting the
+script tag leaves every layout unchanged.
 
 **Continuity.** Particles are born with a random age, so the field is already
 full on the first frame — there is no cold start after a navigation. Each page

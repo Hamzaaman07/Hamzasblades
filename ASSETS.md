@@ -52,6 +52,10 @@ Where section 7's rules land in the build:
 | `video/retreat-location.mp4` | Not shot. Belongs to the Experience page, not built yet. |
 | `img/retreat-still.jpg` | Not shot. Still frame for the homepage teaser band. |
 
+The About page uses the hero forge still in place of a portrait, which is what
+section 4 asks for when no portrait exists. Drop `img/portrait.jpg` in and swap
+the `<picture>` in `about.html` when it is shot.
+
 **The hero still is AI-generated.** It is doing the job section 7 sanctions for
 placeholder footage during the build, and it is not a piece of Hamza's work
 being passed off as one, so it does not cross section 10's line. But this is a
@@ -91,8 +95,8 @@ let the room go fully black.
 |---|---|
 | `img/gallery/*.jpg` | Partial. ~20 pieces, black backdrop, raking side light. |
 | `img/process-teaser.jpg` | Not shot. One wide cinematic frame for the homepage band. |
-| `img/process/*.jpg` | Not shot. 5–6 stages, for the Process page. |
-| `img/portrait.jpg` | Not shot. Optional, strong on About. |
+| `img/process/*.jpg` | Not shot. **Six**, one per stage on the Process page: raw stock, heat, shaping, grinding, handle, finished edge. 4:3. |
+| `img/portrait.jpg` | Not shot. Hamza at the forge, for About. |
 
 Piece photographs go in `img/gallery/`, named to match each entry's `id` in
 `data/gallery.json`:
@@ -119,11 +123,11 @@ Both live in `js/config.js`, the single marked place for them.
 - **Formspree endpoint.** `FORM_ENDPOINT` ships as a placeholder. **Until it is
   replaced, no inquiry is delivered** — the form validates, then tells the
   visitor it cannot send rather than swallowing the message. Create it at
-  formspree.io forwarding to Hamza's address. If the host turns out to be
-  Netlify or Vercel, their native form handling replaces Formspree and is free.
+  formspree.io forwarding to Hamza's address. Netlify is the one host whose
+  native form handling would replace Formspree outright; Cloudflare and Vercel
+  have no equivalent, so on those this endpoint is required.
 - **Instagram URL.** `INSTAGRAM_URL` is empty, so the link does not render.
-  Set it and it appears on the contact page. Section 4 also wants it on About,
-  which is not built yet.
+  Set it and it appears on both the contact page and About, as section 4 asks.
 
 ## Copy to confirm
 
@@ -132,6 +136,13 @@ section 8. These are not, and were written to the voice rules:
 
 - **Contact page** — the page title, the line under it, and the shipping note.
 - **Gallery page** — the title and the line under it.
+- **Process page** — the title, the line under it, and all six stage
+  descriptions. Written to be technically accurate as well as in voice; worth
+  Hamza checking the smithing itself, not just the tone.
+- **About page** — the title "The forge and the hands". The four body
+  paragraphs are section 8's approved copy, verbatim and untouched.
+- **Closing line** on About and Process — section 8 gives it as an example
+  ("e.g."), so it is used as written but is not strictly approved.
 - **Homepage teasers** — the process band's two lines. (The retreats teaser is
   approved copy.)
 - **Inquiry validation and status messages** — what the form says when a field
