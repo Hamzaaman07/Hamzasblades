@@ -40,8 +40,15 @@
      paint. The poster gradient is on screen the whole time. */
 
   var hero = document.querySelector(".hero__video");
-  if (hero && hero.dataset.src) {
+  var stillOnly = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  if (hero && hero.dataset.src && !stillOnly) {
     var loadHero = function () {
+      /* Only reveal the video once it can play. If the file is not there yet
+         this never fires, and the hero keeps showing the still. */
+      hero.addEventListener("canplay", function () {
+        hero.classList.add("is-ready");
+      });
       var source = document.createElement("source");
       source.src = hero.dataset.src;
       source.type = hero.dataset.type || "video/mp4";
@@ -50,87 +57,57 @@
     };
     if (document.readyState === "complete") loadHero();
     else window.addEventListener("load", loadHero);
+  } else if (hero && stillOnly) {
+    /* An autoplaying loop is motion. Reduced motion gets the still. */
+    hero.remove();
+  }
+
+  /* --- Instagram --------------------------------------------------------- */
+  /* Rendered only when the URL is configured, so the page never carries a
+     dead link. */
+
+  var instagram = document.querySelector("[data-instagram]");
+  var instagramUrl = (window.HB_CONFIG || {}).INSTAGRAM_URL;
+  if (instagram && instagramUrl) {
+    instagram.querySelector("[data-instagram-link]").href = instagramUrl;
+    instagram.hidden = false;
+  }
+
+  /* --- Standalone inquiry box -------------------------------------------- */
+  /* The contact page. `?about=custom` — where the "Custom order" call to
+     action points — gets the commission opener; anything else gets the plain
+     one. SPEC section 5. */
+
+  var inquiryMount = document.querySelector("[data-inquiry]");
+  if (inquiryMount && window.HB && HB.createInquiry) {
+    var custom = /(^|[?&])about=custom(&|$)/.test(window.location.search);
+
+    inquiryMount.textContent = "";
+    inquiryMount.appendChild(
+      HB.createInquiry({
+        intent: custom ? "custom" : "general",
+        source: custom ? "custom-order" : "contact"
+      })
+    );
+
+    if (custom) {
+      var eyebrow = document.querySelector("[data-inquiry-eyebrow]");
+      var title = document.querySelector("[data-inquiry-title]");
+      if (eyebrow) eyebrow.textContent = "Custom order";
+      if (title) title.textContent = "Commission a piece";
+    }
   }
 
   /* --- Featured work ----------------------------------------------------- */
-  /* Read from gallery.json so adding a piece is a photo drop plus a few
-     lines. Nothing about the catalogue is hardcoded in the markup. */
+  /* Four pieces from the catalogue. Card rendering lives in js/pieces.js so
+     these and the gallery's cards cannot drift apart. */
 
   var grid = document.querySelector("[data-featured]");
-  if (!grid) return;
+  if (!grid || !window.HB) return;
 
-  var STATUS_LABEL = {
-    available: "Available",
-    sold: "Sold",
-    commission: "Commission"
-  };
-
-  var TYPE_LABEL = {
-    swords: "Sword",
-    knives: "Knife",
-    axes: "Axe & spear",
-    bows: "Bow",
-    woodworking: "Woodworking"
-  };
-
-  function el(tag, cls, text) {
-    var n = document.createElement(tag);
-    if (cls) n.className = cls;
-    if (text) n.textContent = text;
-    return n;
-  }
-
-  function card(piece) {
-    var article = el("article", "piece");
-    if (piece.status === "sold") article.classList.add("piece--sold");
-
-    var frame = el("div", "piece__frame");
-
-    var img = el("img", "piece__img");
-    img.src = piece.image;
-    /* Alt text is the piece title at minimum. */
-    img.alt = piece.title;
-    img.loading = "lazy";
-    img.decoding = "async";
-    img.width = 800;
-    img.height = 1000;
-
-    /* Until the photograph is dropped in, hold the frame rather than
-       collapsing it — the grid must not shift when the file arrives. */
-    var pending = el("div", "piece__pending");
-    pending.appendChild(el("span", "eyebrow", "Photo pending"));
-    pending.hidden = true;
-
-    img.addEventListener("error", function () {
-      img.remove();
-      pending.hidden = false;
-    });
-
-    frame.appendChild(img);
-    frame.appendChild(pending);
-
-    var meta = el("div", "piece__meta");
-    meta.appendChild(el("h3", "t-piece piece__name", piece.title));
-
-    var tags = el("span", "eyebrow");
-    tags.textContent =
-      (TYPE_LABEL[piece.type] || piece.type) +
-      " · " +
-      (STATUS_LABEL[piece.status] || piece.status);
-    meta.appendChild(tags);
-
-    article.appendChild(frame);
-    article.appendChild(meta);
-    return article;
-  }
-
-  fetch("data/gallery.json")
-    .then(function (res) {
-      if (!res.ok) throw new Error("gallery unavailable");
-      return res.json();
-    })
-    .then(function (data) {
-      var featured = (data.pieces || [])
+  HB.load()
+    .then(function (pieces) {
+      var featured = pieces
         .filter(function (p) {
           return p.featured;
         })
@@ -140,7 +117,9 @@
 
       var frag = document.createDocumentFragment();
       featured.forEach(function (p) {
-        frag.appendChild(card(p));
+        /* The detail view lives on the gallery page, so a featured card
+           sends you there rather than opening a lightbox of its own. */
+        frag.appendChild(HB.createCard(p, { interactive: "link", href: "gallery.html" }));
       });
       grid.textContent = "";
       grid.appendChild(frag);

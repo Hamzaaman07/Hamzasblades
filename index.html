@@ -41,34 +41,54 @@
   <!-- Hero ------------------------------------------------------------- -->
   <section class="hero">
     <div class="hero__media">
+      <!-- The hero still: hammer strike on hot steel at night. It is the
+           background now and stays beneath the video once that is shot, so
+           there is never a bare black rectangle. Eager and high priority —
+           it is the largest paint on the page. -->
+      <picture>
+        <source type="image/webp" sizes="100vw"
+                srcset="img/hero-forge-1000.webp 1000w,
+                        img/hero-forge-1672.webp 1672w">
+        <img class="hero__img" alt="" width="1672" height="941"
+             fetchpriority="high" sizes="100vw"
+             src="img/hero-forge-1672.jpg"
+             srcset="img/hero-forge-1000.jpg 1000w,
+                     img/hero-forge-1672.jpg 1672w">
+      </picture>
+
       <!--
         Placeholder. Slow-motion hammer strike on hot steel at night, cut so
         the loop is seamless (matched cut, top-of-swing to top-of-swing).
         The source is attached after load by js/site.js so the video never
-        blocks first paint; the gradient behind it stands in for the poster
-        until img/hero-poster.jpg exists.
+        blocks first paint, and it fades up over the still once it can play.
       -->
       <video class="hero__video" muted playsinline loop autoplay
              preload="none"
              data-src="video/hero-forge.mp4" data-type="video/mp4"
-             poster="img/hero-poster.jpg" aria-hidden="true" tabindex="-1"></video>
+             aria-hidden="true" tabindex="-1"></video>
     </div>
 
     <!-- The seam: bottom quarter dissolves to --forge, ember canvas over it. -->
     <div class="hero__scrim"></div>
 
+    <!-- The mark rides high and the type sits low, so the hot steel running
+         across the middle of the still is left clear. Both bands are dark;
+         the fire is the only thing between them. -->
     <div class="shell hero__inner">
       <!-- The supplied raster logo, displayed at 120px — its ceiling until an
-           SVG trace exists (SPEC section 7). Never upscaled. If the file is
-           missing, js/site.js drops the element and the hero runs on type
-           alone, which section 7 endorses. -->
-      <img class="hero__mark" src="img/logo.png" alt="" width="120" height="120"
-           data-optional>
-      <h1 class="t-hero hero__title">Hamza's Blades</h1>
-      <p class="eyebrow">Hand forged in California</p>
-      <div class="hero__actions">
-        <a class="btn btn--primary" href="gallery.html">View the collection</a>
-        <a class="btn btn--ghost" href="contact.html">Custom order</a>
+           SVG trace exists (SPEC section 7). Never upscaled. Served from a
+           240px derivative that covers a 2x display; img/logo.png is the
+           untouched master. Eager and high priority: it is above the fold. -->
+      <img class="hero__mark" src="img/logo-240.png" alt="" width="120" height="120"
+           fetchpriority="high" data-optional>
+
+      <div class="hero__type">
+        <h1 class="t-hero hero__title">Hamza's Blades</h1>
+        <p class="eyebrow">Hand forged in California</p>
+        <div class="hero__actions">
+          <a class="btn btn--primary" href="gallery.html">View the collection</a>
+          <a class="btn btn--ghost" href="contact.html?about=custom">Custom order</a>
+        </div>
       </div>
     </div>
   </section>
@@ -184,6 +204,9 @@
   </div>
 </footer>
 
+<script src="js/config.js" defer></script>
+<script src="js/pieces.js" defer></script>
+<script src="js/inquiry.js" defer></script>
 <script src="js/site.js" defer></script>
 <script src="js/embers.js" defer></script>
 </body>

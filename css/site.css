@@ -90,6 +90,14 @@ input {
   color: inherit;
 }
 
+/* The hidden attribute must beat any display we set on a component. Without
+   this, `el.hidden = true` on anything given `display: grid` does nothing —
+   which silently leaves the lightbox covering the page and swallowing every
+   click. */
+[hidden] {
+  display: none !important;
+}
+
 /* --- Base ---------------------------------------------------------------- */
 
 body {
@@ -362,7 +370,7 @@ a {
   min-height: 100vh;
   min-height: 100svh;
   display: grid;
-  align-items: center;
+  align-items: stretch;
   overflow: hidden;
 }
 
@@ -380,10 +388,25 @@ a {
     );
 }
 
+.hero__img,
 .hero__video {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+/* The video is invisible until it can actually play, then fades up over the
+   still. Until the file is shot it never becomes ready, so the still is what
+   the hero shows. */
+.hero__video {
+  opacity: 0;
+  transition: opacity 0.8s var(--ease);
+}
+
+.hero__video.is-ready {
+  opacity: 1;
 }
 
 /* The seam: bottom 25% dissolves to --forge, and the ember canvas (z-index 2)
@@ -392,12 +415,25 @@ a {
   position: absolute;
   inset: 0;
   z-index: 1;
-  background: linear-gradient(
+  background:
+    /* A pool behind the centred type. The hot steel in the still sits at
+       roughly half height, right where the title and eyebrow land, and the
+       eyebrow in --smoke has no chance against it. Falls off to nothing at
+       the edges so the glow survives. */
+    radial-gradient(
+      52% 28% at 50% 74%,
+      rgba(10, 9, 8, 0.5) 0%,
+      rgba(10, 9, 8, 0.28) 60%,
+      rgba(10, 9, 8, 0) 100%
+    ),
+    /* Top: keeps the header legible. */
+    linear-gradient(
       to bottom,
       rgba(10, 9, 8, 0.72) 0%,
       rgba(10, 9, 8, 0.25) 28%,
       rgba(10, 9, 8, 0) 50%
     ),
+    /* Bottom quarter: the dissolve to --forge that the embers rise into. */
     linear-gradient(
       to bottom,
       rgba(10, 9, 8, 0) 60%,
@@ -406,11 +442,23 @@ a {
     );
 }
 
+/* Three rows: the mark up top, empty middle where the fire is, the type low.
+   The still's hot steel runs across the centre of the frame and nothing
+   readable survives on top of it — the eyebrow in --smoke least of all. */
 .hero__inner {
   position: relative;
   z-index: 2;
-  padding-block: var(--s-7) var(--s-7);
+  display: grid;
+  grid-template-rows: auto 1fr;
+  justify-items: center;
   text-align: center;
+  /* Top clears the fixed header. */
+  padding-block: calc(72px + var(--s-4)) clamp(3rem, 10vh, 6rem);
+}
+
+.hero__type {
+  /* Fills the remaining row and pins itself to the bottom of it. */
+  align-self: end;
   display: grid;
   justify-items: center;
   gap: var(--s-3);
@@ -569,6 +617,344 @@ a {
 
 .piece--sold {
   opacity: 0.7;
+}
+
+/* --- Interior pages ------------------------------------------------------ */
+/* Top padding clears the fixed header, which is opaque on these pages. */
+
+.page {
+  position: relative;
+  z-index: 2;
+  padding-block: calc(72px + var(--section-y)) var(--section-y);
+}
+
+.page__head {
+  display: grid;
+  gap: var(--s-2);
+  margin-bottom: var(--s-5);
+}
+
+/* --- Filters ------------------------------------------------------------- */
+/* The eyebrow treatment, as SPEC section 2 asks for filter labels. Active
+   gets --brass and a 1px underline. */
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-1) var(--s-4);
+  padding-bottom: var(--s-3);
+  margin-bottom: var(--s-5);
+  border-bottom: var(--line);
+}
+
+.filter {
+  padding: var(--s-1) 0;
+  border: 0;
+  border-bottom: 1px solid transparent;
+  border-radius: 0;
+  background: none;
+  cursor: pointer;
+
+  font-family: var(--body);
+  font-size: var(--t-eyebrow);
+  line-height: 1.4;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--smoke);
+  transition: color 0.25s var(--ease), border-color 0.25s var(--ease);
+}
+
+.filter:hover {
+  color: var(--parchment);
+}
+
+.filter.is-active {
+  color: var(--brass);
+  border-bottom-color: var(--brass);
+}
+
+.gallery__empty {
+  padding-block: var(--s-5);
+}
+
+/* --- Piece interaction --------------------------------------------------- */
+/* The title is the control; its hit area is stretched over the whole card, so
+   the accessible name stays the piece name rather than "image". */
+
+.piece__open {
+  border: 0;
+  padding: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.piece__open::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+}
+
+.piece__open:focus-visible {
+  outline: none;
+}
+
+.piece:focus-within {
+  outline: 1px solid var(--brass);
+  outline-offset: 2px;
+}
+
+/* Filtering moves the grid rather than snapping it — see the FLIP pass in
+   js/gallery.js. */
+.piece {
+  transition: border-color 0.3s var(--ease), transform 0.4s var(--ease),
+    opacity 0.3s var(--ease);
+}
+
+.piece.is-hidden {
+  display: none;
+}
+
+/* --- Contact ------------------------------------------------------------- */
+/* Minimal, as SPEC section 4 asks: the inquiry box, Instagram, a shipping
+   note. No street address, no phone. */
+
+.contact {
+  display: grid;
+  gap: var(--s-6);
+}
+
+@media (min-width: 860px) {
+  .contact {
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+    gap: var(--s-7);
+  }
+}
+
+.contact__aside {
+  display: grid;
+  gap: var(--s-4);
+  align-content: start;
+}
+
+.contact__block {
+  display: grid;
+  gap: var(--s-1);
+}
+
+.contact__block p + p {
+  margin-top: 0;
+}
+
+.contact__block a {
+  color: var(--brass);
+}
+
+/* --- Inquiry boxes ------------------------------------------------------- */
+/* SPEC section 5. A name, an email, a message. Square fields, hairline
+   borders, --ash ground. Nothing structured. */
+
+.inquiry {
+  display: grid;
+  gap: var(--s-3);
+  max-width: 34rem;
+}
+
+.field {
+  display: grid;
+  gap: var(--s-1);
+}
+
+.field__input {
+  width: 100%;
+  padding: 0.75rem;
+  border: var(--line);
+  border-radius: 0;
+  background: var(--ash);
+  color: var(--parchment);
+  font-family: var(--body);
+  font-size: var(--t-small);
+  line-height: 1.6;
+  transition: border-color 0.25s var(--ease);
+}
+
+.field__input::placeholder {
+  color: var(--smoke);
+  opacity: 1;
+}
+
+.field__input:hover {
+  border-color: var(--smoke);
+}
+
+.field__input:focus-visible {
+  border-color: var(--brass);
+}
+
+.field__input--message {
+  resize: vertical;
+  min-height: 9rem;
+}
+
+.field__input[aria-invalid="true"] {
+  border-color: var(--ember);
+}
+
+/* Errors read in --ember at weight rather than introducing a red. */
+.field__error {
+  font-size: var(--t-small);
+  line-height: 1.5;
+  color: var(--ember);
+}
+
+/* The small text button that writes the suggested message in. */
+.inquiry__suggest {
+  justify-self: start;
+  padding: var(--s-1) 0;
+  border: 0;
+  border-bottom: 1px solid var(--ash-line);
+  border-radius: 0;
+  background: none;
+  cursor: pointer;
+
+  font-family: var(--body);
+  font-size: var(--t-eyebrow);
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--smoke);
+  transition: color 0.25s var(--ease), border-color 0.25s var(--ease);
+}
+
+.inquiry__suggest:hover {
+  color: var(--brass);
+  border-bottom-color: var(--brass);
+}
+
+.inquiry__submit {
+  justify-self: start;
+}
+
+.inquiry__status {
+  font-size: var(--t-small);
+  line-height: 1.6;
+}
+
+.inquiry__status.is-error {
+  color: var(--ember);
+}
+
+.inquiry__done {
+  max-width: var(--measure);
+  color: var(--brass);
+  font-size: var(--t-body);
+}
+
+.inquiry__done:focus-visible {
+  outline: 1px solid var(--brass);
+  outline-offset: 4px;
+}
+
+/* --- Lightbox ------------------------------------------------------------ */
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: grid;
+  place-items: center;
+  padding: var(--s-3);
+  background: rgba(10, 9, 8, 0.92);
+  opacity: 0;
+  transition: opacity 0.2s var(--ease);
+  overflow-y: auto;
+}
+
+.lightbox.is-open {
+  opacity: 1;
+}
+
+.lightbox__panel {
+  position: relative;
+  width: min(1080px, 100%);
+  max-height: 100%;
+  display: grid;
+  gap: var(--s-4);
+  /* Top padding clears the close button, which would otherwise sit on the
+     photograph when the panel stacks. */
+  padding: calc(var(--s-2) + 44px) var(--s-4) var(--s-4);
+  border: var(--line);
+  background: var(--ash);
+}
+
+@media (min-width: 860px) {
+  .lightbox__panel {
+    grid-template-columns: 1.2fr 1fr;
+    gap: var(--s-5);
+    padding: var(--s-5);
+  }
+}
+
+.lightbox__close {
+  position: absolute;
+  top: var(--s-2);
+  right: var(--s-2);
+  z-index: 3;
+  min-height: 44px;
+  padding: 0 var(--s-2);
+  border: 1px solid transparent;
+  border-radius: 0;
+  background: none;
+  cursor: pointer;
+  transition: border-color 0.25s var(--ease);
+}
+
+.lightbox__close:hover {
+  border-color: var(--brass);
+}
+
+.lightbox__close:hover .eyebrow {
+  color: var(--brass);
+}
+
+.lightbox__media {
+  min-width: 0;
+}
+
+.piece__frame--large {
+  aspect-ratio: 4 / 5;
+  max-height: 70vh;
+}
+
+.lightbox__body {
+  display: grid;
+  gap: var(--s-2);
+  align-content: start;
+  padding-top: var(--s-4);
+}
+
+@media (min-width: 860px) {
+  /* Beside a tall photo, the short column reads better centred than stacked
+     at the top. */
+  .lightbox__body {
+    align-content: center;
+    padding-top: 0;
+  }
+}
+
+.lightbox__inquiry {
+  display: grid;
+  gap: var(--s-3);
+  margin-top: var(--s-3);
+  padding-top: var(--s-3);
+  border-top: var(--line);
+}
+
+/* Holds the page still behind the lightbox. */
+body.is-locked {
+  overflow: hidden;
 }
 
 /* --- Teaser bands -------------------------------------------------------- */
