@@ -362,7 +362,7 @@ a {
   min-height: 100vh;
   min-height: 100svh;
   display: grid;
-  align-items: center;
+  align-items: stretch;
   overflow: hidden;
 }
 
@@ -380,10 +380,25 @@ a {
     );
 }
 
+.hero__img,
 .hero__video {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+/* The video is invisible until it can actually play, then fades up over the
+   still. Until the file is shot it never becomes ready, so the still is what
+   the hero shows. */
+.hero__video {
+  opacity: 0;
+  transition: opacity 0.8s var(--ease);
+}
+
+.hero__video.is-ready {
+  opacity: 1;
 }
 
 /* The seam: bottom 25% dissolves to --forge, and the ember canvas (z-index 2)
@@ -392,12 +407,25 @@ a {
   position: absolute;
   inset: 0;
   z-index: 1;
-  background: linear-gradient(
+  background:
+    /* A pool behind the centred type. The hot steel in the still sits at
+       roughly half height, right where the title and eyebrow land, and the
+       eyebrow in --smoke has no chance against it. Falls off to nothing at
+       the edges so the glow survives. */
+    radial-gradient(
+      52% 28% at 50% 74%,
+      rgba(10, 9, 8, 0.5) 0%,
+      rgba(10, 9, 8, 0.28) 60%,
+      rgba(10, 9, 8, 0) 100%
+    ),
+    /* Top: keeps the header legible. */
+    linear-gradient(
       to bottom,
       rgba(10, 9, 8, 0.72) 0%,
       rgba(10, 9, 8, 0.25) 28%,
       rgba(10, 9, 8, 0) 50%
     ),
+    /* Bottom quarter: the dissolve to --forge that the embers rise into. */
     linear-gradient(
       to bottom,
       rgba(10, 9, 8, 0) 60%,
@@ -406,11 +434,23 @@ a {
     );
 }
 
+/* Three rows: the mark up top, empty middle where the fire is, the type low.
+   The still's hot steel runs across the centre of the frame and nothing
+   readable survives on top of it — the eyebrow in --smoke least of all. */
 .hero__inner {
   position: relative;
   z-index: 2;
-  padding-block: var(--s-7) var(--s-7);
+  display: grid;
+  grid-template-rows: auto 1fr;
+  justify-items: center;
   text-align: center;
+  /* Top clears the fixed header. */
+  padding-block: calc(72px + var(--s-4)) clamp(3rem, 10vh, 6rem);
+}
+
+.hero__type {
+  /* Fills the remaining row and pins itself to the bottom of it. */
+  align-self: end;
   display: grid;
   justify-items: center;
   gap: var(--s-3);
