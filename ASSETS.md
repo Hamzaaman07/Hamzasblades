@@ -98,7 +98,7 @@ let the room go fully black.
 
 | File | Status |
 |---|---|
-| `img/gallery/al-hajarah-dagger-*` | **In.** Three views, derived from `img/Al-Hajarah Dagger/`. |
+| `img/gallery/al-hajarah-dagger-*` | **In.** Three views, derived from `img/Knives/Al-Hajarah Dagger/`. |
 | `img/gallery/*.jpg` | Partial. ~20 pieces, black backdrop, raking side light. |
 | `img/process-teaser.jpg` | Not shot. One wide cinematic frame for the homepage band. |
 | `img/process/*.jpg` | Not shot. **Six**, one per stage on the Process page: raw stock, heat, shaping, grinding, handle, finished edge. 4:3. |
@@ -112,15 +112,17 @@ half-populated catalogue still lays out cleanly.
 
 ### Adding a piece
 
-Drop the originals anywhere under `img/` — a folder per piece is fine, and the
-originals are kept as masters. Then derive the web copies. Al-Hajarah's
+Masters live at `img/<Category>/<Piece Title>/`, one folder per piece —
+`Knives/`, `Swords/`, `Woodworking/`. The folder name is the piece title and
+the trailing number in each filename is the display order. Originals are kept;
+the web copies are derived into `img/gallery/`. Then derive the web copies. Al-Hajarah's
 originals were ~3 MB PNGs each; the derived WebP is 79 KB:
 
 ```
 python3 - <<'EOF'
 from PIL import Image
 import os
-SRC, BASE = 'img/Al-Hajarah Dagger', 'al-hajarah-dagger'
+SRC, BASE = 'img/Knives/Al-Hajarah Dagger', 'al-hajarah-dagger'
 # (source file, view number) — view 01 is the card photo
 for src, n in [('dagger3.png', '01'), ('dagger.png', '02'), ('dagger2.png', '03')]:
     im0 = Image.open(os.path.join(SRC, src)).convert('RGB')
