@@ -98,6 +98,14 @@
     }
   }
 
+  /* --- Retreat sign-up --------------------------------------------------- */
+
+  var notifyMount = document.querySelector("[data-notify]");
+  if (notifyMount && window.HB && HB.createNotify) {
+    notifyMount.textContent = "";
+    notifyMount.appendChild(HB.createNotify());
+  }
+
   /* --- Featured work ----------------------------------------------------- */
   /* Four pieces from the catalogue. Card rendering lives in js/pieces.js so
      these and the gallery's cards cannot drift apart. */

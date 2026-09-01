@@ -221,43 +221,56 @@
   /* --- Submitting -------------------------------------------------------- */
 
   function onSubmit(form, parts, status, submit) {
-    status.textContent = "";
-    status.className = "inquiry__status";
-
-    var fields = {
+    var errors = validate({
       name: parts.name.input,
       email: parts.email.input,
       message: parts.message.input
-    };
+    });
 
-    var errors = validate(fields);
+    if (showErrors(parts, errors)) return;
+
+    send(form, status, submit, {
+      idleLabel: "Send inquiry",
+      notConnected:
+        "This form isn't connected yet, so that didn't send. Try again shortly.",
+      dropped:
+        "That didn't send — the connection dropped. Press send again and it should go through.",
+      success: "Sent. I'll write back from my own inbox — usually within a few days."
+    });
+  }
+
+  /* Paints every error, focuses the first field that needs attention, and
+     reports whether anything was wrong. The submit button is never disabled —
+     it can be pressed, and it responds. */
+  function showErrors(parts, errors) {
     var keys = Object.keys(errors);
+    Object.keys(parts).forEach(function (key) {
+      if (errors[key]) showError(parts[key], errors[key]);
+      else clearError(parts[key]);
+    });
+    if (!keys.length) return false;
+    parts[keys[0]].input.focus();
+    return true;
+  }
 
-    /* The submit button is never disabled — it can be pressed, and it
-       responds. Focus goes to the first field that needs attention. */
-    if (keys.length) {
-      Object.keys(parts).forEach(function (key) {
-        if (errors[key]) showError(parts[key], errors[key]);
-        else clearError(parts[key]);
-      });
-      parts[keys[0]].input.focus();
-      return;
-    }
+  /* Shared by the inquiry box and the retreat sign-up. */
+  function send(form, status, submit, copy) {
+    status.textContent = "";
+    status.className = "inquiry__status";
 
     var endpoint = (window.HB_CONFIG || {}).FORM_ENDPOINT || "";
 
     if (!endpoint || endpoint.indexOf("YOUR_ID_HERE") !== -1) {
-      /* Better to say so than to swallow a real inquiry silently. */
+      /* Better to say so than to swallow a real message silently. */
       console.warn(
-        "Hamza's Blades: no Formspree endpoint set. Inquiries are not being " +
-          "delivered. Set FORM_ENDPOINT in js/config.js."
+        "Hamza's Blades: no Formspree endpoint set. Nothing submitted through " +
+          "this site is being delivered. Set FORM_ENDPOINT in js/config.js."
       );
-      fail(status, "This form isn't connected yet, so that didn't send. Try again shortly.");
+      fail(status, copy.notConnected);
       return;
     }
 
     submit.textContent = "Sending";
-    status.textContent = "";
 
     fetch(endpoint, {
       method: "POST",
@@ -266,14 +279,11 @@
     })
       .then(function (res) {
         if (!res.ok) throw new Error("rejected");
-        succeed(form);
+        succeed(form, copy.success);
       })
       .catch(function () {
-        submit.textContent = "Send inquiry";
-        fail(
-          status,
-          "That didn't send — the connection dropped. Press send again and it should go through."
-        );
+        submit.textContent = copy.idleLabel;
+        fail(status, copy.dropped);
       });
   }
 
@@ -283,15 +293,85 @@
   }
 
   /* Success replaces the form with a confirmation line in --brass. */
-  function succeed(form) {
+  function succeed(form, message) {
     var done = el("p", "inquiry__done");
     done.setAttribute("role", "status");
-    done.textContent = "Sent. I'll write back from my own inbox — usually within a few days.";
+    done.textContent = message;
     form.parentNode.replaceChild(done, form);
     done.setAttribute("tabindex", "-1");
     done.focus();
   }
 
+  /* --- Retreat sign-up ---------------------------------------------------- */
+  /* SPEC section 4: a single field plus a button. Not a modal, not a popup,
+     no exit intent. Wired to the same endpoint as the inquiry boxes and
+     tagged so the two are distinguishable in the inbox. */
+
+  function createNotify() {
+    seq += 1;
+
+    var form = el("form", "inquiry notify");
+    form.noValidate = true;
+
+    var email = field({
+      name: "email",
+      label: "Get the dates when they're set.",
+      type: "email",
+      autocomplete: "email",
+      placeholder: "you@example.com"
+    });
+    email.wrap.classList.add("notify__field");
+
+    var row = el("div", "notify__row");
+    row.appendChild(email.wrap);
+
+    var submit = el("button", "btn btn--primary", "Notify me");
+    submit.type = "submit";
+    row.appendChild(submit);
+    form.appendChild(row);
+
+    form.appendChild(hidden("source", "retreats-list"));
+    form.appendChild(hidden("_subject", "Retreat dates — sign-up"));
+    var gotcha = hidden("_gotcha", "");
+    gotcha.setAttribute("tabindex", "-1");
+    gotcha.setAttribute("aria-hidden", "true");
+    form.appendChild(gotcha);
+
+    var status = el("p", "inquiry__status");
+    status.setAttribute("role", "status");
+    form.appendChild(status);
+
+    var parts = { email: email };
+    email.input.addEventListener("input", function () {
+      clearError(email);
+    });
+
+    form.addEventListener("submit", function (event) {
+      event.preventDefault();
+
+      var value = email.input.value.trim();
+      var errors = {};
+      if (!value) errors.email = "Enter an email address and I'll let you know.";
+      else if (!EMAIL.test(value)) {
+        errors.email = "That address looks incomplete. Check it and try again.";
+      }
+
+      if (showErrors(parts, errors)) return;
+
+      send(form, status, submit, {
+        idleLabel: "Notify me",
+        notConnected:
+          "This form isn't connected yet, so that didn't send. Try again shortly.",
+        dropped:
+          "That didn't send — the connection dropped. Press the button again and it should go through.",
+        success: "You're on the list. I'll write when the dates are set."
+      });
+    });
+
+    return form;
+  }
+
   HB.createInquiry = createInquiry;
+  HB.createNotify = createNotify;
   HB.suggestionFor = suggestionFor;
 })();

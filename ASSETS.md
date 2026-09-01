@@ -49,8 +49,13 @@ Where section 7's rules land in the build:
 | `img/hero-forge-1672.{jpg,webp}` | Derived. What the hero loads on wide viewports. |
 | `img/hero-forge-1000.{jpg,webp}` | Derived. Narrow viewports. |
 | `video/hero-forge.mp4` | Not shot. Slow-motion hammer strike on hot steel at night, matched-cut loop. |
-| `video/retreat-location.mp4` | Not shot. Belongs to the Experience page, not built yet. |
-| `img/retreat-still.jpg` | Not shot. Still frame for the homepage teaser band. |
+| `video/retreat-location.mp4` | Not shot. Location footage, golden hour or after sunset, slow movement. The Experience hero. |
+| `img/retreat-still.jpg` | Not shot. Still frame from the above. Used by the Experience hero and the homepage teaser band. |
+
+The Experience hero shows its gradient until `img/retreat-still.jpg` lands —
+the image removes itself while missing, so there is no broken frame. Drop the
+file in and it appears with no markup change; derivatives are worth generating
+for it the same way as the hero still.
 
 The About page uses the hero forge still in place of a portrait, which is what
 section 4 asks for when no portrait exists. Drop `img/portrait.jpg` in and swap
@@ -143,6 +148,12 @@ section 8. These are not, and were written to the voice rules:
   paragraphs are section 8's approved copy, verbatim and untouched.
 - **Closing line** on About and Process — section 8 gives it as an example
   ("e.g."), so it is used as written but is not strictly approved.
+- **Experience page** — the title "Under open sky", the three block headings
+  and their descriptions, and the sign-up band's heading and line. The
+  paragraph under the hero is section 8's approved copy, verbatim. Note that
+  section 8 warns the retreat forge is in the Sierra Nevada and distinct from
+  the two working forges — the copy here says Sierra Nevada only and never
+  implies otherwise.
 - **Homepage teasers** — the process band's two lines. (The retreats teaser is
   approved copy.)
 - **Inquiry validation and status messages** — what the form says when a field

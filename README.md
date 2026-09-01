@@ -19,6 +19,7 @@ npx http-server -p 8000
 index.html          home
 gallery.html        the collection
 process.html        the making, in order
+experience.html     the retreats — coming soon
 about.html          Hamza's story
 contact.html        the inquiry box
 css/site.css        design tokens and every component
@@ -45,7 +46,7 @@ Against the build order in spec §6:
 | 2. Gallery | Done — JSON structure, grid, filters, detail view |
 | 3. Inquiry boxes | Done — suggested messages, validation, Formspree wiring |
 | 4. Home, About, Process | Done |
-| 5. Retreats | Not started |
+| 5. Retreats | Done — video slot, coming-soon treatment, email capture |
 | 6. The ember system | Done for every page built so far |
 | 7. Performance and accessibility pass | Partly — see the ember notes below |
 
@@ -53,8 +54,9 @@ The ember system came in ahead of its place in that order. It is spec §6 step 6
 and everything before it is meant to land first; it was built during step 1 and
 is staying. Nothing depends on it, so the order it arrived in costs nothing.
 
-`experience.html` is linked from the header and footer but does not exist yet —
-it is step 5, the last page.
+Every page in the spec is now built and every internal link resolves. What is
+left is step 7, the performance and accessibility pass, and the assets and copy
+listed in ASSETS.md.
 
 ## Before this can go live
 
@@ -120,6 +122,21 @@ the visitor typed.
 
 The email address appears nowhere in page text — it lives in the form service,
 per spec §5.
+
+## The retreats page
+
+`experience.html`. The hero takes the same treatment as the homepage — full
+bleed, muted, looping, dissolving to `--forge` at the bottom — and shows the
+gradient until the location footage exists.
+
+The email capture is the page's job. One field and a button, centred, wired to
+the same endpoint as the inquiry boxes and tagged `source: retreats-list` so
+the two are distinguishable in the inbox. It shares the inquiry box's
+validation and failure handling, so there is one set of rules for both:
+success replaces the field with a confirmation in `--brass`, failure says what
+went wrong and keeps what was typed.
+
+Nothing on the page is bookable and no dates or prices appear, per spec §10.
 
 ## Copy and assets
 

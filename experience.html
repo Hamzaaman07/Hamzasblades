@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Experience — Hamza's Blades</title>
+<meta name="description" content="Coming soon: day and multi-day trips to the forge in the Sierra Nevada mountains. Shape your own blade from raw steel, archery, camping, and more.">
+
+<link rel="icon" href="img/crescent.svg" type="image/svg+xml">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400&family=Karla:wght@400;500&display=swap">
+<link rel="stylesheet" href="css/site.css">
+</head>
+
+<body data-embers="retreats">
+
+<header class="header">
+  <div class="shell header__inner">
+    <a class="brand" href="index.html">
+      <span class="brand__name">Hamza's Blades</span>
+    </a>
+    <nav class="nav" aria-label="Primary">
+      <a class="nav__link" href="gallery.html">Work</a>
+      <a class="nav__link" href="process.html">Process</a>
+      <a class="nav__link" href="experience.html" aria-current="page">Experience</a>
+      <a class="nav__link" href="about.html">About</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <!-- Hero: same treatment as the homepage. Full-bleed, muted, looping,
+       dissolving to --forge at the bottom where the embers rise. -->
+  <section class="hero hero--page">
+    <div class="hero__media">
+      <!-- The location still. Removes itself until the file lands, leaving
+           the gradient — which is what SPEC section 4 asks for while this is
+           a placeholder. -->
+      <img class="hero__img" src="img/retreat-still.jpg" alt=""
+           width="1672" height="941" fetchpriority="high" data-optional>
+
+      <video class="hero__video" muted playsinline loop autoplay
+             preload="none"
+             data-src="video/retreat-location.mp4" data-type="video/mp4"
+             aria-hidden="true" tabindex="-1"></video>
+    </div>
+
+    <div class="hero__scrim"></div>
+
+    <div class="shell hero__inner">
+      <div class="hero__type">
+        <p class="eyebrow eyebrow--brass">Coming soon</p>
+        <h1 class="t-hero">Under open sky</h1>
+      </div>
+    </div>
+  </section>
+
+  <!-- Client-approved, verbatim. SPEC section 8. -->
+  <section class="section">
+    <div class="shell statement">
+      <p class="statement__body">
+        Day and multi-day trips to the forge in the Sierra Nevada mountains.
+        Shape your own blade from raw steel, archery, camping, and more. Dates
+        are being set.
+      </p>
+    </div>
+  </section>
+
+  <section class="section section--rule">
+    <div class="shell">
+      <div class="retreat-blocks">
+        <div class="retreat-block">
+          <p class="eyebrow">At the anvil</p>
+          <h2 class="t-section">Forge your own blade</h2>
+          <p class="measure">
+            You work the anvil yourself. Not a demonstration to watch — steel
+            that is yours, drawn out under your own hammer, and a blade you
+            take home at the end of it.
+          </p>
+        </div>
+
+        <div class="retreat-block">
+          <p class="eyebrow">On the range</p>
+          <h2 class="t-section">Archery</h2>
+          <p class="measure">
+            Bows and arrows made the same way as the steel, and open ground to
+            shoot across. Time enough to learn the draw properly rather than
+            in ten minutes.
+          </p>
+        </div>
+
+        <div class="retreat-block">
+          <p class="eyebrow">After dark</p>
+          <h2 class="t-section">Camping</h2>
+          <p class="measure">
+            Nights under open sky in the Sierra Nevada. Fire, food, and far
+            enough from a road that the sky is worth looking at.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- The most important element on this page. Centred, generous space, no
+       modal and no popup. SPEC section 4. -->
+  <section class="section section--rule">
+    <div class="shell notify-band">
+      <p class="eyebrow">Dates</p>
+      <h2 class="t-section">There is nothing to book yet</h2>
+      <p class="measure muted">
+        Dates are still being set. Leave an address and I'll write as soon as
+        there is something to say.
+      </p>
+
+      <div class="notify-mount" data-notify>
+        <p class="small muted">
+          The sign-up needs JavaScript. If it has not appeared, you can
+          <a class="link-through" href="contact.html">send an inquiry</a>
+          instead and I will add you.
+        </p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="shell footer__inner">
+    <div class="footer__col">
+      <a class="brand" href="index.html">
+        <span class="brand__name">Hamza's Blades</span>
+      </a>
+      <p class="small muted measure">
+        Swords, knives, axes and spears, hand forged one at a time in
+        California.
+      </p>
+    </div>
+
+    <div class="footer__col">
+      <p class="eyebrow">Pages</p>
+      <nav class="footer__links" aria-label="Footer">
+        <a href="gallery.html">Work</a>
+        <a href="process.html">Process</a>
+        <a href="experience.html">Experience</a>
+        <a href="about.html">About</a>
+      </nav>
+    </div>
+
+    <div class="footer__col">
+      <p class="eyebrow">The forge</p>
+      <p class="small muted">Sacramento and Huntington Beach, California</p>
+      <p class="small"><a href="contact.html">Send an inquiry</a></p>
+    </div>
+  </div>
+
+  <div class="shell footer__base">
+    <p class="eyebrow">&copy; 2026 Hamza's Blades</p>
+    <p class="eyebrow">Made by hand</p>
+  </div>
+</footer>
+
+<script src="js/config.js" defer></script>
+<script src="js/pieces.js" defer></script>
+<script src="js/inquiry.js" defer></script>
+<script src="js/site.js" defer></script>
+<script src="js/embers.js" defer></script>
+</body>
+</html>

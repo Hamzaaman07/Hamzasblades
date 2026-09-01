@@ -718,6 +718,80 @@ a {
   display: none;
 }
 
+/* --- Retreats ------------------------------------------------------------ */
+
+/* A hero with no logo mark: one row, type pinned low, same dissolve. */
+.hero--page .hero__inner {
+  grid-template-rows: 1fr;
+}
+
+.retreat-blocks {
+  display: grid;
+  gap: var(--s-6);
+}
+
+@media (min-width: 860px) {
+  .retreat-blocks {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--s-5);
+  }
+}
+
+.retreat-block {
+  display: grid;
+  gap: var(--s-2);
+  align-content: start;
+  padding-top: var(--s-3);
+  border-top: 1px solid var(--brass);
+}
+
+/* The email capture. Centred, with room around it. */
+.notify-band {
+  display: grid;
+  justify-items: center;
+  gap: var(--s-2);
+  text-align: center;
+}
+
+.notify-band .measure {
+  margin-bottom: var(--s-4);
+}
+
+.notify-mount {
+  width: 100%;
+  display: grid;
+  justify-items: center;
+}
+
+.notify {
+  width: 100%;
+  max-width: 32rem;
+  gap: var(--s-2);
+  text-align: left;
+}
+
+.notify__row {
+  display: grid;
+  gap: var(--s-2);
+}
+
+@media (min-width: 560px) {
+  .notify__row {
+    grid-template-columns: 1fr auto;
+    align-items: end;
+  }
+
+  .notify__row .btn {
+    /* Sits level with the input, not with its label. */
+    height: calc(0.75rem * 2 + 1.6 * var(--t-small) + 2px);
+    min-height: 48px;
+  }
+}
+
+.notify__field {
+  min-width: 0;
+}
+
 /* --- Process steps ------------------------------------------------------- */
 /* An ordered list, because the order is the point. Images alternate sides. */
 
