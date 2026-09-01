@@ -718,6 +718,145 @@ a {
   display: none;
 }
 
+/* --- Contact ------------------------------------------------------------- */
+/* Minimal, as SPEC section 4 asks: the inquiry box, Instagram, a shipping
+   note. No street address, no phone. */
+
+.contact {
+  display: grid;
+  gap: var(--s-6);
+}
+
+@media (min-width: 860px) {
+  .contact {
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+    gap: var(--s-7);
+  }
+}
+
+.contact__aside {
+  display: grid;
+  gap: var(--s-4);
+  align-content: start;
+}
+
+.contact__block {
+  display: grid;
+  gap: var(--s-1);
+}
+
+.contact__block p + p {
+  margin-top: 0;
+}
+
+.contact__block a {
+  color: var(--brass);
+}
+
+/* --- Inquiry boxes ------------------------------------------------------- */
+/* SPEC section 5. A name, an email, a message. Square fields, hairline
+   borders, --ash ground. Nothing structured. */
+
+.inquiry {
+  display: grid;
+  gap: var(--s-3);
+  max-width: 34rem;
+}
+
+.field {
+  display: grid;
+  gap: var(--s-1);
+}
+
+.field__input {
+  width: 100%;
+  padding: 0.75rem;
+  border: var(--line);
+  border-radius: 0;
+  background: var(--ash);
+  color: var(--parchment);
+  font-family: var(--body);
+  font-size: var(--t-small);
+  line-height: 1.6;
+  transition: border-color 0.25s var(--ease);
+}
+
+.field__input::placeholder {
+  color: var(--smoke);
+  opacity: 1;
+}
+
+.field__input:hover {
+  border-color: var(--smoke);
+}
+
+.field__input:focus-visible {
+  border-color: var(--brass);
+}
+
+.field__input--message {
+  resize: vertical;
+  min-height: 9rem;
+}
+
+.field__input[aria-invalid="true"] {
+  border-color: var(--ember);
+}
+
+/* Errors read in --ember at weight rather than introducing a red. */
+.field__error {
+  font-size: var(--t-small);
+  line-height: 1.5;
+  color: var(--ember);
+}
+
+/* The small text button that writes the suggested message in. */
+.inquiry__suggest {
+  justify-self: start;
+  padding: var(--s-1) 0;
+  border: 0;
+  border-bottom: 1px solid var(--ash-line);
+  border-radius: 0;
+  background: none;
+  cursor: pointer;
+
+  font-family: var(--body);
+  font-size: var(--t-eyebrow);
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--smoke);
+  transition: color 0.25s var(--ease), border-color 0.25s var(--ease);
+}
+
+.inquiry__suggest:hover {
+  color: var(--brass);
+  border-bottom-color: var(--brass);
+}
+
+.inquiry__submit {
+  justify-self: start;
+}
+
+.inquiry__status {
+  font-size: var(--t-small);
+  line-height: 1.6;
+}
+
+.inquiry__status.is-error {
+  color: var(--ember);
+}
+
+.inquiry__done {
+  max-width: var(--measure);
+  color: var(--brass);
+  font-size: var(--t-body);
+}
+
+.inquiry__done:focus-visible {
+  outline: 1px solid var(--brass);
+  outline-offset: 4px;
+}
+
 /* --- Lightbox ------------------------------------------------------------ */
 
 .lightbox {
@@ -806,6 +945,8 @@ a {
 }
 
 .lightbox__inquiry {
+  display: grid;
+  gap: var(--s-3);
   margin-top: var(--s-3);
   padding-top: var(--s-3);
   border-top: var(--line);

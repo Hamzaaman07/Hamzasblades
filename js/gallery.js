@@ -163,13 +163,37 @@
     lbMeta.textContent =
       HB.typeNoun(piece.type) + " · " + HB.statusLabel(piece.status);
 
-    /* The inquiry box is SPEC section 5 and build step 3. Its mount point
-       carries the context that step needs: which piece, and whether the
-       message should ask to buy it or to commission something like it. */
+    /* A fresh inquiry box per piece: a sold piece asks about commissioning
+       something similar, everything else asks about the piece itself. */
     if (lbInquiry) {
-      lbInquiry.dataset.pieceId = piece.id;
-      lbInquiry.dataset.pieceTitle = piece.title;
-      lbInquiry.dataset.intent = piece.status === "sold" ? "commission" : "purchase";
+      lbInquiry.textContent = "";
+
+      if (HB.createInquiry) {
+        var intent = piece.status === "sold" ? "commission" : "purchase";
+        lbInquiry.dataset.intent = intent;
+        lbInquiry.appendChild(
+          HB.el(
+            "p",
+            "eyebrow",
+            intent === "commission" ? "Commission something similar" : "Ask about this piece"
+          )
+        );
+        lbInquiry.appendChild(
+          HB.createInquiry({
+            intent: intent,
+            pieceId: piece.id,
+            pieceTitle: piece.title,
+            source: "gallery"
+          })
+        );
+      } else {
+        /* js/inquiry.js absent — keep a route to the contact page. */
+        var fallback = HB.el("p", "small muted", "To ask about this piece, ");
+        var link = HB.el("a", "link-through", "send an inquiry");
+        link.href = "contact.html";
+        fallback.appendChild(link);
+        lbInquiry.appendChild(fallback);
+      }
     }
 
     lightbox.hidden = false;

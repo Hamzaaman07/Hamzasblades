@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Work — Hamza's Blades</title>
-<meta name="description" content="Hand-forged swords, knives, axes, spears, bows and woodworking. Every piece made one at a time in California.">
+<title>Inquiries — Hamza's Blades</title>
+<meta name="description" content="Ask about a piece or commission something made to order. Hand-forged blades from Sacramento and Huntington Beach, California.">
 
 <link rel="icon" href="img/crescent.svg" type="image/svg+xml">
 
@@ -14,7 +14,7 @@
 <link rel="stylesheet" href="css/site.css">
 </head>
 
-<body data-embers="gallery">
+<body data-embers="contact">
 
 <header class="header is-stuck">
   <div class="shell header__inner">
@@ -22,7 +22,7 @@
       <span class="brand__name">Hamza's Blades</span>
     </a>
     <nav class="nav" aria-label="Primary">
-      <a class="nav__link" href="gallery.html" aria-current="page">Work</a>
+      <a class="nav__link" href="gallery.html">Work</a>
       <a class="nav__link" href="process.html">Process</a>
       <a class="nav__link" href="experience.html">Experience</a>
       <a class="nav__link" href="about.html">About</a>
@@ -34,32 +34,50 @@
   <div class="shell">
 
     <div class="page__head">
-      <p class="eyebrow">The collection</p>
-      <h1 class="t-page">Work</h1>
+      <p class="eyebrow" data-inquiry-eyebrow>Inquiries</p>
+      <h1 class="t-page" data-inquiry-title>Tell me what you have in mind</h1>
       <p class="measure muted">
-        Swords, knives, axes and spears, bows, and woodworking. Sold pieces
-        stay here — they are the record of what has been made.
+        Every piece is made one at a time, so nothing here is bought from a
+        shelf. Send a message and I'll write back.
       </p>
     </div>
 
-    <!-- Filters refine the catalogue. They never hide it behind a click, so
-         the default state is everything. Built by js/gallery.js from the
-         types actually present in the data. -->
-    <div class="filters" role="group" aria-label="Filter by type" data-filters></div>
+    <div class="contact">
+      <div class="contact__form">
+        <!-- The inquiry box mounts here. js/site.js picks the suggested
+             message from ?about= — "custom" for a commission, otherwise the
+             plain opener. SPEC section 5. -->
+        <div data-inquiry>
+          <p class="small muted measure">
+            The inquiry form needs JavaScript. If it has not appeared, reach me
+            through the link on my Instagram profile instead.
+          </p>
+        </div>
+      </div>
 
-    <div class="pieces" data-gallery>
-      <!-- Filled from data/gallery.json. This is what shows if the fetch
-           fails, so the page still points somewhere useful. -->
-      <p class="muted small">
-        The collection is not loading right now.
-        <a class="link-through" href="contact.html">Send an inquiry</a>
-        and tell me what you are after.
-      </p>
+      <aside class="contact__aside">
+        <div class="contact__block">
+          <p class="eyebrow">Shipping</p>
+          <p class="small muted">
+            Pieces ship from California, packed and insured. Cost depends on
+            the piece and where it is going — say where you are and I will
+            work it out before anything is agreed.
+          </p>
+        </div>
+
+        <div class="contact__block">
+          <p class="eyebrow">The forge</p>
+          <p class="small muted">Sacramento and Huntington Beach, California</p>
+        </div>
+
+        <!-- Rendered by js/site.js only when INSTAGRAM_URL is set in
+             js/config.js, so there is never a dead link here. -->
+        <div class="contact__block" data-instagram hidden>
+          <p class="eyebrow">Elsewhere</p>
+          <p class="small"><a data-instagram-link href="#">Instagram</a></p>
+        </div>
+      </aside>
     </div>
-
-    <p class="muted small gallery__empty" data-empty hidden>
-      Nothing in that category yet.
-    </p>
 
   </div>
 </main>
@@ -99,33 +117,9 @@
   </div>
 </footer>
 
-<!-- Detail view. Escape closes it, focus is trapped while it is open and
-     returned to the card that opened it. -->
-<div class="lightbox" data-lightbox hidden
-     role="dialog" aria-modal="true" aria-labelledby="lightbox-title">
-  <div class="lightbox__panel">
-    <button class="lightbox__close" type="button" data-lightbox-close>
-      <span class="eyebrow">Close</span>
-    </button>
-
-    <div class="lightbox__media" data-lightbox-frame></div>
-
-    <div class="lightbox__body">
-      <h2 class="t-page" id="lightbox-title" data-lightbox-title></h2>
-      <p class="eyebrow" data-lightbox-meta></p>
-
-      <!-- The inquiry box mounts here, built per piece by js/gallery.js so
-           the suggested message matches whether the piece is available or
-           sold. SPEC section 5. -->
-      <div class="lightbox__inquiry" data-lightbox-inquiry></div>
-    </div>
-  </div>
-</div>
-
 <script src="js/config.js" defer></script>
 <script src="js/pieces.js" defer></script>
 <script src="js/inquiry.js" defer></script>
-<script src="js/gallery.js" defer></script>
 <script src="js/site.js" defer></script>
 <script src="js/embers.js" defer></script>
 </body>

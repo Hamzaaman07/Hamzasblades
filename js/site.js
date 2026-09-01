@@ -62,6 +62,42 @@
     hero.remove();
   }
 
+  /* --- Instagram --------------------------------------------------------- */
+  /* Rendered only when the URL is configured, so the page never carries a
+     dead link. */
+
+  var instagram = document.querySelector("[data-instagram]");
+  var instagramUrl = (window.HB_CONFIG || {}).INSTAGRAM_URL;
+  if (instagram && instagramUrl) {
+    instagram.querySelector("[data-instagram-link]").href = instagramUrl;
+    instagram.hidden = false;
+  }
+
+  /* --- Standalone inquiry box -------------------------------------------- */
+  /* The contact page. `?about=custom` — where the "Custom order" call to
+     action points — gets the commission opener; anything else gets the plain
+     one. SPEC section 5. */
+
+  var inquiryMount = document.querySelector("[data-inquiry]");
+  if (inquiryMount && window.HB && HB.createInquiry) {
+    var custom = /(^|[?&])about=custom(&|$)/.test(window.location.search);
+
+    inquiryMount.textContent = "";
+    inquiryMount.appendChild(
+      HB.createInquiry({
+        intent: custom ? "custom" : "general",
+        source: custom ? "custom-order" : "contact"
+      })
+    );
+
+    if (custom) {
+      var eyebrow = document.querySelector("[data-inquiry-eyebrow]");
+      var title = document.querySelector("[data-inquiry-title]");
+      if (eyebrow) eyebrow.textContent = "Custom order";
+      if (title) title.textContent = "Commission a piece";
+    }
+  }
+
   /* --- Featured work ----------------------------------------------------- */
   /* Four pieces from the catalogue. Card rendering lives in js/pieces.js so
      these and the gallery's cards cannot drift apart. */

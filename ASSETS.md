@@ -114,8 +114,25 @@ featured row has something to render. To be replaced with Hamza's real pieces.
 
 ## Still to be decided
 
-- **Formspree endpoint.** Section 5 wants it in a single marked config
-  constant. Nothing is wired yet — inquiry boxes are build step 3. If the host
-  turns out to be Netlify or Vercel, their native form handling replaces
-  Formspree and is free.
-- **Instagram URL.** Section 4 wants it on About and Contact.
+Both live in `js/config.js`, the single marked place for them.
+
+- **Formspree endpoint.** `FORM_ENDPOINT` ships as a placeholder. **Until it is
+  replaced, no inquiry is delivered** — the form validates, then tells the
+  visitor it cannot send rather than swallowing the message. Create it at
+  formspree.io forwarding to Hamza's address. If the host turns out to be
+  Netlify or Vercel, their native form handling replaces Formspree and is free.
+- **Instagram URL.** `INSTAGRAM_URL` is empty, so the link does not render.
+  Set it and it appears on the contact page. Section 4 also wants it on About,
+  which is not built yet.
+
+## Copy to confirm
+
+The positioning statement, About and Retreats copy are all client-approved from
+section 8. These are not, and were written to the voice rules:
+
+- **Contact page** — the page title, the line under it, and the shipping note.
+- **Gallery page** — the title and the line under it.
+- **Homepage teasers** — the process band's two lines. (The retreats teaser is
+  approved copy.)
+- **Inquiry validation and status messages** — what the form says when a field
+  is missing, when sending fails, and when it succeeds.

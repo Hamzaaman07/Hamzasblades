@@ -38,18 +38,30 @@ Against the build order in spec §6:
 |---|---|
 | 1. Foundation | Done — tokens, fonts, layout primitives, nav, footer |
 | 2. Gallery | Done — JSON structure, grid, filters, detail view |
-| 3. Inquiry boxes | Not started |
+| 3. Inquiry boxes | Done — suggested messages, validation, Formspree wiring |
 | 4. Home, About, Process | Home done; About and Process not started |
 | 5. Retreats | Not started |
-| 6. The ember system | Done for home and gallery |
+| 6. The ember system | Done for home, gallery and contact |
 | 7. Performance and accessibility pass | Partly — see the ember notes below |
 
 The ember system came in ahead of its place in that order. It is spec §6 step 6
 and everything before it is meant to land first; it was built during step 1 and
 is staying. Nothing depends on it, so the order it arrived in costs nothing.
 
-`process.html`, `experience.html`, `about.html` and `contact.html` are linked
-from the header, footer and hero buttons but do not exist yet.
+`process.html`, `experience.html` and `about.html` are linked from the header
+and footer but do not exist yet.
+
+## Before this can go live
+
+**Set `FORM_ENDPOINT` in `js/config.js`.** It ships as a placeholder, and
+until it is replaced no inquiry is delivered — the form validates, then tells
+the visitor it cannot send rather than swallowing the message, and logs a
+warning naming the file. Create the endpoint at formspree.io forwarding to
+Hamza's address. If the site lands on Netlify or Vercel, their native form
+handling is free and replaces Formspree entirely.
+
+`INSTAGRAM_URL` in the same file is optional: set it and the link renders on
+the contact page, leave it empty and nothing renders. No dead link either way.
 
 ## The gallery
 
@@ -70,8 +82,38 @@ Sold pieces stay in the catalogue at 70% — they are portfolio. Their detail
 view is marked `data-intent="commission"` so build step 3 can ask about
 commissioning something similar rather than about buying a piece that is gone.
 
-The inquiry box itself is spec §5 and belongs to step 3. Its mount point
-(`[data-lightbox-inquiry]`) already carries the piece id, title and intent.
+## Inquiry boxes
+
+One component, `HB.createInquiry(context)` in `js/inquiry.js`. A name, an
+email, a message — nothing structured. It appears in the gallery's detail view
+and on the contact page.
+
+The suggested message comes from the context and is spec §5's copy verbatim:
+
+| Context | Where |
+|---|---|
+| `purchase` | A gallery piece that is available |
+| `commission` | A gallery piece that is sold — asks for something similar |
+| `custom` | `contact.html?about=custom`, where "Custom order" points |
+| anything else | `contact.html`, the plain opener |
+
+It shows greyed as the placeholder, and "Use this message" writes it in as
+real, editable text with the cursor at the end. Same gesture on mobile and
+desktop — no tab key, no keyboard shortcut.
+
+A gallery inquiry carries the piece title and id as hidden fields, so an email
+is never ambiguous about which piece it is about, and every inquiry is tagged
+with a `source` so submissions are distinguishable in the inbox.
+
+Validation runs on submit: empty name, empty or malformed email, empty
+message. Errors show inline against the offending field in `--ember` and clear
+the moment that field is edited. The submit button is never disabled — it can
+be pressed, and it responds. Success replaces the form with a confirmation in
+`--brass`; failure says what went wrong and what to do, and keeps everything
+the visitor typed.
+
+The email address appears nowhere in page text — it lives in the form service,
+per spec §5.
 
 The site is complete without the canvas. `js/embers.js` appends its own element
 and removes nothing — delete the script tag and the layout is unchanged.
