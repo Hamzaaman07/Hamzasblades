@@ -208,6 +208,29 @@ over 800ms rather than snapping.
 character come from spec §3. Verified against that table at all three device
 tiers — desktop full, tablet 40%, mobile 20%.
 
+**Sparks are streaks, not dots.** Each is drawn as a short line back along the
+path it just travelled, its length following its speed and its tail leaning
+with the sideways motion. Slow pages get short marks and fast ones long ones,
+so the gallery stays quiet without being told to.
+
+**A minority are risers.** 14–20% per page get roughly two to three times the
+lifetime, a faster start, gentler acceleration and a much slower fade, so they
+carry to the top of the frame and scatter sideways on the way. Without them
+the field died in the lower third and read as a band of glow along the bottom
+edge. Measured on the homepage at 1440×900, distinct sparks per fifth of the
+screen run 277 / 129 / 60 / 22 / 6 from bottom to top.
+
+**Colour comes from the photograph, not from the palette.** Sampling the hero
+still: about 75% of its incandescent pixels sit between hue 355 and 14 — deep
+crimson through red-orange — while the hottest 5% land near hue 30. So the
+heat scale runs from amber at 36 down to crimson at −8, and each spark walks
+*down* it as it ages: born hot off the steel, cooling to red as it rises.
+
+That widens spec §3's stated hue range of 18–42, which covers only the bright
+core and misses every red in the photograph. It is a deliberate deviation,
+made on request; narrowing `HUE_HOT` and `HUE_COOL` in `js/embers.js` puts it
+back.
+
 **The dissolve** is the handoff spec §3 calls the moment worth getting right.
 Two things carry it. `focus` centres the spawn band on the homepage, so sparks
 read as coming off one piece of steel below the frame rather than as ambient

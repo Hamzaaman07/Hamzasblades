@@ -31,12 +31,12 @@
      page as soon as you scroll. Intensity tracks density, so it is strong on
      the homepage and barely there on About. */
   var PROFILES = {
-    home: { count: 400, speed: 1.3, wobble: 1, life: [3, 6.5], focus: 0.9, glow: 0.15 },
-    gallery: { count: 90, speed: 0.65, wobble: 0.9, life: [5, 9], glow: 0.04 },
-    process: { count: 250, speed: 1, wobble: 1, life: [3.5, 7], glow: 0.09 },
-    retreats: { count: 180, speed: 0.85, wobble: 2.1, life: [4.5, 8.5], glow: 0.07 },
-    about: { count: 70, speed: 0.8, wobble: 1.1, life: [5, 9], glow: 0.035 },
-    contact: { count: 70, speed: 0.8, wobble: 1.1, life: [5, 9], glow: 0.035 }
+    home: { count: 400, speed: 1.3, wobble: 1, life: [3, 6.5], focus: 0.9, glow: 0.15, risers: 0.16 },
+    gallery: { count: 90, speed: 0.65, wobble: 0.9, life: [5, 9], glow: 0.04, risers: 0.14 },
+    process: { count: 250, speed: 1, wobble: 1, life: [3.5, 7], glow: 0.09, risers: 0.15 },
+    retreats: { count: 180, speed: 0.85, wobble: 2.1, life: [4.5, 8.5], glow: 0.07, risers: 0.2 },
+    about: { count: 70, speed: 0.8, wobble: 1.1, life: [5, 9], glow: 0.035, risers: 0.18 },
+    contact: { count: 70, speed: 0.8, wobble: 1.1, life: [5, 9], glow: 0.035, risers: 0.18 }
   };
 
   var page = document.body.getAttribute("data-embers") || "about";
@@ -82,33 +82,61 @@
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
 
-  /* --- Glow sprites ------------------------------------------------------ */
-  /* A radial gradient per particle per frame is the expensive way to do this.
-     Pre-render one sprite per hue bucket across 18–42 and blit instead. */
+  /* --- Heat scale --------------------------------------------------------- */
+  /* Sampled from the hero still: of its incandescent pixels, ~75% sit between
+     hue 355 and 14 — deep crimson through red-orange — while the hottest 5%
+     land near hue 30 at high lightness, the amber core of the bar. So the
+     scale runs from that amber down through orange into crimson.
 
-  var HUE_MIN = 18;
-  var HUE_MAX = 42;
-  var BUCKETS = 10;
+     This widens SPEC section 3's stated 18–42, which covers only the bright
+     core and misses every red in the photograph.
+
+     A particle moves DOWN this scale as it ages: a spark leaves the steel hot
+     and cools while it rises, which is both what the eye expects and what the
+     still actually shows. Sprites are pre-rendered per step and blitted —
+     a radial gradient per particle per frame is the expensive way. */
+
+  var HUE_HOT = 36;
+  var HUE_COOL = -8;
+  var BUCKETS = 14;
   var SPRITE = 64;
   var sprites = [];
+  var cores = [];
 
   function buildSprites() {
     sprites = [];
+    cores = [];
     for (var i = 0; i < BUCKETS; i++) {
-      var hue = HUE_MIN + ((HUE_MAX - HUE_MIN) * i) / (BUCKETS - 1);
+      /* t: 0 = cooled crimson, 1 = amber, straight off the steel. */
+      var t = i / (BUCKETS - 1);
+      var hue = HUE_COOL + (HUE_HOT - HUE_COOL) * t;
+      /* Cooled sparks are darker and a touch more saturated; hot ones are
+         near-white at the core, as the bar is in the photograph. */
+      var coreL = 42 + 30 * t;
+      var sat = 100 - 5 * t;
+
+      cores.push("hsl(" + hue + ", " + sat + "%, " + coreL + "%)");
+
       var c = document.createElement("canvas");
       c.width = c.height = SPRITE;
       var g = c.getContext("2d");
       var r = SPRITE / 2;
       var grad = g.createRadialGradient(r, r, 0, r, r, r);
-      grad.addColorStop(0, "hsla(" + hue + ", 100%, 72%, 0.95)");
-      grad.addColorStop(0.18, "hsla(" + hue + ", 100%, 58%, 0.55)");
-      grad.addColorStop(0.5, "hsla(" + hue + ", 95%, 45%, 0.16)");
-      grad.addColorStop(1, "hsla(" + hue + ", 90%, 40%, 0)");
+      grad.addColorStop(0, "hsla(" + hue + ", " + sat + "%, " + (coreL + 8) + "%, 0.92)");
+      grad.addColorStop(0.18, "hsla(" + hue + ", " + sat + "%, " + (coreL - 8) + "%, 0.5)");
+      grad.addColorStop(0.5, "hsla(" + (hue - 4) + ", " + sat + "%, " + (coreL - 18) + "%, 0.14)");
+      grad.addColorStop(1, "hsla(" + (hue - 6) + ", " + sat + "%, " + (coreL - 22) + "%, 0)");
       g.fillStyle = grad;
       g.fillRect(0, 0, SPRITE, SPRITE);
       sprites.push(c);
     }
+  }
+
+  /* How hot a particle reads right now, 0..1, walked down its own curve. */
+  function heat(p) {
+    var life = p.age / p.maxLife;
+    var t = p.hot0 + (p.hot1 - p.hot0) * Math.pow(life, p.cool);
+    return t < 0 ? 0 : t > 1 ? 1 : t;
   }
 
   /* --- Particles --------------------------------------------------------- */
@@ -130,7 +158,14 @@
   }
 
   function spawn(p, prewarm) {
+    /* A minority break away and carry all the way up the frame instead of
+       dying in the lower third. They are what stops the field reading as a
+       band of glow along the bottom edge. */
+    p.riser = Math.random() < (profile.risers || 0);
+
     p.maxLife = rand(profile.life[0], profile.life[1]);
+    if (p.riser) p.maxLife *= rand(2.0, 3.0);
+
     /* prewarm gives the particle a random age so the field is already full
        on the first frame — no visible cold start after a navigation. */
     p.age = prewarm ? Math.random() * p.maxLife : 0;
@@ -147,14 +182,32 @@
     p.wobFreq = rand(0.35, 1.15);
     p.wobPhase = Math.random() * Math.PI * 2;
 
+    if (p.riser) {
+      /* Faster off the mark but gentler acceleration, so they climb steadily
+         rather than rocketing, and wander further sideways on the way — which
+         is what scatters them across the width by the time they are high. */
+      p.vy *= rand(1.3, 1.7);
+      p.ay *= 0.5;
+      p.drift = rand(-28, 28);
+      p.wobAmp *= 1.5;
+    }
+
     /* Brightness flicker on a second, faster sine. This is what separates
        fire from floating dots. */
     p.flkFreq = rand(4, 11);
     p.flkPhase = Math.random() * Math.PI * 2;
 
-    p.size = rand(0.7, 2.3);
-    p.bucket = (Math.random() * BUCKETS) | 0;
-    p.alpha = rand(0.55, 1);
+    p.size = rand(0.7, 2.3) * (p.riser ? 0.8 : 1);
+    p.alpha = rand(0.55, 1) * (p.riser ? 0.85 : 1);
+
+    /* Streak length as a fraction of speed — a fast spark draws a longer
+       line. Fixed per particle so the length does not jitter frame to frame. */
+    p.trail = rand(0.07, 0.16) * (p.riser ? 1.4 : 1);
+
+    /* Its own cooling curve: born hot, ending somewhere in the reds. */
+    p.hot0 = rand(0.5, 0.92);
+    p.hot1 = rand(0, 0.2);
+    p.cool = p.riser ? rand(0.9, 1.4) : rand(0.4, 0.75);
 
     /* Advance a prewarmed particle to where its age says it should be, so the
        field is already spread up the viewport on the first frame. */
@@ -179,9 +232,12 @@
 
   function envelope(p) {
     var life = p.age / p.maxLife;
-    /* Quick fade in over the first 12% of life, long fade out. */
+    /* Quick fade in over the first 12% of life, long fade out. Risers hold
+       their brightness far longer — with the ordinary curve they are already
+       invisible by the time they clear the lower third, which was exactly why
+       nothing reached the top of the frame. */
     var fadeIn = life < 0.12 ? life / 0.12 : 1;
-    var fadeOut = Math.pow(1 - life, 1.6);
+    var fadeOut = Math.pow(1 - life, p.riser ? 0.7 : 1.6);
     return fadeIn * fadeOut * p.alpha;
   }
 
@@ -196,15 +252,17 @@
     var r = Math.max(W * 0.42, 320);
     var cy = H + r * 0.5;
     baseGlow = ctx.createRadialGradient(W / 2, cy, 0, W / 2, cy, r);
-    baseGlow.addColorStop(0, "hsla(24, 92%, 52%, " + profile.glow + ")");
-    baseGlow.addColorStop(0.45, "hsla(22, 90%, 46%, " + profile.glow * 0.32 + ")");
-    baseGlow.addColorStop(0.75, "hsla(20, 88%, 42%, " + profile.glow * 0.08 + ")");
-    baseGlow.addColorStop(1, "hsla(20, 88%, 40%, 0)");
+    baseGlow.addColorStop(0, "hsla(20, 96%, 50%, " + profile.glow + ")");
+    baseGlow.addColorStop(0.45, "hsla(12, 96%, 44%, " + profile.glow * 0.32 + ")");
+    baseGlow.addColorStop(0.75, "hsla(4, 95%, 40%, " + profile.glow * 0.08 + ")");
+    baseGlow.addColorStop(1, "hsla(0, 95%, 38%, 0)");
   }
 
   function draw(t) {
     ctx.clearRect(0, 0, W, H);
     ctx.globalCompositeOperation = "lighter";
+    /* Constant for every spark — no reason to set it per particle. */
+    ctx.lineCap = "round";
 
     /* The forge below the frame, under the sparks. */
     if (baseGlow) {
@@ -224,17 +282,41 @@
       var x = p.x0 + Math.sin(p.age * p.wobFreq + p.wobPhase) * p.wobAmp;
       var y = p.y;
 
-      /* Radial glow behind the core. */
+      var bucket = Math.round(heat(p) * (BUCKETS - 1));
+
+      /* Radial glow behind the head. */
       var r = p.size * 7;
       ctx.globalAlpha = Math.min(a * 0.6, 1);
-      ctx.drawImage(sprites[p.bucket], x - r, y - r, r * 2, r * 2);
+      ctx.drawImage(sprites[bucket], x - r, y - r, r * 2, r * 2);
 
-      /* The core itself. */
+      /* The spark itself, drawn as a streak rather than a dot: a short line
+         back along the path it just travelled, so it reads as something
+         moving. Length follows speed, and the tail leans with the sideways
+         motion instead of hanging straight down. */
+      var speed = -p.vy;
+      var len = speed * p.trail;
+      if (len > 26) len = 26;
+
       ctx.globalAlpha = Math.min(a, 1);
-      ctx.fillStyle = "hsl(" + (HUE_MIN + (p.bucket / (BUCKETS - 1)) * (HUE_MAX - HUE_MIN)) + ", 100%, 78%)";
-      ctx.beginPath();
-      ctx.arc(x, y, p.size, 0, Math.PI * 2);
-      ctx.fill();
+      ctx.strokeStyle = cores[bucket];
+
+      if (len > p.size) {
+        var back = len / speed;
+        var vx =
+          p.drift +
+          Math.cos(p.age * p.wobFreq + p.wobPhase) * p.wobAmp * p.wobFreq;
+        ctx.lineWidth = p.size * 1.5;
+        ctx.beginPath();
+        ctx.moveTo(x - vx * back, y + len);
+        ctx.lineTo(x, y);
+        ctx.stroke();
+      } else {
+        /* Barely moving — a streak would be a smear, so keep it a point. */
+        ctx.fillStyle = cores[bucket];
+        ctx.beginPath();
+        ctx.arc(x, y, p.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
     }
 
     ctx.globalAlpha = 1;
