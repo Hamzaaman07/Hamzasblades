@@ -1,4 +1,5 @@
 {
+  "_readme": "Newest first — this array's order is the display order. status is available | sold | commission. type is swords | knives | axes | bows | woodworking. Adding a piece is a photo drop in img/gallery/ plus an entry here. THESE ARE PLACEHOLDER TITLES, to be replaced with Hamza's real pieces.",
   "pieces": [
     {
       "id": "damascus-hunter-01",
