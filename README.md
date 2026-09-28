@@ -150,6 +150,13 @@ Nothing on the page is bookable and no dates or prices appear, per spec §10.
 
 The positioning statement is the client-approved text from spec §8, verbatim.
 
+The hero is real footage now — hot steel on the anvil, shot at night with the
+room black, looping with a crossfade so the repeat has no visible seam. It is
+muted, uncontrolled and autoplaying, so it reads as a moving photograph rather
+than as a video. The still beneath it is the loop's own first frame, so the
+handoff is invisible and the AI-generated placeholder is gone from the site.
+See ASSETS.md for the encode and the measurements.
+
 The logo is in. Spec §7's rules on it shape where it appears: the hero mark is
 capped at 120px and never upscaled, and the header and footer carry the
 wordmark in Amiri instead of a mark, because at their size the calligraphy
@@ -165,11 +172,19 @@ of 85:
 
 | Page | Perf | A11y | Best practices | SEO |
 |---|---|---|---|---|
-| index | 99 | 100 | 96 | 100 |
-| gallery | 98 | 100 | 96 | 100 |
+| index | 99 | 100 | 100 | 100 |
+| gallery | 99 | 100 | 100 | 100 |
 | experience | 100 | 100 | 96 | 100 |
 
-The gallery figure is with all 18 pieces and their real photography loaded.
+The gallery figure is with all 18 pieces and their real photography loaded, and
+the index figure is with the hero loop playing — measured with and without the
+video, it scores 99 either way.
+
+Experience is the one page still at 96 on best practices, and the cause is two
+console 404s: `video/retreat-location.mp4` and `img/retreat-still.jpg`, neither
+of which has been shot. Both pages that were at 96 for the same reason —
+index and gallery — are at 100 now that the hero footage and the catalogue
+photography exist.
 
 Zero axe-core violations on every page, including the gallery with its detail
 view open. Every focusable element on every page is reachable by keyboard and
@@ -193,8 +208,7 @@ the grid went from one line of fallback text to several thousand pixels of
 cards, shoving the page down — a 0.373 layout shift that put the page at 71,
 below the spec's floor. The grid now reserves its height until the cards land.
 
-Remaining Lighthouse notes, all judged not worth acting on: the console 404s
-are the gallery photographs and hero video that have not been shot; "minify
+Remaining Lighthouse notes, all judged not worth acting on: "minify
 CSS/JS" measures uncompressed bytes, and all the CSS and JS together gzip to
 21 KB, so a build step would buy little against the complexity; cache lifetimes
 are handled by `_headers`, which the local test server ignores but Cloudflare

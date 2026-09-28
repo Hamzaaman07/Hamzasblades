@@ -39,29 +39,37 @@
   <!-- Hero ------------------------------------------------------------- -->
   <section class="hero">
     <div class="hero__media">
-      <!-- The hero still: hammer strike on hot steel at night. It is the
-           background now and stays beneath the video once that is shot, so
-           there is never a bare black rectangle. Eager and high priority —
-           it is the largest paint on the page. -->
+      <!-- The hero still: the first frame of the loop below, so the handoff
+           from still to video is invisible — same anvil, same billet, same
+           light. It stays beneath the video permanently, so there is never a
+           bare black rectangle while the loop downloads or if it fails.
+           Eager and high priority — it is the largest paint on the page. -->
       <picture>
         <source type="image/webp" sizes="100vw"
                 srcset="img/hero-forge-1000.webp 1000w,
-                        img/hero-forge-1672.webp 1672w">
-        <img class="hero__img" alt="" width="1672" height="941"
+                        img/hero-forge-1920.webp 1920w">
+        <img class="hero__img" alt="" width="1920" height="1080"
              fetchpriority="high" sizes="100vw"
-             src="img/hero-forge-1672.jpg"
+             src="img/hero-forge-1920.jpg"
              srcset="img/hero-forge-1000.jpg 1000w,
-                     img/hero-forge-1672.jpg 1672w">
+                     img/hero-forge-1920.jpg 1920w">
       </picture>
 
       <!--
-        Placeholder. Slow-motion hammer strike on hot steel at night, cut so
-        the loop is seamless (matched cut, top-of-swing to top-of-swing).
-        The source is attached after load by js/site.js so the video never
-        blocks first paint, and it fades up over the still once it can play.
+        Hot steel resting on the anvil, shot at night with the room fully
+        black. The last second crossfades into the first, so the loop has no
+        visible seam — measured, the repeat point differs no more than two
+        ordinary consecutive frames do.
+
+        No controls, muted, autoplaying: it reads as a moving photograph
+        rather than as a video, which is the intent. The source is attached
+        after load by js/site.js so it never blocks first paint, and it fades
+        up over the still once it can play. Under prefers-reduced-motion the
+        element is removed outright and the still is what shows.
       -->
       <video class="hero__video" muted playsinline loop autoplay
              preload="none"
+             data-src-webm="video/hero-forge.webm"
              data-src="video/hero-forge.mp4" data-type="video/mp4"
              aria-hidden="true" tabindex="-1"></video>
     </div>

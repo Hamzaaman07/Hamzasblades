@@ -39,6 +39,14 @@
   /* Held back until the page has painted so the video never blocks first
      paint. The poster gradient is on screen the whole time. */
 
+  function addSource(video, src, type) {
+    if (!src) return;
+    var source = document.createElement("source");
+    source.src = src;
+    source.type = type;
+    video.appendChild(source);
+  }
+
   var hero = document.querySelector(".hero__video");
   var stillOnly = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -49,10 +57,12 @@
       hero.addEventListener("canplay", function () {
         hero.classList.add("is-ready");
       });
-      var source = document.createElement("source");
-      source.src = hero.dataset.src;
-      source.type = hero.dataset.type || "video/mp4";
-      hero.appendChild(source);
+      /* Order matters: the browser commits to the first source it can
+         play, so the cheap one goes first. The WebM is a quarter of the
+         MP4's bytes; the MP4 is the universal fallback and the one Safari
+         actually uses. */
+      addSource(hero, hero.dataset.srcWebm, "video/webm");
+      addSource(hero, hero.dataset.src, hero.dataset.type || "video/mp4");
       hero.load();
     };
     if (document.readyState === "complete") loadHero();
