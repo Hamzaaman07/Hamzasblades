@@ -39,6 +39,14 @@
   /* Held back until the page has painted so the video never blocks first
      paint. The poster gradient is on screen the whole time. */
 
+  function addSource(video, src, type) {
+    if (!src) return;
+    var source = document.createElement("source");
+    source.src = src;
+    source.type = type;
+    video.appendChild(source);
+  }
+
   var hero = document.querySelector(".hero__video");
   var stillOnly = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -49,10 +57,12 @@
       hero.addEventListener("canplay", function () {
         hero.classList.add("is-ready");
       });
-      var source = document.createElement("source");
-      source.src = hero.dataset.src;
-      source.type = hero.dataset.type || "video/mp4";
-      hero.appendChild(source);
+      /* Order matters: the browser commits to the first source it can
+         play, so the cheap one goes first. The WebM is a quarter of the
+         MP4's bytes; the MP4 is the universal fallback and the one Safari
+         actually uses. */
+      addSource(hero, hero.dataset.srcWebm, "video/webm");
+      addSource(hero, hero.dataset.src, hero.dataset.type || "video/mp4");
       hero.load();
     };
     if (document.readyState === "complete") loadHero();
@@ -98,6 +108,14 @@
     }
   }
 
+  /* --- Retreat sign-up --------------------------------------------------- */
+
+  var notifyMount = document.querySelector("[data-notify]");
+  if (notifyMount && window.HB && HB.createNotify) {
+    notifyMount.textContent = "";
+    notifyMount.appendChild(HB.createNotify());
+  }
+
   /* --- Featured work ----------------------------------------------------- */
   /* Four pieces from the catalogue. Card rendering lives in js/pieces.js so
      these and the gallery's cards cannot drift apart. */
@@ -113,7 +131,10 @@
         })
         .slice(0, 4);
 
-      if (!featured.length) return;
+      if (!featured.length) {
+        grid.classList.add("is-loaded");
+        return;
+      }
 
       var frag = document.createDocumentFragment();
       featured.forEach(function (p) {
@@ -123,8 +144,10 @@
       });
       grid.textContent = "";
       grid.appendChild(frag);
+      grid.classList.add("is-loaded");
     })
     .catch(function () {
+      grid.classList.add("is-loaded");
       /* Leave the markup's own fallback line in place. The section still
          reads as finished and the link to the full catalogue still works. */
     });

@@ -157,7 +157,52 @@
     lastFocused = opener || document.activeElement;
 
     lbFrame.textContent = "";
-    lbFrame.appendChild(HB.createFrame(piece, true));
+
+    /* One photo: just the frame. Several: the frame plus a row of thumbnails
+       that swap it. Real buttons, so they sit in the tab order and inside the
+       dialog's focus trap. */
+    var views = HB.viewsOf(piece);
+    var main = HB.createFrame(piece, true, views[0]);
+    lbFrame.appendChild(main);
+
+    if (views.length > 1) {
+      var strip = HB.el("div", "views");
+      strip.setAttribute("role", "group");
+      strip.setAttribute("aria-label", "Other views of " + piece.title);
+
+      views.forEach(function (view, i) {
+        var thumb = HB.el("button", "views__item");
+        thumb.type = "button";
+        thumb.setAttribute("aria-label", "View " + (i + 1) + " of " + views.length);
+        thumb.setAttribute("aria-pressed", i === 0 ? "true" : "false");
+
+        var t = HB.el("img");
+        /* 68px on screen — always the small copy. */
+        t.src = (view.card || view).image;
+        t.alt = "";
+        t.loading = "lazy";
+        t.decoding = "async";
+        thumb.appendChild(t);
+
+        thumb.addEventListener("click", function () {
+          var next = HB.createFrame(piece, true, view);
+          main.parentNode.replaceChild(next, main);
+          main = next;
+          Array.prototype.forEach.call(
+            strip.querySelectorAll(".views__item"),
+            function (b, j) {
+              b.setAttribute("aria-pressed", i === j ? "true" : "false");
+              b.classList.toggle("is-active", i === j);
+            }
+          );
+        });
+
+        if (i === 0) thumb.classList.add("is-active");
+        strip.appendChild(thumb);
+      });
+
+      lbFrame.appendChild(strip);
+    }
 
     lbTitle.textContent = piece.title;
     lbMeta.textContent =
@@ -275,25 +320,33 @@
   HB.load()
     .then(function (list) {
       pieces = list;
-      if (!pieces.length) return;
+      if (!pieces.length) {
+        grid.classList.add("is-loaded");
+        return;
+      }
 
       var available = {};
       var frag = document.createDocumentFragment();
 
       pieces.forEach(function (piece) {
         available[piece.type] = true;
-        var card = HB.createCard(piece, { interactive: "button" });
+        /* h2: these sit directly under the page's h1. */
+        var card = HB.createCard(piece, { interactive: "button", heading: "h2" });
         cards.push(card);
         frag.appendChild(card);
       });
 
       grid.textContent = "";
       grid.appendChild(frag);
+      /* Releases the height reserved against layout shift. */
+      grid.classList.add("is-loaded");
       buildFilters(available);
       markActive();
       updateEmpty();
     })
     .catch(function () {
-      /* The markup's fallback line stays put. */
+      /* The markup's fallback line stays put — but release the reserved
+         height, or it sits in 80vh of nothing. */
+      grid.classList.add("is-loaded");
     });
 })();

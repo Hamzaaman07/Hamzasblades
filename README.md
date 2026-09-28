@@ -18,10 +18,19 @@ npx http-server -p 8000
 ```
 index.html          home
 gallery.html        the collection
+process.html        the making, in order
+experience.html     the retreats — coming soon
+about.html          Hamza's story
+contact.html        the inquiry box
 css/site.css        design tokens and every component
+css/fonts.css       @font-face for the self-hosted Amiri and Karla
+fonts/              the font files themselves, OFL — see fonts/OFL.txt
+_headers            cache policy, read by Cloudflare Pages and Netlify
 js/pieces.js        the catalogue — loading and card rendering, shared
 js/site.js          header, hero video loading, featured work
 js/gallery.js       filters, grid reflow, detail view
+js/inquiry.js       the inquiry box component
+js/config.js        Formspree endpoint and Instagram URL — edit before launch
 js/embers.js        the ember continuum
 data/gallery.json   the only place pieces are defined
 img/  video/        assets, see ASSETS.md
@@ -39,17 +48,17 @@ Against the build order in spec §6:
 | 1. Foundation | Done — tokens, fonts, layout primitives, nav, footer |
 | 2. Gallery | Done — JSON structure, grid, filters, detail view |
 | 3. Inquiry boxes | Done — suggested messages, validation, Formspree wiring |
-| 4. Home, About, Process | Home done; About and Process not started |
-| 5. Retreats | Not started |
-| 6. The ember system | Done for home, gallery and contact |
-| 7. Performance and accessibility pass | Partly — see the ember notes below |
+| 4. Home, About, Process | Done |
+| 5. Retreats | Done — video slot, coming-soon treatment, email capture |
+| 6. The ember system | Done — home, per-page density, the video-to-particle dissolve |
+| 7. Performance and accessibility pass | Done |
 
-The ember system came in ahead of its place in that order. It is spec §6 step 6
-and everything before it is meant to land first; it was built during step 1 and
-is staying. Nothing depends on it, so the order it arrived in costs nothing.
+The ember system was started during step 1, ahead of its place in this order,
+and finished in step 6. Nothing depends on it, so arriving early cost nothing.
 
-`process.html`, `experience.html` and `about.html` are linked from the header
-and footer but do not exist yet.
+Every page in the spec is built, every internal link resolves, and the build
+order is complete. What is left is the assets and copy listed in ASSETS.md, and
+the launch step below.
 
 ## Before this can go live
 
@@ -57,8 +66,9 @@ and footer but do not exist yet.
 until it is replaced no inquiry is delivered — the form validates, then tells
 the visitor it cannot send rather than swallowing the message, and logs a
 warning naming the file. Create the endpoint at formspree.io forwarding to
-Hamza's address. If the site lands on Netlify or Vercel, their native form
-handling is free and replaces Formspree entirely.
+Hamza's address. Netlify is the one host with native form handling that would
+replace Formspree outright; Cloudflare and Vercel have no equivalent, so on
+those this endpoint is required.
 
 `INSTAGRAM_URL` in the same file is optional: set it and the link renders on
 the contact page, leave it empty and nothing renders. No dead link either way.
@@ -78,8 +88,14 @@ inside while it is open and returns to the card that opened it. The card's
 title is the control and its hit area is stretched over the whole card, so the
 accessible name is the piece name rather than "image".
 
+The catalogue holds 18 real pieces across knives, swords and woodworking. The
+filter set is built from the data, so Axes & spears and Bows do not appear
+until there is something to put in them.
+
+Photographs are never cropped — see ASSETS.md for why and how.
+
 Sold pieces stay in the catalogue at 70% — they are portfolio. Their detail
-view is marked `data-intent="commission"` so build step 3 can ask about
+view is marked `data-intent="commission"`, so its inquiry box asks about
 commissioning something similar rather than about buying a piece that is gone.
 
 ## Inquiry boxes
@@ -115,12 +131,31 @@ the visitor typed.
 The email address appears nowhere in page text — it lives in the form service,
 per spec §5.
 
-The site is complete without the canvas. `js/embers.js` appends its own element
-and removes nothing — delete the script tag and the layout is unchanged.
+## The retreats page
+
+`experience.html`. The hero takes the same treatment as the homepage — full
+bleed, muted, looping, dissolving to `--forge` at the bottom — and shows the
+gradient until the location footage exists.
+
+The email capture is the page's job. One field and a button, centred, wired to
+the same endpoint as the inquiry boxes and tagged `source: retreats-list` so
+the two are distinguishable in the inbox. It shares the inquiry box's
+validation and failure handling, so there is one set of rules for both:
+success replaces the field with a confirmation in `--brass`, failure says what
+went wrong and keeps what was typed.
+
+Nothing on the page is bookable and no dates or prices appear, per spec §10.
 
 ## Copy and assets
 
 The positioning statement is the client-approved text from spec §8, verbatim.
+
+The hero is real footage now — hot steel on the anvil, shot at night with the
+room black, looping with a crossfade so the repeat has no visible seam. It is
+muted, uncontrolled and autoplaying, so it reads as a moving photograph rather
+than as a video. The still beneath it is the loop's own first frame, so the
+handoff is invisible and the AI-generated placeholder is gone from the site.
+See ASSETS.md for the encode and the measurements.
 
 The logo is in. Spec §7's rules on it shape where it appears: the hero mark is
 capped at 120px and never upscaled, and the header and footer carry the
@@ -130,9 +165,60 @@ crescent variant for the same reason.
 
 ASSETS.md tracks spec §7 against what is actually in the repo.
 
+## Performance and accessibility
+
+Measured with Lighthouse on mobile, particles enabled, against spec §9's floor
+of 85:
+
+| Page | Perf | A11y | Best practices | SEO |
+|---|---|---|---|---|
+| index | 99 | 100 | 100 | 100 |
+| gallery | 99 | 100 | 100 | 100 |
+| experience | 100 | 100 | 96 | 100 |
+
+The gallery figure is with all 18 pieces and their real photography loaded, and
+the index figure is with the hero loop playing — measured with and without the
+video, it scores 99 either way.
+
+Experience is the one page still at 96 on best practices, and the cause is two
+console 404s: `video/retreat-location.mp4` and `img/retreat-still.jpg`, neither
+of which has been shot. Both pages that were at 96 for the same reason —
+index and gallery — are at 100 now that the hero footage and the catalogue
+photography exist.
+
+Zero axe-core violations on every page, including the gallery with its detail
+view open. Every focusable element on every page is reachable by keyboard and
+visibly focused. Responsive from 360px to 2560px with no horizontal scroll at
+either end.
+
+Two things found and fixed in this pass are worth knowing about, because both
+were invisible until measured:
+
+**The fonts were the single biggest cost.** Loading Amiri and Karla from
+fonts.googleapis.com is a render-blocking request to a third-party origin.
+Removing it took the homepage from 89 to 100 and Speed Index from 19.7s to
+0.9s. They are now self-hosted in `fonts/` — Latin and Latin Extended only,
+about 65 KB, since no page sets Arabic text and Karla 500 was requested but
+never used. The site now makes no third-party requests at all. This also fixes
+a real failure mode: when Google Fonts is slow or blocked, the old build
+stalled and then fell back to Times.
+
+**The gallery grid shifted as it loaded.** The catalogue arrives by fetch, so
+the grid went from one line of fallback text to several thousand pixels of
+cards, shoving the page down — a 0.373 layout shift that put the page at 71,
+below the spec's floor. The grid now reserves its height until the cards land.
+
+Remaining Lighthouse notes, all judged not worth acting on: "minify
+CSS/JS" measures uncompressed bytes, and all the CSS and JS together gzip to
+21 KB, so a build step would buy little against the complexity; cache lifetimes
+are handled by `_headers`, which the local test server ignores but Cloudflare
+reads.
+
 ## The ember continuum
 
-One system, one canvas, fixed to the viewport.
+One system, one canvas, fixed to the viewport. The site is complete without it:
+`js/embers.js` appends its own element and removes nothing, so deleting the
+script tag leaves every layout unchanged.
 
 **Continuity.** Particles are born with a random age, so the field is already
 full on the first frame — there is no cold start after a navigation. Each page
@@ -141,7 +227,43 @@ over 800ms rather than snapping.
 
 **Density** is set per page by `<body data-embers="home">`. Valid values are
 `home`, `gallery`, `process`, `retreats`, `about` and `contact`; counts and
-character come from spec §3.
+character come from spec §3. Verified against that table at all three device
+tiers — desktop full, tablet 40%, mobile 20%.
+
+**Sparks are streaks, not dots.** Each is drawn as a short line back along the
+path it just travelled, its length following its speed and its tail leaning
+with the sideways motion. Slow pages get short marks and fast ones long ones,
+so the gallery stays quiet without being told to.
+
+**A minority are risers.** 14–20% per page get roughly two to three times the
+lifetime, a faster start, gentler acceleration and a much slower fade, so they
+carry to the top of the frame and scatter sideways on the way. Without them
+the field died in the lower third and read as a band of glow along the bottom
+edge. Measured on the homepage at 1440×900, distinct sparks per fifth of the
+screen run 277 / 129 / 60 / 22 / 6 from bottom to top.
+
+**Colour comes from the photograph, not from the palette.** Sampling the hero
+still: about 75% of its incandescent pixels sit between hue 355 and 14 — deep
+crimson through red-orange — while the hottest 5% land near hue 30. So the
+heat scale runs from amber at 36 down to crimson at −8, and each spark walks
+*down* it as it ages: born hot off the steel, cooling to red as it rises.
+
+That widens spec §3's stated hue range of 18–42, which covers only the bright
+core and misses every red in the photograph. It is a deliberate deviation,
+made on request; narrowing `HUE_HOT` and `HUE_COOL` in `js/embers.js` puts it
+back.
+
+**The dissolve** is the handoff spec §3 calls the moment worth getting right.
+Two things carry it. `focus` centres the spawn band on the homepage, so sparks
+read as coming off one piece of steel below the frame rather than as ambient
+dust across the width. `glow` draws a soft warm wash along the bottom edge —
+the forge below the frame — that the sparks rise out of, at an intensity that
+tracks each page's density.
+
+That glow lives on the canvas rather than in CSS on purpose: the canvas is
+fixed to the viewport, so the wash travels with it. Put the same gradient in
+the hero and it gets clipped at the hero's bottom edge, drawing a hard
+horizontal line across the page the moment you scroll.
 
 **Stacking** is the seam the design hangs on. The hero sits at `z-index: 0`, the
 canvas at `1`, everything after the hero at `2`. So simulated sparks are drawn

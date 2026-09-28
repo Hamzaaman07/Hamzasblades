@@ -416,6 +416,9 @@ a {
   inset: 0;
   z-index: 1;
   background:
+    /* The forge below the frame is drawn by the canvas, not here — a glow in
+       this box would be clipped at the hero's bottom edge and leave a hard
+       line across the page on scroll. See js/embers.js. */
     /* A pool behind the centred type. The hot steel in the still sits at
        roughly half height, right where the title and eyebrow land, and the
        eyebrow in --smoke has no chance against it. Falls off to nothing at
@@ -519,6 +522,19 @@ a {
   gap: var(--s-4);
 }
 
+/* The catalogue arrives after a fetch, so the grid starts as one line of
+   fallback text and then becomes several thousand pixels of cards. Without a
+   reservation that shoves the whole page down as it lands — a 0.37 layout
+   shift, enough on its own to put the page under the spec's Lighthouse floor.
+   The class is added once the cards are in, or once the fetch has failed. */
+.pieces[data-gallery]:not(.is-loaded) {
+  min-height: 80vh;
+}
+
+.pieces--featured:not(.is-loaded) {
+  min-height: 60vh;
+}
+
 /* Featured work is a fixed four, not an auto-fill — the homepage row should
    hold its shape rather than reflowing to three and orphaning the fourth. */
 .pieces--featured {
@@ -580,16 +596,19 @@ a {
   background: linear-gradient(160deg, #1d1811 0%, #100c08 100%);
 }
 
+/* Nothing is ever cropped. The frame keeps its 4:5 so the grid rows stay
+   even, and the photograph is fitted whole inside it — portrait pieces fill
+   it almost exactly, landscape ones sit letterboxed on --ash. Losing half a
+   sword to a centre crop is worse than a little empty frame. */
 .piece__img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   transition: transform 0.6s var(--ease);
 }
 
-.piece:hover .piece__img {
-  transform: scale(1.03);
-}
+/* No zoom: on a contained image it would push the piece past the frame. The
+   border warming to --brass and the ember glow carry the hover instead. */
 
 /* Shown when the photograph has not been dropped in yet. Keeps the grid
    at full height so nothing shifts when the real file arrives. */
@@ -716,6 +735,192 @@ a {
 
 .piece.is-hidden {
   display: none;
+}
+
+/* --- Retreats ------------------------------------------------------------ */
+
+/* A hero with no logo mark: one row, type pinned low, same dissolve. */
+.hero--page .hero__inner {
+  grid-template-rows: 1fr;
+}
+
+.retreat-blocks {
+  display: grid;
+  gap: var(--s-6);
+}
+
+@media (min-width: 860px) {
+  .retreat-blocks {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--s-5);
+  }
+}
+
+.retreat-block {
+  display: grid;
+  gap: var(--s-2);
+  align-content: start;
+  padding-top: var(--s-3);
+  border-top: 1px solid var(--brass);
+}
+
+/* The email capture. Centred, with room around it. */
+.notify-band {
+  display: grid;
+  justify-items: center;
+  gap: var(--s-2);
+  text-align: center;
+}
+
+.notify-band .measure {
+  margin-bottom: var(--s-4);
+}
+
+.notify-mount {
+  width: 100%;
+  display: grid;
+  justify-items: center;
+}
+
+.notify {
+  width: 100%;
+  max-width: 32rem;
+  gap: var(--s-2);
+  text-align: left;
+}
+
+.notify__row {
+  display: grid;
+  gap: var(--s-2);
+}
+
+@media (min-width: 560px) {
+  .notify__row {
+    grid-template-columns: 1fr auto;
+    align-items: end;
+  }
+
+  .notify__row .btn {
+    /* Sits level with the input, not with its label. */
+    height: calc(0.75rem * 2 + 1.6 * var(--t-small) + 2px);
+    min-height: 48px;
+  }
+}
+
+.notify__field {
+  min-width: 0;
+}
+
+/* --- Process steps ------------------------------------------------------- */
+/* An ordered list, because the order is the point. Images alternate sides. */
+
+.steps {
+  display: grid;
+  gap: var(--s-7);
+  counter-reset: step;
+}
+
+.step {
+  display: grid;
+  gap: var(--s-3);
+  align-items: center;
+}
+
+@media (min-width: 860px) {
+  .step {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s-6);
+  }
+
+  /* Alternating side. The copy leads on every second step. */
+  .step:nth-child(even) .step__figure {
+    order: 2;
+  }
+}
+
+.step__figure {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  border: var(--line);
+  background: linear-gradient(160deg, #1d1811 0%, #100c08 100%);
+  overflow: hidden;
+}
+
+.step__figure img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.step__copy {
+  display: grid;
+  gap: var(--s-2);
+  align-content: center;
+}
+
+/* --- About --------------------------------------------------------------- */
+
+.about {
+  display: grid;
+  gap: var(--s-5);
+  align-items: start;
+}
+
+@media (min-width: 900px) {
+  .about {
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    gap: var(--s-7);
+  }
+
+  .about__media {
+    position: sticky;
+    top: calc(72px + var(--s-4));
+  }
+}
+
+.about__media {
+  display: grid;
+  gap: var(--s-4);
+}
+
+.about__figure {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  border: var(--line);
+  background: linear-gradient(160deg, #1d1811 0%, #100c08 100%);
+  overflow: hidden;
+}
+
+.about__figure img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.about__meta {
+  display: grid;
+  gap: var(--s-3);
+}
+
+.about__copy p + p {
+  margin-top: var(--s-3);
+}
+
+/* --- Closing band -------------------------------------------------------- */
+/* Points at the inquiry box, per SPEC section 8. */
+
+.closer {
+  display: grid;
+  justify-items: start;
+  gap: var(--s-3);
+  margin-top: var(--s-7);
+  padding-top: var(--s-5);
+  border-top: var(--line);
+}
+
+.closer .t-section {
+  max-width: 30ch;
+  color: var(--brass);
 }
 
 /* --- Contact ------------------------------------------------------------- */
@@ -924,8 +1129,47 @@ a {
 }
 
 .piece__frame--large {
+  /* A fixed box rather than a fixed ratio: every view of a piece occupies the
+     same space whatever its orientation, so the panel does not jump when you
+     step through them. */
+  height: clamp(300px, 58vh, 620px);
+  aspect-ratio: auto;
+}
+
+/* Extra views of a piece, under the detail photo. */
+.views {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-1);
+  margin-top: var(--s-2);
+}
+
+.views__item {
+  width: 68px;
   aspect-ratio: 4 / 5;
-  max-height: 70vh;
+  padding: 0;
+  border: var(--line);
+  border-radius: 0;
+  background: var(--ash);
+  cursor: pointer;
+  overflow: hidden;
+  opacity: 0.55;
+  transition: opacity 0.25s var(--ease), border-color 0.25s var(--ease);
+}
+
+.views__item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.views__item:hover {
+  opacity: 0.85;
+}
+
+.views__item.is-active {
+  opacity: 1;
+  border-color: var(--brass);
 }
 
 .lightbox__body {
@@ -1070,9 +1314,6 @@ body.is-locked {
     scroll-behavior: auto !important;
   }
 
-  .piece:hover .piece__img {
-    transform: none;
-  }
 
   .link-through:hover .arrow {
     transform: none;

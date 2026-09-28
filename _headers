@@ -1,0 +1,33 @@
+# Cache policy. Read by Cloudflare Pages and by Netlify; harmless anywhere
+# else, since it is just a text file.
+#
+# Nothing here is content-hashed — css/site.css keeps that name forever — so
+# these are deliberately moderate. A year-long cache on an unhashed filename
+# means an edit ships to nobody until their cache expires. If a build step
+# that fingerprints filenames ever lands, these can go up to a year with
+# `immutable`.
+
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+
+# Photographs and the logo. Replaced rarely, and by hand.
+/img/*
+  Cache-Control: public, max-age=2592000
+
+/video/*
+  Cache-Control: public, max-age=2592000
+
+# Code and styles. A day, so a fix is live tomorrow at worst.
+/css/*
+  Cache-Control: public, max-age=86400
+/js/*
+  Cache-Control: public, max-age=86400
+
+# The catalogue changes whenever a piece is added or sold.
+/data/*
+  Cache-Control: public, max-age=3600
+
+# Pages themselves always revalidate, so a deploy is visible immediately.
+/*.html
+  Cache-Control: public, max-age=0, must-revalidate
