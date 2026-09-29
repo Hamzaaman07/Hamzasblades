@@ -29,10 +29,12 @@ _headers            cache policy, read by Cloudflare Pages and Netlify
 js/pieces.js        the catalogue — loading and card rendering, shared
 js/site.js          header, hero video loading, featured work
 js/gallery.js       filters, grid reflow, detail view
+js/loops.js         silent looping video where a photograph would go
 js/inquiry.js       the inquiry box component
 js/config.js        Formspree endpoint and Instagram URL — edit before launch
 js/embers.js        the ember continuum
 data/gallery.json   the only place pieces are defined
+data/process.json   which Process stages have a still, a loop, or both
 img/  video/        assets, see ASSETS.md
 ```
 
@@ -97,6 +99,30 @@ Photographs are never cropped — see ASSETS.md for why and how.
 Sold pieces stay in the catalogue at 70% — they are portfolio. Their detail
 view is marked `data-intent="commission"`, so its inquiry box asks about
 commissioning something similar rather than about buying a piece that is gone.
+
+## The Process page
+
+The six stages are an ordered list, and the order is the point. Each stage can
+show a photograph, a short silent loop, or both — mixed freely, so a stage
+nobody has filmed can stay a still while the ones worth seeing move. Give a
+stage both and the still is the loop's poster: it shows at once and the loop
+fades up over it.
+
+The stage copy lives in the markup, because it is page content and has to be
+crawlable and render with no JS. Only the media is data-driven, and only
+because guessing at a path is worse than showing nothing: a `<source>` aimed at
+a missing file is committed to by the browser rather than falling back, and a
+`src` that 404s is a failed request on every load. `data/process.json` says
+what exists; a stage with no entry emits no markup, keeps its 4:3 frame and
+says "pending". All six are pending today.
+
+Six autoplaying loops on one screen is the thing that would go wrong, so
+`js/loops.js` never loads one until it is within 300px of the viewport and
+pauses any that scrolls away rather than leaving it to decode. With four loops
+running the page measures 98 on Lighthouse mobile, CLS 0.002. Under
+`prefers-reduced-motion` no video is created at all. There is nothing to
+operate — no controls, no sound, no timeline — so the loops are `aria-hidden`,
+untabbable, and nothing inside the figures takes keyboard focus.
 
 ## Inquiry boxes
 

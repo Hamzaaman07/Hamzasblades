@@ -139,7 +139,7 @@ entirely.
 |---|---|
 | `img/gallery/*` | **Complete.** 18 pieces, 63 photographs, derived from the masters under `img/Knives/`, `img/Swords/` and `img/Woodworking/`. |
 | `img/process-teaser.jpg` | Not shot. One wide cinematic frame for the homepage band. |
-| `img/process/*.jpg` | Not shot. **Six**, one per stage on the Process page: raw stock, heat, shaping, grinding, handle, finished edge. 4:3. |
+| `img/process/*` and `video/process/*` | Not shot. **Six stages** on the Process page — see below. Each can be a still, a loop, or both. |
 | `img/portrait.jpg` | Not shot. Hamza at the forge, for About. |
 
 Derived photographs go in `img/gallery/`, named `<piece-id>-<NN>`. Every piece
@@ -220,6 +220,77 @@ Then add the entry to `data/gallery.json`. Beyond the spec's fields:
 
 Everything except `image` is optional; a piece with just `image` behaves
 exactly as before.
+
+### The Process stages
+
+Each of the six stages can be a photograph, a short silent loop, or both —
+mixed freely, so a stage nobody has filmed yet can stay a still while the ones
+worth seeing move. Give a stage both and the still becomes the loop's poster:
+it shows immediately and the loop fades up over it.
+
+**Nothing is path-guessed.** `data/process.json` says what exists, and a stage
+with no entry emits no markup at all — it keeps its "pending" frame and costs
+zero requests. That is the state of all six today. Guessing at
+`img/process/heat.jpg` and letting it 404 would cost a failed request on every
+single page load, which is exactly what still holds the Experience page at 96.
+
+The stage keys are fixed, and must match the `data-stage` attributes in
+`process.html`: `raw-stock`, `heat`, `shaping`, `grinding`, `handle`,
+`finished-edge`. The stage copy lives in `process.html`, not here — it is page
+content, it has to be crawlable, and it has to render with no JS.
+
+```json
+{
+  "stages": {
+    "heat": {
+      "image": "img/process/heat.jpg",
+      "webp": "img/process/heat.webp",
+      "loop": { "webm": "video/process/heat.webm", "mp4": "video/process/heat.mp4" }
+    },
+    "handle": { "image": "img/process/handle.jpg" }
+  }
+}
+```
+
+`webp` is optional and, as everywhere else in this repo, **only listed if the
+file exists**. `alt` is optional: these frames sit beside a heading and a
+paragraph that already say what is being shown, so they default to empty and
+are hidden from screen readers rather than narrated twice.
+
+**Shooting notes.** Frames are 4:3 and the media is cropped to fill, so shoot
+**landscape** — a vertical phone clip loses most of its sides. Keep each loop
+short, 4–8 seconds; these are texture, not demonstrations, and six of them
+share one page. One repeating action reads best: the bellows, the hammer
+falling, sparks off the grinder, a shaving coming off the handle.
+
+**Encoding** is the same recipe as the hero, at a smaller frame. These sit in a
+half-width column, so 800×600 is plenty and 1080p is waste:
+
+```
+for s in raw-stock heat shaping grinding handle finished-edge; do
+  [ -f "video/process-src/$s.mov" ] || continue
+  ffmpeg -y -i "video/process-src/$s.mov" -an \
+    -vf "scale=800:600:force_original_aspect_ratio=increase,crop=800:600" \
+    -c:v libx264 -profile:v high -preset slower -crf 26 -pix_fmt yuv420p \
+    -color_range tv -movflags +faststart "video/process/$s.mp4"
+  ffmpeg -y -i "video/process/$s.mp4" -an -c:v libvpx-vp9 -crf 36 -b:v 0 \
+    -row-mt 1 -cpu-used 2 "video/process/$s.webm"
+done
+```
+
+Then add each one to `data/process.json`. If a clip does not loop cleanly on a
+hard cut, borrow the hero's crossfade from the section above.
+
+**Six loops on one page is the thing that would go wrong**, so `js/loops.js`
+is frugal by construction: nothing is fetched until a stage is within 300px of
+the viewport, and a loop that scrolls away is paused rather than left decoding.
+Measured with four loops running, the page is 98 on Lighthouse mobile with CLS
+0.002 — the 4:3 frame holds its shape whether or not anything is in it.
+
+Under `prefers-reduced-motion` no video element is ever created; the stage
+shows its still, or its pending frame. There is nothing to operate — no
+controls, no sound, no timeline — so the loops are `aria-hidden` and
+untabbable, and nothing inside the figures takes keyboard focus.
 
 ## Data
 

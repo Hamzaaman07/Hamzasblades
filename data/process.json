@@ -1,0 +1,4 @@
+{
+  "_readme": "Media for the six stages on process.html. The stage copy lives in process.html, not here — this file only says which stills and loops exist. Keys must match the data-stage attributes: raw-stock, heat, shaping, grinding, handle, finished-edge. A stage that is absent, or has no entry, keeps its \"pending\" frame and costs no requests — NOTHING HAS BEEN SHOT YET, which is why stages is empty. Per stage: image (the still, required if you want one), webp (optional, ONLY if the file exists), alt (optional; the frames are decorative and default to empty), loop.webm and loop.mp4 (optional, either or both). Give a stage both a still and a loop and the still shows first with the loop fading up over it. See ASSETS.md for how to encode them.",
+  "stages": {}
+}

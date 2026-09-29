@@ -846,10 +846,41 @@ a {
   overflow: hidden;
 }
 
-.step__figure img {
+/* The still and the loop stack in the same frame. Both start invisible and
+   fade up only once they have actually loaded, so a stage that has not been
+   shot shows the pending block rather than a broken image or a black box —
+   and a stage that has both uses the still as the loop's poster. */
+.step__img,
+.step__loop {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.6s var(--ease);
+}
+
+.step__img.is-ready,
+.step__loop.is-ready {
+  opacity: 1;
+}
+
+/* The loop sits over the still, so the handoff is a fade rather than a cut. */
+.step__loop {
+  z-index: 1;
+}
+
+/* Cleared by js/loops.js as soon as either one lands. */
+.step__figure.is-ready .band__pending {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .step__img,
+  .step__loop {
+    transition: none;
+  }
 }
 
 .step__copy {

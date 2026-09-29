@@ -40,12 +40,19 @@
       </p>
     </div>
 
-    <!-- An ordered list because the order is the point. Images alternate
-         sides; each figure holds its frame until the photograph lands. -->
+    <!-- An ordered list because the order is the point. Media alternates
+         sides; each figure holds its 4:3 frame whether or not anything has
+         been shot, so the page never reflows as stages land.
+
+         The copy stays in the markup rather than in JSON: it is the content
+         of the page, it must be crawlable, and it must render with no JS.
+         Only the media is data-driven, and only because guessing at a path
+         is worse than showing nothing — see data/process.json. Each figure
+         names its stage; js/loops.js fills in whatever that stage has. -->
     <ol class="steps">
 
       <li class="step">
-        <figure class="step__figure">
+        <figure class="step__figure" data-stage="raw-stock">
           <div class="band__pending"><span class="eyebrow">Photo pending</span></div>
         </figure>
         <div class="step__copy">
@@ -60,7 +67,7 @@
       </li>
 
       <li class="step">
-        <figure class="step__figure">
+        <figure class="step__figure" data-stage="heat">
           <div class="band__pending"><span class="eyebrow">Photo pending</span></div>
         </figure>
         <div class="step__copy">
@@ -75,7 +82,7 @@
       </li>
 
       <li class="step">
-        <figure class="step__figure">
+        <figure class="step__figure" data-stage="shaping">
           <div class="band__pending"><span class="eyebrow">Photo pending</span></div>
         </figure>
         <div class="step__copy">
@@ -90,7 +97,7 @@
       </li>
 
       <li class="step">
-        <figure class="step__figure">
+        <figure class="step__figure" data-stage="grinding">
           <div class="band__pending"><span class="eyebrow">Photo pending</span></div>
         </figure>
         <div class="step__copy">
@@ -105,7 +112,7 @@
       </li>
 
       <li class="step">
-        <figure class="step__figure">
+        <figure class="step__figure" data-stage="handle">
           <div class="band__pending"><span class="eyebrow">Photo pending</span></div>
         </figure>
         <div class="step__copy">
@@ -120,7 +127,7 @@
       </li>
 
       <li class="step">
-        <figure class="step__figure">
+        <figure class="step__figure" data-stage="finished-edge">
           <div class="band__pending"><span class="eyebrow">Photo pending</span></div>
         </figure>
         <div class="step__copy">
@@ -180,6 +187,7 @@
 
 <script src="js/config.js" defer></script>
 <script src="js/site.js" defer></script>
+<script src="js/loops.js" defer></script>
 <script src="js/embers.js" defer></script>
 </body>
 </html>
