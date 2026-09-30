@@ -102,11 +102,24 @@ commissioning something similar rather than about buying a piece that is gone.
 
 ## The Process page
 
-The six stages are an ordered list, and the order is the point. Each stage can
-show a photograph, a short silent loop, or both — mixed freely, so a stage
-nobody has filmed can stay a still while the ones worth seeing move. Give a
-stage both and the still is the loop's poster: it shows at once and the loop
-fades up over it.
+The six stages are an ordered list, and the order is the point. All six are
+real footage now: a short silent loop each, with the loop's own first frame as
+its poster, so the still shows at once and the loop fades up over it. A stage
+can equally be a still alone, or nothing at all, in which case it keeps its
+frame and says "pending".
+
+**Nothing is cropped.** Five stages were shot vertically on a phone and
+`shaping` landscape, so each frame takes its own clip's aspect ratio instead
+of a house 4:3 — forcing a 9:16 clip into 4:3 would cut two thirds of it away.
+Height is capped and the width follows from the ratio, so tall stages sit
+narrow and centred in their column and the landscape one fills it.
+
+Three of the clips do not loop at their own ends, because the camera has moved
+by the time they stop. The encode searches for the pair of frames that
+actually match and trims to those rather than assuming the whole clip is the
+loop, then crossfades. Measured on the shipped files, every seam is at or
+below the clip's own frame-to-frame motion — all six loop invisibly. ASSETS.md
+has the numbers.
 
 The stage copy lives in the markup, because it is page content and has to be
 crawlable and render with no JS. Only the media is data-driven, and only
@@ -118,9 +131,14 @@ says "pending". All six are pending today.
 
 Six autoplaying loops on one screen is the thing that would go wrong, so
 `js/loops.js` never loads one until it is within 300px of the viewport and
-pauses any that scrolls away rather than leaving it to decode. With four loops
-running the page measures 98 on Lighthouse mobile, CLS 0.002. Under
-`prefers-reduced-motion` no video is created at all. There is nothing to
+pauses any that scrolls away rather than leaving it to decode. With all six in
+the page measures 99 on Lighthouse mobile, CLS 0.001. Scrolling the whole page
+costs 2.8 MB on Chrome and 3.4 MB on Safari, and less in practice because the
+loading is lazy. Under `prefers-reduced-motion` no video is created at all.
+
+The frame's aspect ratio is in `process.html` rather than the manifest,
+because it has to be right at first paint: taking it from the fetched JSON
+reshaped every frame as the data landed and cost 0.162 of layout shift. There is nothing to
 operate — no controls, no sound, no timeline — so the loops are `aria-hidden`,
 untabbable, and nothing inside the figures takes keyboard focus.
 
@@ -200,11 +218,13 @@ of 85:
 |---|---|---|---|---|
 | index | 99 | 100 | 100 | 100 |
 | gallery | 99 | 100 | 100 | 100 |
+| process | 99 | 100 | 100 | 100 |
 | experience | 100 | 100 | 96 | 100 |
 
-The gallery figure is with all 18 pieces and their real photography loaded, and
+The gallery figure is with all 18 pieces and their real photography loaded,
 the index figure is with the hero loop playing — measured with and without the
-video, it scores 99 either way.
+video, it scores 99 either way — and the process figure is with all six stage
+loops in.
 
 Experience is the one page still at 96 on best practices, and the cause is two
 console 404s: `video/retreat-location.mp4` and `img/retreat-still.jpg`, neither

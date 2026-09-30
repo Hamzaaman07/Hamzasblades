@@ -79,10 +79,10 @@
     img.alt = stage.alt || "";
     img.loading = "lazy";
     img.decoding = "async";
-    /* The frame is 4:3 and holds its own shape, so these only stop the
-       image being intrinsically sized before it loads. */
-    img.width = 1600;
-    img.height = 1200;
+    /* The frame holds its own shape and the image is stretched to it, so
+       these only stop the image being intrinsically sized before it loads. */
+    img.width = stage.width || 1600;
+    img.height = stage.height || 1200;
     img.src = stage.image;
     img.addEventListener("load", function () { reveal(img, figure); });
     img.addEventListener("error", function () { img.remove(); });
@@ -136,6 +136,10 @@
       Array.prototype.forEach.call(figures, function (figure) {
         var stage = stages[figure.dataset.stage];
         if (!stage) return;
+        /* The frame's shape is NOT set here. It is --ar in process.html,
+           because it has to be right at first paint: applying it once this
+           fetch resolves reshapes every stage and costs real layout shift.
+           This file only fills the frame that is already reserved. */
         buildStill(stage, figure);
         buildLoop(stage, figure);
       });
