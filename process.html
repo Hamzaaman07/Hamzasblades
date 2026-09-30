@@ -40,12 +40,28 @@
       </p>
     </div>
 
-    <!-- An ordered list because the order is the point. Images alternate
-         sides; each figure holds its frame until the photograph lands. -->
+    <!-- An ordered list because the order is the point. Media alternates
+         sides; each figure holds its 4:3 frame whether or not anything has
+         been shot, so the page never reflows as stages land.
+
+         The copy stays in the markup rather than in JSON: it is the content
+         of the page, it must be crawlable, and it must render with no JS.
+         Only the media is data-driven, and only because guessing at a path
+         is worse than showing nothing — see data/process.json. Each figure
+         names its stage; js/loops.js fills in whatever that stage has.
+
+         --ar is the frame's shape, and it is here rather than in the
+         manifest on purpose: it has to be right at first paint. Setting it
+         from the fetched JSON instead reshaped every frame once the data
+         landed and cost 0.162 of layout shift, measured. Getting it wrong
+         is harmless — it reserves the wrong box for a moment — so it is
+         safe in markup, unlike a file path. Five stages were shot vertical
+         and shaping landscape; if a stage is ever refilmed the other way
+         round, change it here as well as in data/process.json. -->
     <ol class="steps">
 
       <li class="step">
-        <figure class="step__figure">
+        <figure class="step__figure step__figure--sized" data-stage="raw-stock" style="--ar: 720 / 1280">
           <div class="band__pending"><span class="eyebrow">Photo pending</span></div>
         </figure>
         <div class="step__copy">
@@ -60,7 +76,7 @@
       </li>
 
       <li class="step">
-        <figure class="step__figure">
+        <figure class="step__figure step__figure--sized" data-stage="heat" style="--ar: 720 / 1280">
           <div class="band__pending"><span class="eyebrow">Photo pending</span></div>
         </figure>
         <div class="step__copy">
@@ -75,7 +91,7 @@
       </li>
 
       <li class="step">
-        <figure class="step__figure">
+        <figure class="step__figure step__figure--sized" data-stage="shaping" style="--ar: 1280 / 720">
           <div class="band__pending"><span class="eyebrow">Photo pending</span></div>
         </figure>
         <div class="step__copy">
@@ -90,7 +106,7 @@
       </li>
 
       <li class="step">
-        <figure class="step__figure">
+        <figure class="step__figure step__figure--sized" data-stage="grinding" style="--ar: 720 / 1280">
           <div class="band__pending"><span class="eyebrow">Photo pending</span></div>
         </figure>
         <div class="step__copy">
@@ -105,7 +121,7 @@
       </li>
 
       <li class="step">
-        <figure class="step__figure">
+        <figure class="step__figure step__figure--sized" data-stage="handle" style="--ar: 720 / 1280">
           <div class="band__pending"><span class="eyebrow">Photo pending</span></div>
         </figure>
         <div class="step__copy">
@@ -120,7 +136,7 @@
       </li>
 
       <li class="step">
-        <figure class="step__figure">
+        <figure class="step__figure step__figure--sized" data-stage="finished-edge" style="--ar: 720 / 1280">
           <div class="band__pending"><span class="eyebrow">Photo pending</span></div>
         </figure>
         <div class="step__copy">
@@ -180,6 +196,7 @@
 
 <script src="js/config.js" defer></script>
 <script src="js/site.js" defer></script>
+<script src="js/loops.js" defer></script>
 <script src="js/embers.js" defer></script>
 </body>
 </html>

@@ -139,7 +139,8 @@ entirely.
 |---|---|
 | `img/gallery/*` | **Complete.** 18 pieces, 63 photographs, derived from the masters under `img/Knives/`, `img/Swords/` and `img/Woodworking/`. |
 | `img/process-teaser.jpg` | Not shot. One wide cinematic frame for the homepage band. |
-| `img/process/*.jpg` | Not shot. **Six**, one per stage on the Process page: raw stock, heat, shaping, grinding, handle, finished edge. 4:3. |
+| `video/*.mov` (six) | **Supplied.** The stage masters — `Raw Stock`, `heat`, `shaping`, `grinding`, `handle`, `finished edge`. Kept untouched. |
+| `video/process/*` and `img/process/*` | **Complete.** All six stages, derived from those masters. |
 | `img/portrait.jpg` | Not shot. Hamza at the forge, for About. |
 
 Derived photographs go in `img/gallery/`, named `<piece-id>-<NN>`. Every piece
@@ -220,6 +221,119 @@ Then add the entry to `data/gallery.json`. Beyond the spec's fields:
 
 Everything except `image` is optional; a piece with just `image` behaves
 exactly as before.
+
+### The Process stages
+
+All six are in, each a short silent loop with the loop's own first frame as
+its poster. Five were shot vertically on a phone and `shaping` landscape.
+
+| Stage | Master | Shipped loop | Frame |
+|---|---|---|---|
+| Raw stock | `Raw Stock.mov` 1.7s | 1.2s, 422 KB | 9:16 |
+| Heat | `heat.mov` 8.2s | 3.1s, 826 KB | 9:16 |
+| Shaping | `shaping.mov` 8.8s | 8.8s, 285 KB | 16:9 |
+| Grinding | `grinding.mov` 7.3s | 3.1s, 371 KB | 9:16 |
+| Handle | `handle.mov` 8.1s | 5.5s, 459 KB | 9:16 |
+| Finished edge | `finished edge.mov` 3.5s | 3.5s, 407 KB | 9:16 |
+
+**Nothing is cropped.** Each frame takes its own clip's aspect ratio rather
+than a house 4:3, because forcing a 9:16 phone clip into 4:3 cuts about two
+thirds of it away. A 9:16 clip at full column width would be over a thousand
+pixels tall, so height is capped (`--step-cap`, `min(68vh, 600px)`) and the
+width follows from the ratio: tall stages sit narrow and centred in their
+column, the landscape one fills it.
+
+**The frame's shape lives in `process.html`, not in the manifest.** Each
+figure carries `style="--ar: 720 / 1280"`. That looks like duplication and is
+deliberate: setting it from the fetched JSON instead reshaped every frame once
+the data arrived and cost 0.162 of layout shift, measured, dropping the page
+from 98 to 92. It has to be right at first paint. Getting it wrong is harmless
+— it reserves the wrong box for a moment — which is why it is safe in markup
+where a file path is not. **If a stage is ever refilmed the other way round,
+change `--ar` in `process.html` as well as `width`/`height` in the manifest.**
+
+**Three of the masters do not loop at their own ends** — the camera has moved
+by the time the clip stops. So the encode does not assume the whole clip is
+the loop: it searches for the pair of frames that actually match, subject to
+keeping enough duration, and trims to those. On `grinding` that took the loop
+gap from 57.9 to 28.4 before any crossfade; on `handle`, 22.0 to 10.8. `heat`
+was trimmed the same way, and `raw-stock`, `shaping` and `finished-edge` were
+kept whole because their own ends already matched. Then the last second or so
+crossfades into the first.
+
+Measured on the shipped files, every seam is at or below the clip's own
+frame-to-frame motion — which is to say all six loop invisibly:
+
+| Stage | Loop seam | Normal frame step |
+|---|---|---|
+| Raw stock | 18.16 | 18.71 |
+| Heat | 12.62 | 11.19 |
+| Shaping | 1.92 | 1.32 |
+| Grinding | 9.81 | 14.27 |
+| Handle | 11.78 | 13.05 |
+| Finished edge | 9.68 | 10.98 |
+
+**WebM is not always the winner.** On the dark hero footage VP9 beat x264 by
+four to one. On these daylight clips — grass, straw, a bright forge — it
+loses, sometimes badly: `raw-stock` was 422 KB as MP4 and 1.2 MB as WebM. So
+each clip ships whichever is smaller, and `loop.webm` is listed in the
+manifest **only where WebM actually won**. `raw-stock` and `heat` are MP4
+only. The MP4 is always present: it is what Safari uses, and it is the
+fallback for any browser without VP9.
+
+A browser with no H.264 at all — some Linux Chromium builds — cannot play
+those two, and shows the poster still instead of a black frame. That path is
+verified, not assumed: the test browser here is one of those builds.
+
+Weight, if a visitor scrolls the whole page: **2.8 MB on Chrome, 3.4 MB on
+Safari**, and less in practice because loading is lazy. 5.0 MB sits in the
+repo, since the MP4 ships alongside each WebM.
+
+**Regenerating.** The masters carry rotation metadata (`-90`, `+90`, `-180`),
+an audio track and a data stream; `ffmpeg` autorotates and the encode drops
+the rest. Find each clip's loop point first, then:
+
+```
+# $1 master  $2 slug  $3 start  $4 duration  $5 crossfade  $6 W  $7 H
+E=$(python3 -c "print(round($4-$5, 3))")
+V="scale=$6:$7:force_original_aspect_ratio=decrease,pad=$6:$7:(ow-iw)/2:(oh-ih)/2:color=0x0A0908,setsar=1"
+F="[0:v]$V,fps=24,format=yuv420p,split=2[h][t];\
+[h]trim=0:$E,setpts=PTS-STARTPTS[head];\
+[t]trim=start=$E,setpts=PTS-STARTPTS,format=yuva420p,fade=out:st=0:d=$5:alpha=1[tail];\
+[head][tail]overlay=eof_action=pass,format=yuv420p[v]"
+
+ffmpeg -y -ss "$3" -t "$4" -i "$1" -filter_complex "$F" -map "[v]" -an \
+  -c:v libx264 -profile:v high -preset slower -crf 29 -g 48 -pix_fmt yuv420p \
+  -color_range tv -colorspace bt709 -color_primaries bt709 -color_trc bt709 \
+  -movflags +faststart "video/process/$2.mp4"
+ffmpeg -y -i "video/process/$2.mp4" -an -c:v libvpx-vp9 -crf 42 -b:v 0 \
+  -row-mt 1 -cpu-used 2 -g 48 "video/process/$2.webm"   # keep only if smaller
+ffmpeg -y -i "video/process/$2.mp4" -vf "select='eq(n,0)',scale=iw/2.5:-2" \
+  -vsync 0 -frames:v 1 /tmp/p.png
+python3 -c "from PIL import Image; im=Image.open('/tmp/p.png').convert('RGB'); \
+im.save('img/process/$2.jpg',quality=62,optimize=True,progressive=True); \
+im.save('img/process/$2.webp',quality=55,method=6)"
+```
+
+Vertical clips go to 720x1280 and landscape to 1280x720; the display box is at
+most 338px wide for a vertical stage, so that covers a 2x screen with room.
+Posters are deliberately cheap — they are on screen for a moment and then
+replaced.
+
+**Six loops on one page is the thing that would go wrong**, so `js/loops.js`
+is frugal by construction: nothing is fetched until a stage is within 300px of
+the viewport, and a loop that scrolls away is paused rather than left decoding.
+With all six in, the page measures 99 on Lighthouse mobile with CLS 0.001.
+
+Under `prefers-reduced-motion` no video element is ever created; the stage
+shows its poster still. There is nothing to operate — no controls, no sound,
+no timeline — so the loops are `aria-hidden` and untabbable, and nothing
+inside the figures takes keyboard focus.
+
+**These are daylight shots**, unlike the hero and the catalogue. The Process
+page now reads brighter and greener than the rest of the site. That is what
+the work actually looks like, so it is not a defect, but it is a deliberate
+tonal break worth knowing about.
 
 ## Data
 

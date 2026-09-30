@@ -1,0 +1,69 @@
+{
+  "_readme": "Media for the six stages on process.html. The stage copy lives in process.html, not here \u2014 this file only says what exists. Keys must match the data-stage attributes. A stage with no entry keeps its \"pending\" frame and costs no requests. width/height are the encoded display dimensions and shape the frame, so nothing is cropped: five stages were shot vertically and shaping landscape. webp and loop.webm are listed ONLY where those files exist \u2014 webm only where it actually came out smaller than the mp4, which on the daylight clips it did not. loop.mp4 is always present and is what Safari uses. See ASSETS.md for the encode.",
+  "stages": {
+    "raw-stock": {
+      "width": 720,
+      "height": 1280,
+      "alt": "A bar of high-carbon steel, before anything is done to it.",
+      "image": "img/process/raw-stock.jpg",
+      "webp": "img/process/raw-stock.webp",
+      "loop": {
+        "mp4": "video/process/raw-stock.mp4"
+      }
+    },
+    "heat": {
+      "width": 720,
+      "height": 1280,
+      "alt": "The forge, with the steel coming up to colour.",
+      "image": "img/process/heat.jpg",
+      "webp": "img/process/heat.webp",
+      "loop": {
+        "mp4": "video/process/heat.mp4"
+      }
+    },
+    "shaping": {
+      "width": 1280,
+      "height": 720,
+      "alt": "Hot steel on the anvil, part-way through being drawn out.",
+      "image": "img/process/shaping.jpg",
+      "webp": "img/process/shaping.webp",
+      "loop": {
+        "webm": "video/process/shaping.webm",
+        "mp4": "video/process/shaping.mp4"
+      }
+    },
+    "grinding": {
+      "width": 720,
+      "height": 1280,
+      "alt": "Working the blade down to clean, even bevels.",
+      "image": "img/process/grinding.jpg",
+      "webp": "img/process/grinding.webp",
+      "loop": {
+        "webm": "video/process/grinding.webm",
+        "mp4": "video/process/grinding.mp4"
+      }
+    },
+    "handle": {
+      "width": 720,
+      "height": 1280,
+      "alt": "Shaping the handle at the bench.",
+      "image": "img/process/handle.jpg",
+      "webp": "img/process/handle.webp",
+      "loop": {
+        "webm": "video/process/handle.webm",
+        "mp4": "video/process/handle.mp4"
+      }
+    },
+    "finished-edge": {
+      "width": 720,
+      "height": 1280,
+      "alt": "A finished blade.",
+      "image": "img/process/finished-edge.jpg",
+      "webp": "img/process/finished-edge.webp",
+      "loop": {
+        "webm": "video/process/finished-edge.webm",
+        "mp4": "video/process/finished-edge.mp4"
+      }
+    }
+  }
+}
