@@ -134,9 +134,21 @@
 
   <!-- Retreats teaser ---------------------------------------------------- -->
   <section class="section section--rule" id="retreats">
-    <div class="shell band">
-      <figure class="band__figure">
-        <div class="band__pending"><span class="eyebrow">Still frame pending</span></div>
+    <div class="shell band band--portrait">
+      <!-- Hamza's retreat film. Shot vertically, so the frame takes 9:16
+           rather than the band's default 16:9 and nothing is cropped; --ar
+           is here rather than in script because it has to be right at first
+           paint. The poster is the film's own opening frame, so the handoff
+           is invisible, and it is what shows until the film can play. -->
+      <figure class="band__figure band__figure--sized" style="--ar: 608 / 1080">
+        <picture>
+          <source type="image/webp" srcset="img/retreat-teaser.webp">
+          <img src="img/retreat-teaser.jpg" alt="" width="608" height="1080"
+               loading="lazy" decoding="async">
+        </picture>
+        <video class="band__loop" data-loop muted playsinline loop
+               preload="none" aria-hidden="true" tabindex="-1"
+               data-src="video/retreat-teaser.mp4" data-type="video/mp4"></video>
       </figure>
       <div class="band__copy">
         <p class="eyebrow eyebrow--brass">Coming soon</p>
@@ -214,6 +226,7 @@
 <script src="js/pieces.js" defer></script>
 <script src="js/inquiry.js" defer></script>
 <script src="js/site.js" defer></script>
+<script src="js/loops.js" defer></script>
 <script src="js/embers.js" defer></script>
 </body>
 </html>
