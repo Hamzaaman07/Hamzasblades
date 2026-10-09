@@ -5,15 +5,21 @@
 
 window.HB_CONFIG = {
   /* ----------------------------------------------------------------------
-     REPLACE THIS with the Formspree endpoint from formspree.io, set to
-     forward to hamzasblades@gmail.com.
+     REPLACE THIS with the form's own endpoint from formspree.io. It looks
+     like https://formspree.io/f/abcdwxyz — the id is all that changes.
 
      Until it is replaced, inquiries are NOT delivered: the form validates,
-     then tells the visitor it cannot send rather than swallowing the message,
-     and logs a warning naming this file.
+     then tells the visitor it cannot send rather than swallowing the
+     message, and logs a warning naming this file.
 
-     If the site ends up on Netlify or Vercel, their native form handling is
-     free and replaces Formspree entirely — worth doing instead.
+     The destination address is set INSIDE Formspree and must never appear
+     here. This file is served to every visitor, so an address in it is
+     public page text by another name — which is the thing SPEC section 5
+     exists to prevent.
+
+     Netlify is the one host whose native form handling would replace
+     Formspree outright. Cloudflare Pages and Vercel have no equivalent, so
+     on those this endpoint is required.
      ---------------------------------------------------------------------- */
   FORM_ENDPOINT: "https://formspree.io/f/YOUR_ID_HERE",
 
