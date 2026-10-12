@@ -26,6 +26,8 @@ css/site.css        design tokens and every component
 css/fonts.css       @font-face for the self-hosted Amiri and Karla
 fonts/              the font files themselves, OFL — see fonts/OFL.txt
 _headers            cache policy, read by Cloudflare Pages and Netlify
+robots.txt          crawl rules; keeps the masters out of the index
+sitemap.xml         the six pages
 js/pieces.js        the catalogue — loading and card rendering, shared
 js/site.js          header, hero video loading, featured work
 js/gallery.js       filters, grid reflow, detail view
@@ -62,6 +64,29 @@ and finished in step 6. Nothing depends on it, so arriving early cost nothing.
 Every page in the spec is built, every internal link resolves, and the build
 order is complete. What is left is the assets and copy listed in ASSETS.md, and
 the launch step below.
+
+## The domain
+
+Every page carries a canonical URL and an Open Graph card at
+`https://hamzasblades.com`. Both have to be absolute: a relative `og:image`
+is ignored by every platform, and without a canonical the same page reachable
+at the apex, at `www.`, and at the `pages.dev` address counts as three copies
+to a search engine.
+
+**If the domain ever changes, those URLs are the one thing to update** — they
+appear in all six pages, in `robots.txt` and in `sitemap.xml`, and nowhere
+else. Everything the site loads at runtime is a relative path, so the site
+itself does not care what it is served from.
+
+`img/share-card.jpg` is the preview image, 1200×630 because that is the size
+every platform crops toward. It is a centre band of the hero still, chosen so
+the hot steel survives the crop — it sits in the lower third of the frame, and
+a naive crop would have cut it.
+
+`robots.txt` keeps `img/Knives/`, `img/Swords/`, `img/Woodworking/` and the
+`.mov` masters out of the index. Nothing links to them, they are large, and
+full-resolution photographs turning up in image search ahead of the pages they
+belong to is not what anyone wants.
 
 ## Before this can go live
 
