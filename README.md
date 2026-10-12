@@ -86,10 +86,26 @@ Filtering runs a FLIP pass: measure every visible card, apply the filter,
 measure again, then play the difference back as a transform. The grid moves
 instead of snapping. Under `prefers-reduced-motion` it just toggles.
 
-Clicking a piece opens the detail view. Escape closes it, focus is trapped
-inside while it is open and returns to the card that opened it. The card's
-title is the control and its hit area is stretched over the whole card, so the
-accessible name is the piece name rather than "image".
+Clicking anywhere on a piece opens the detail view — the photograph, the
+title, the padding around them. The card's title is the control and its hit
+area is stretched over the whole card, so the accessible name is the piece
+name rather than "image". Escape closes it, focus is trapped inside while it
+is open and returns to the card that opened it.
+
+That stretched hit area is absolutely positioned, so it resolves against the
+nearest positioned ancestor. `.piece__meta` used to be positioned, to climb
+above the hover glow, which quietly made *it* the containing block and shrank
+the clickable area to the title row — 9% of the card. The glow now sits at
+`z-index: -1` behind the content instead, with `isolation: isolate` on the
+card so it does not fall behind the card's own background, and `.piece__meta`
+is deliberately left unpositioned. **Do not add `position` to `.piece__meta`.**
+
+A featured card on the home page links to `gallery.html?piece=<id>`. The
+gallery scrolls to that card and opens its detail view on arrival, so closing
+it leaves the visitor standing in the collection at the piece they came for,
+rather than back on the home page. The query is dropped once the view is
+closed, so a reload or a Back does not put them through it again, and an
+unknown id does nothing at all.
 
 The catalogue holds 20 real pieces across knives, swords and woodworking —
 twelve knives, six swords, two woodworking. The filter set is built from the

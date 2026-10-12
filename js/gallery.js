@@ -254,6 +254,7 @@
 
   function closeDetail() {
     if (!lightbox || lightbox.hidden) return;
+    clearPieceParam();
     lightbox.classList.remove("is-open");
     document.removeEventListener("keydown", onKeydown);
     document.body.classList.remove("is-locked");
@@ -317,6 +318,36 @@
     if (piece) openDetail(piece, button);
   });
 
+  /* Arriving from a featured card on the home page: gallery.html?piece=<id>
+     opens that piece straight away. The card is scrolled to first, so when
+     the visitor closes the detail view they are standing in the collection
+     at the piece they came for rather than at the top of the page.
+
+     An unknown or missing id does nothing, which is the right answer for a
+     stale link — the gallery is still the gallery. */
+  function openFromUrl() {
+    if (!window.URLSearchParams) return;
+    var wanted = new URLSearchParams(window.location.search).get("piece");
+    if (!wanted) return;
+
+    var piece = pieces.filter(function (p) { return p.id === wanted; })[0];
+    if (!piece) return;
+
+    var card = cards.filter(function (c) { return c.dataset.id === wanted; })[0];
+    var opener = card && card.querySelector(".piece__open");
+    if (card) card.scrollIntoView({ block: "center" });
+    openDetail(piece, opener);
+  }
+
+  /* Once it is closed, drop the query. Otherwise a reload or a Back puts the
+     visitor through the same detail view again, which is not what closing
+     something is supposed to mean. */
+  function clearPieceParam() {
+    if (!window.history || !window.history.replaceState) return;
+    if (window.location.search.indexOf("piece=") === -1) return;
+    window.history.replaceState(null, "", window.location.pathname);
+  }
+
   HB.load()
     .then(function (list) {
       pieces = list;
@@ -343,6 +374,7 @@
       buildFilters(available);
       markActive();
       updateEmpty();
+      openFromUrl();
     })
     .catch(function () {
       /* The markup's fallback line stays put — but release the reserved

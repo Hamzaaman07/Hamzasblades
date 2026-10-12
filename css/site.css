@@ -572,6 +572,11 @@ a {
 
 .piece {
   position: relative;
+  /* Its own stacking context, so the glow below can sit at z-index -1 and
+     land behind the card's content but still in front of its background.
+     Without this the glow escapes into .page's context and disappears
+     behind the card entirely. */
+  isolation: isolate;
   display: grid;
   gap: var(--s-2);
   padding: var(--s-2);
@@ -581,9 +586,15 @@ a {
 }
 
 .piece::after {
-  /* The faint ember glow that rises behind the image on hover. */
+  /* The faint ember glow that rises behind the image on hover. Behind the
+     content rather than over it — it used to paint on top, which is why
+     .piece__meta carried a z-index to climb back out. That z-index needed
+     position: relative, which made .piece__meta the containing block for
+     the stretched hit area below, shrinking the clickable area from the
+     whole card to the title row. */
   content: "";
   position: absolute;
+  z-index: -1;
   inset: auto 0 0;
   height: 60%;
   background: linear-gradient(
@@ -639,9 +650,10 @@ a {
 
 /* Title over metadata, always stacked — side by side collapses unevenly once
    four cards share the row. */
+/* Deliberately not positioned. The hit area in .piece__open::after is
+   absolute, so it resolves against the nearest positioned ancestor — make
+   this one positioned and the whole card stops being clickable. */
 .piece__meta {
-  position: relative;
-  z-index: 1;
   display: grid;
   gap: 2px;
   padding-bottom: var(--s-1);
@@ -727,6 +739,9 @@ a {
   cursor: pointer;
 }
 
+/* Stretches the title's hit area over the whole card, so the photograph is
+   clickable and the accessible name is still the piece's name rather than
+   "image". This resolves against .piece — see the note on .piece__meta. */
 .piece__open::after {
   content: "";
   position: absolute;
