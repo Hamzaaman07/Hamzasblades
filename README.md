@@ -196,11 +196,14 @@ separate slot and is still unshot.
 bleed, muted, looping, dissolving to `--forge` at the bottom — and shows the
 gradient until the location footage exists.
 
-It is the one hero that does not pin its type to the bottom. The home page
-does that because the fire runs across the middle of the footage and the type
-has to stay clear of it; here there is no footage yet, so pinning low left
-most of a viewport of empty gradient above the title. The type is centred
-instead and the section is 74vh rather than a full screen.
+It is the one hero that is sized by its content rather than by the viewport.
+The home page pins its type to the bottom of a full screen because the fire
+runs across the middle of the footage and the type has to stay clear of it.
+Here there is no footage, so that left most of a viewport of empty gradient —
+first above the title, then below the button. The type is centred and the
+section is as tall as what is in it, which puts the copy below at the same
+spacing as any other section on the site. The gradient and the embers paint
+whatever height that is, so the background is unchanged.
 
 Under the title is a **Join the waitlist** link down to the band at the foot
 of the page. It is a plain in-page anchor, not script: it works with
@@ -242,11 +245,11 @@ than as a video. The still beneath it is the loop's own first frame, so the
 handoff is invisible and the AI-generated placeholder is gone from the site.
 See ASSETS.md for the encode and the measurements.
 
-The logo is in. Spec §7's rules on it shape where it appears: the hero mark is
-capped at 120px and never upscaled, and the header and footer carry the
-wordmark in Amiri instead of a mark, because at their size the calligraphy
-would fall under the ~48px legibility floor. The favicon uses the simplified
-crescent variant for the same reason.
+The logo is in. The hero mark is capped at 120px and never upscaled. The
+header carries the mark at 32px beside the wordmark — below spec §7's ~48px
+legibility floor, which is workable only because the wordmark next to it is
+doing the reading, so the mark has to be recognised rather than deciphered.
+The footer stays wordmark-only. The favicon is the real mark too.
 
 ASSETS.md tracks spec §7 against what is actually in the repo.
 

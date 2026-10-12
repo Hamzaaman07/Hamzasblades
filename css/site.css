@@ -298,6 +298,23 @@ a {
 .brand {
   display: inline-flex;
   align-items: center;
+  gap: 0.55rem;
+}
+
+/* Capped at 32px and never upscaled, like the hero mark. The wordmark beside
+   it carries the name, so the mark does not have to be read — which is what
+   makes it usable below SPEC section 7's ~48px legibility floor. */
+.brand__mark {
+  width: 32px;
+  height: 32px;
+  flex: none;
+}
+
+@media (max-width: 420px) {
+  .brand__mark {
+    width: 26px;
+    height: 26px;
+  }
 }
 
 .brand__name {
@@ -746,13 +763,16 @@ a {
    viewport of empty space above the title. Centre it instead, and give the
    section rather less than a full screen. */
 .hero--page {
-  min-height: 74vh;
-  min-height: 74svh;
+  /* Sized by its own content, not by the viewport. A fixed height here left
+     a third of a screen of empty gradient under the button before the copy
+     below could start, because there is no footage to fill it. The gradient
+     and the embers are unaffected — they paint whatever height this is. */
+  min-height: 0;
 }
 
 .hero--page .hero__inner {
-  grid-template-rows: 1fr;
-  padding-block: calc(72px + var(--s-5)) clamp(2.5rem, 7vh, 4.5rem);
+  grid-template-rows: auto;
+  padding-block: calc(72px + var(--s-5)) var(--s-6);
 }
 
 .hero--page .hero__type {

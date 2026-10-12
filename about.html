@@ -6,7 +6,13 @@
 <title>About — Hamza's Blades</title>
 <meta name="description" content="A Muslim blacksmith based in California, hand-forging swords, knives and traditional tools between Sacramento and Huntington Beach.">
 
-<link rel="icon" href="img/crescent.svg" type="image/svg+xml">
+<!-- The real mark. At 16px the calligraphy inside it is not readable, but
+     the brass disc and crescent are distinctive enough to find in a strip of
+     tabs, which is what a favicon is for. The 180 is composited onto --forge
+     because iOS fills transparency with white when it squares an icon off. -->
+<link rel="icon" href="img/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="img/favicon-180.png" sizes="180x180" type="image/png">
+<link rel="apple-touch-icon" href="img/favicon-180.png">
 
 <link rel="stylesheet" href="css/fonts.css">
 <link rel="stylesheet" href="css/site.css">
@@ -17,6 +23,12 @@
 <header class="header is-stuck">
   <div class="shell header__inner">
     <a class="brand" href="index.html">
+      <!-- The mark sits beside the wordmark rather than instead of it. At
+           32px the calligraphy is below the legibility floor SPEC section 7
+           warns about, which is exactly why the name stays next to it in
+           type — the mark is recognition, the wordmark is the reading. -->
+      <img class="brand__mark" src="img/logo-64.png" alt="" width="32" height="32"
+           decoding="async">
       <span class="brand__name">Hamza's Blades</span>
     </a>
     <nav class="nav" aria-label="Primary">

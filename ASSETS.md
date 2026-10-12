@@ -11,6 +11,9 @@ noted.
 |---|---|
 | `img/logo.png` | Supplied. 618×618 RGBA. The master — kept untouched, not referenced by any page. |
 | `img/logo-240.png` | Derived. What the hero actually loads. |
+| `img/logo-64.png` | Derived. The header mark, displayed at 32px. |
+| `img/favicon-32.png` | Derived. The tab icon. |
+| `img/favicon-180.png` | Derived, composited onto `--forge`. Apple touch / home screen. |
 | `img/logo.svg` | Not made. Vector trace, needed for crisp scaling. |
 | `img/crescent.svg` | **Drawn, needs approval.** The simplified crescent variant section 7 lists as "not made". |
 
@@ -24,20 +27,47 @@ changes:
 python3 -c "from PIL import Image; \
 Image.open('img/logo.png').convert('RGBA').resize((240,240), Image.LANCZOS) \
 .quantize(colors=64, method=Image.FASTOCTREE).save('img/logo-240.png', optimize=True)"
+
+python3 -c "
+from PIL import Image
+src = Image.open('img/logo.png').convert('RGBA')
+src.resize((64,64), Image.LANCZOS).save('img/logo-64.png', optimize=True)
+src.resize((32,32), Image.LANCZOS).save('img/favicon-32.png', optimize=True)
+pad = Image.new('RGBA', (180,180), (10,9,8,255))
+m = src.resize((148,148), Image.LANCZOS)
+pad.paste(m, (16,16), m)
+pad.convert('RGB').save('img/favicon-180.png', optimize=True)
+"
 ```
 
 An SVG trace is still worth having — it would replace both files and drop the
 120px ceiling.
 
 `img/crescent.svg` is drawn to the supplied logo's geometry — brass disc,
-crescent in the dark maroon-brown the calligraphy reads as (`#3D1512`). It is
-the favicon and is the fallback for anything below the ~48px legibility floor.
-It is a proposal, not approved artwork; worth Hamza's eye against the original.
+crescent in the dark maroon-brown the calligraphy reads as (`#3D1512`). It
+**was** the favicon; Hamza asked for the real mark there instead, so it is now
+unused by any page. It is still the thing to reach for if anything ever needs
+the mark below ~24px. A proposal, not approved artwork.
+
+**The favicon is the real logo.** At 16px — which is what a browser tab
+actually paints — the calligraphy inside is not readable. That is accepted:
+a favicon's job is to be findable in a strip of tabs, and the brass disc with
+its crescent notch is distinctive at that size even when the script inside is
+not. The 180px copy is composited onto `--forge` rather than shipped with
+transparency, because iOS fills transparency with white when it squares an
+icon off for the home screen.
 
 Where section 7's rules land in the build:
 
-- The mark is **not** used in the header or the footer. Both would sit near
-  34px, under the ~48px floor, so they carry the wordmark in Amiri instead.
+- The mark **is** in the header now, at 32px, beside the wordmark. That is
+  below section 7's ~48px legibility floor, and it was left out for exactly
+  that reason until Hamza asked for it. What makes it workable is that it is
+  not carrying the name: the wordmark sits next to it in Amiri and does the
+  reading, so the mark only has to be recognised, not deciphered. Checked at
+  24, 28, 32, 40 and 56px — the calligraphy softens below about 40px but the
+  brass disc and crescent stay distinct. It drops to 26px under 420px wide.
+- The **footer** still has no mark. Nothing was asked for there, and it has
+  the same wordmark treatment as before.
 - The hero mark is capped at 120px and never upscaled.
 - The mark only ever sits on `--forge`.
 
