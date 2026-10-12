@@ -87,7 +87,14 @@ measure again, then play the difference back as a transform. The grid moves
 instead of snapping. Under `prefers-reduced-motion` it just toggles.
 
 Clicking anywhere on a piece opens the detail view — the photograph, the
-title, the padding around them. The card's title is the control and its hit
+title, the padding around them. Inside it, a piece with several photographs
+can be swiped through on a phone and stepped through with the arrow keys on a
+desktop, both going through the same code as the thumbnail strip. The strip
+stays, because it is the only thing that says how many photographs there are,
+but nobody reaches for a 68px thumbnail when the photograph is under their
+thumb. A swipe has to be a decisive 48px and mostly sideways, so scrolling the
+dialog is never mistaken for changing view, and the arrows are left alone
+while someone is typing in the inquiry box. The card's title is the control and its hit
 area is stretched over the whole card, so the accessible name is the piece
 name rather than "image". Escape closes it, focus is trapped inside while it
 is open and returns to the card that opened it.

@@ -158,6 +158,7 @@
         </picture>
         <video class="band__loop" data-loop muted playsinline loop
                preload="none" aria-hidden="true" tabindex="-1"
+               data-src-narrow="video/retreat-teaser-sm.mp4"
                data-src="video/retreat-teaser.mp4" data-type="video/mp4"></video>
       </figure>
       <div class="band__copy">
@@ -178,8 +179,18 @@
   <!-- Process teaser ----------------------------------------------------- -->
   <section class="section section--rule" id="process">
     <div class="shell band">
+      <!-- 16:9 already, so it fills the band's default frame with no crop. -->
       <figure class="band__figure">
-        <div class="band__pending"><span class="eyebrow">Photo pending</span></div>
+        <picture>
+          <source type="image/webp" sizes="(min-width: 900px) 58vw, 100vw"
+                  srcset="img/hero-forge-1000.webp 1000w,
+                          img/hero-forge-1920.webp 1920w">
+          <img src="img/hero-forge-1920.jpg" alt="" width="1920" height="1080"
+               loading="lazy" decoding="async"
+               sizes="(min-width: 900px) 58vw, 100vw"
+               srcset="img/hero-forge-1000.jpg 1000w,
+                       img/hero-forge-1920.jpg 1920w">
+        </picture>
       </figure>
       <div class="band__copy">
         <p class="eyebrow">The forging process</p>

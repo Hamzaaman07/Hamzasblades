@@ -82,7 +82,8 @@ Where section 7's rules land in the build:
 | `img/hero-forge-1000.{jpg,webp}` | Derived. Narrow viewports. |
 | `img/ChatGPT Image Aug 31, 2026, 06_20_20 PM.png` | Superseded by the real footage. No page references it. |
 | `video/hype video (1).mp4` | **Supplied.** 1080×1920, 60fps, 27s, 24 MB, with audio. The retreat film master — kept untouched. |
-| `video/retreat-teaser.mp4` | Derived. 608×1080, 24fps, 3.2 MB. The home page's retreats band. |
+| `video/retreat-teaser.mp4` | Derived. 608×1080, 24fps, 3.2 MB. The home page's retreats band on desktop. |
+| `video/retreat-teaser-sm.mp4` | Derived. 416×738, 1.5 MB. What a phone loads instead. |
 | `img/retreat-teaser.{jpg,webp}` | Derived — the film's first frame. Its poster. |
 | `video/retreat-location.mp4` | Not shot. Location footage for the **Experience page hero**, which is still on its gradient. |
 | `img/retreat-still.jpg` | Not shot. Still frame from the above, for the Experience hero. |
@@ -116,9 +117,18 @@ pixels. The column needs a definite `fr`.
 Audio is stripped, as it must be for an autoplaying band. If the music
 matters, this is the wrong place for the film.
 
-**Weight.** 3.2 MB, which is a lot for the home page and is the reason it is
+**Weight.** A phone gets a 416×738 cut at 1.5 MB rather than the 3.2 MB one;
+the frame is about 340px wide there, so the full-size file is mostly detail
+nobody can see, paid for on a mobile connection. `<source media>` is no longer
+honoured for video, so `js/loops.js` picks between them. Either way it is
 lazy: nothing is fetched until the band is within 300px of the viewport, and
-it pauses when scrolled away. Measured, the page is still 99 on Lighthouse
+it pauses when scrolled away.
+
+**The band has no border.** A 1px frame reads correctly around an empty band
+but around edge-to-edge footage it is a line drawn on the picture. It was also
+the cause of a thin letterbox: with border-box sizing the border eats 2px out
+of the content box, so a contained video no longer matched the frame it was
+given. Removing it closed a 3.5px gap to zero. Measured, the page is still 99 on Lighthouse
 mobile with CLS 0.003. VP9 was tried and lost badly — 5.7 MB against 3.2 —
 so this is MP4 only, and a browser without H.264 shows the poster. Trimming
 the 27 seconds would be the next lever if it ever needs to be lighter; the
@@ -191,9 +201,22 @@ src if w==src.width else src.resize((w,round(src.height*w/src.width)),Image.LANC
 for w in (1000,1920) ]"
 ```
 
-**The loop seam was measured, not eyeballed.** Frame-to-frame, the repeat point
-differs by a mean of 1.45/255 — where two ordinary consecutive frames mid-clip
-differ by 1.28. The join is within the clip's own flicker, so it is invisible.
+**There is no crossfade.** The loop is a hard cut, and it is cleaner for it.
+Rather than blending the ends together, the encode takes the 4.3s window of
+the master whose own ends already match — 6.0s to 10.3s. Measured against
+every ordinary frame-to-frame change in the clip, the cut sits at the 84th
+percentile: inside normal motion, so there is nothing to see. The crossfaded
+version it replaced sat at the 98th percentile, which is outside normal motion
+and was the faint pulse at the repeat. Shorter, smaller and better.
+
+```
+# 10.4s master -> the 4.3s stretch that loops on its own
+ffmpeg -y -ss 6.0 -t 4.3 -i "video/Forging Video.mov" \
+  -vf "scale=1920:1080:in_range=full:out_range=tv,format=yuv420p,setsar=1" -an \
+  -c:v libx264 -profile:v high -preset slower -crf 24 -g 60 -pix_fmt yuv420p \
+  -color_range tv -colorspace bt709 -color_primaries bt709 -color_trc bt709 \
+  -movflags +faststart video/hero-forge.mp4
+```
 
 **It must not look like a video.** No controls, muted, `playsinline`, autoplay,
 loop — it reads as a moving photograph, which is the whole point of not
@@ -406,9 +429,20 @@ Posters are deliberately cheap — they are on screen for a moment and then
 replaced.
 
 **Six loops on one page is the thing that would go wrong**, so `js/loops.js`
-is frugal by construction: nothing is fetched until a stage is within 300px of
-the viewport, and a loop that scrolls away is paused rather than left decoding.
-With all six in, the page measures 99 on Lighthouse mobile with CLS 0.001.
+separates the two costs. Fetching runs early, 300px before a stage arrives, so
+the file is there by the time it is looked at. Playing is gated much tighter,
+on a stage being at least a quarter on screen, because decode is what actually
+makes a phone stutter — with one loose observer doing both, three stages could
+be decoding at once mid-scroll while only one was being looked at. Measured on
+a 4× throttled phone, the worst case during a full scroll is now two.
+
+**The stills are in the markup, not fetched.** Waiting for the manifest before
+painting anything left the six frames empty for about 900ms on that same
+throttled phone, which was the flash on load; it is now about 300ms and shows
+the frame's own dark gradient rather than "photo pending" text. Step one is
+eager and high priority since it is above the fold. There is no pending block
+on this page any more: every stage has been shot, so that text could only ever
+appear for the moment before its own still arrived.
 
 Under `prefers-reduced-motion` no video element is ever created; the stage
 shows its poster still. There is nothing to operate — no controls, no sound,

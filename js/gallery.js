@@ -152,8 +152,17 @@
   var FOCUSABLE =
     'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
+  /* Set by openDetail when a piece has more than one view; the swipe and
+     arrow-key handlers below are bound once and read these. */
+  var step = null;
+  var viewCount = 0;
+  var currentView = null;
+
   function openDetail(piece, opener) {
     if (!lightbox) return;
+    step = null;
+    viewCount = 0;
+    currentView = null;
     lastFocused = opener || document.activeElement;
 
     lbFrame.textContent = "";
@@ -170,6 +179,30 @@
       strip.setAttribute("role", "group");
       strip.setAttribute("aria-label", "Other views of " + piece.title);
 
+      var shown = 0;
+
+      /* One way in for every gesture — the thumbnails, a swipe, and the
+         arrow keys all end up here, so they cannot drift apart. */
+      function showView(i) {
+        if (i < 0 || i >= views.length || i === shown) return;
+        shown = i;
+        var next = HB.createFrame(piece, true, views[i]);
+        main.parentNode.replaceChild(next, main);
+        main = next;
+        Array.prototype.forEach.call(
+          strip.querySelectorAll(".views__item"),
+          function (b, j) {
+            b.setAttribute("aria-pressed", i === j ? "true" : "false");
+            b.classList.toggle("is-active", i === j);
+            /* Keep the active thumbnail in view when the strip scrolls. */
+            if (i === j && b.scrollIntoView) {
+              b.scrollIntoView({ block: "nearest", inline: "nearest" });
+            }
+          }
+        );
+      }
+      step = showView;
+
       views.forEach(function (view, i) {
         var thumb = HB.el("button", "views__item");
         thumb.type = "button";
@@ -184,24 +217,15 @@
         t.decoding = "async";
         thumb.appendChild(t);
 
-        thumb.addEventListener("click", function () {
-          var next = HB.createFrame(piece, true, view);
-          main.parentNode.replaceChild(next, main);
-          main = next;
-          Array.prototype.forEach.call(
-            strip.querySelectorAll(".views__item"),
-            function (b, j) {
-              b.setAttribute("aria-pressed", i === j ? "true" : "false");
-              b.classList.toggle("is-active", i === j);
-            }
-          );
-        });
+        thumb.addEventListener("click", function () { showView(i); });
 
         if (i === 0) thumb.classList.add("is-active");
         strip.appendChild(thumb);
       });
 
       lbFrame.appendChild(strip);
+      viewCount = views.length;
+      currentView = function () { return shown; };
     }
 
     lbTitle.textContent = piece.title;
@@ -276,6 +300,16 @@
       closeDetail();
       return;
     }
+    /* The arrow keys step through views, except while someone is typing in
+       the inquiry box — there they belong to the text field. */
+    if (event.key === "ArrowRight" || event.key === "ArrowLeft") {
+      var el = document.activeElement;
+      if (el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA")) return;
+      if (viewCount < 2) return;
+      event.preventDefault();
+      stepBy(event.key === "ArrowRight" ? 1 : -1);
+      return;
+    }
     if (event.key !== "Tab") return;
 
     var focusable = Array.prototype.filter.call(
@@ -296,6 +330,46 @@
       event.preventDefault();
       firstNode.focus();
     }
+  }
+
+  /* --- Moving between views ---------------------------------------------- */
+  /* Swipe on a phone and the arrow keys on a desktop, both going through the
+     same showView as the thumbnails. The thumbnail strip stays — it is the
+     only affordance that says how many photographs there are — but on a
+     phone nobody looks for a 68px thumbnail when the photograph itself is
+     right there under their thumb. */
+
+  function stepBy(delta) {
+    if (!step || !currentView) return;
+    step(currentView() + delta);
+  }
+
+  if (lightbox) {
+    var swipeX = 0;
+    var swipeY = 0;
+    var swiping = false;
+
+    lightbox.addEventListener("touchstart", function (event) {
+      /* Not a swipe if it started on the thumbnail strip, which scrolls
+         horizontally under its own steam, or on the inquiry form. */
+      if (event.touches.length !== 1 || viewCount < 2) return;
+      if (event.target.closest(".views") || event.target.closest("form")) return;
+      swipeX = event.touches[0].clientX;
+      swipeY = event.touches[0].clientY;
+      swiping = true;
+    }, { passive: true });
+
+    lightbox.addEventListener("touchend", function (event) {
+      if (!swiping) return;
+      swiping = false;
+      var touch = event.changedTouches[0];
+      var dx = touch.clientX - swipeX;
+      var dy = touch.clientY - swipeY;
+      /* Horizontal, and decisively so: a 48px throw that is mostly sideways.
+         Anything vaguer is someone scrolling the dialog, not changing view. */
+      if (Math.abs(dx) < 48 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+      stepBy(dx < 0 ? 1 : -1);
+    }, { passive: true });
   }
 
   if (lightbox) {

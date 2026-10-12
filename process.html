@@ -62,6 +62,18 @@
          is worse than showing nothing — see data/process.json. Each figure
          names its stage; js/loops.js fills in whatever that stage has.
 
+         The still is in the markup, not fetched. Waiting for
+         data/process.json to resolve before painting anything left the six
+         "pending" frames on screen for about 900ms on a throttled phone,
+         which was the flash on load. The still is committed next to the
+         markup that names it, so there is nothing to guess at.
+
+         There is no "photo pending" block any more either: every stage has
+         been shot, so that text could only ever appear for the moment
+         before its own still arrived. The frame's own dark gradient is the
+         right thing to show while an image loads. js/loops.js still handles
+         a stage with nothing, for whenever a seventh is added.
+
          --ar is the frame's shape, and it is here rather than in the
          manifest on purpose: it has to be right at first paint. Setting it
          from the fetched JSON instead reshaped every frame once the data
@@ -74,7 +86,15 @@
 
       <li class="step">
         <figure class="step__figure step__figure--sized" data-stage="raw-stock" style="--ar: 720 / 1280">
-          <div class="band__pending"><span class="eyebrow">Photo pending</span></div>
+          <picture>
+            <source type="image/webp" srcset="img/process/raw-stock.webp">
+            <!-- Step one is above the fold, so it is eager and high
+                 priority. Lazy-loading an image that is already on screen
+                 only delays it. -->
+            <img class="step__img is-ready" src="img/process/raw-stock.jpg" alt=""
+                 width="720" height="1280"
+                 fetchpriority="high" decoding="async">
+          </picture>
         </figure>
         <div class="step__copy">
           <p class="eyebrow">Step one</p>
@@ -89,7 +109,12 @@
 
       <li class="step">
         <figure class="step__figure step__figure--sized" data-stage="heat" style="--ar: 720 / 1280">
-          <div class="band__pending"><span class="eyebrow">Photo pending</span></div>
+          <picture>
+            <source type="image/webp" srcset="img/process/heat.webp">
+            <img class="step__img is-ready" src="img/process/heat.jpg" alt=""
+                 width="720" height="1280"
+                 loading="lazy" decoding="async">
+          </picture>
         </figure>
         <div class="step__copy">
           <p class="eyebrow">Step two</p>
@@ -104,7 +129,12 @@
 
       <li class="step">
         <figure class="step__figure step__figure--sized" data-stage="shaping" style="--ar: 1280 / 720">
-          <div class="band__pending"><span class="eyebrow">Photo pending</span></div>
+          <picture>
+            <source type="image/webp" srcset="img/process/shaping.webp">
+            <img class="step__img is-ready" src="img/process/shaping.jpg" alt=""
+                 width="1280" height="720"
+                 loading="lazy" decoding="async">
+          </picture>
         </figure>
         <div class="step__copy">
           <p class="eyebrow">Step three</p>
@@ -119,7 +149,12 @@
 
       <li class="step">
         <figure class="step__figure step__figure--sized" data-stage="grinding" style="--ar: 720 / 1280">
-          <div class="band__pending"><span class="eyebrow">Photo pending</span></div>
+          <picture>
+            <source type="image/webp" srcset="img/process/grinding.webp">
+            <img class="step__img is-ready" src="img/process/grinding.jpg" alt=""
+                 width="720" height="1280"
+                 loading="lazy" decoding="async">
+          </picture>
         </figure>
         <div class="step__copy">
           <p class="eyebrow">Step four</p>
@@ -134,7 +169,12 @@
 
       <li class="step">
         <figure class="step__figure step__figure--sized" data-stage="handle" style="--ar: 720 / 1280">
-          <div class="band__pending"><span class="eyebrow">Photo pending</span></div>
+          <picture>
+            <source type="image/webp" srcset="img/process/handle.webp">
+            <img class="step__img is-ready" src="img/process/handle.jpg" alt=""
+                 width="720" height="1280"
+                 loading="lazy" decoding="async">
+          </picture>
         </figure>
         <div class="step__copy">
           <p class="eyebrow">Step five</p>
@@ -149,7 +189,12 @@
 
       <li class="step">
         <figure class="step__figure step__figure--sized" data-stage="finished-edge" style="--ar: 720 / 1280">
-          <div class="band__pending"><span class="eyebrow">Photo pending</span></div>
+          <picture>
+            <source type="image/webp" srcset="img/process/finished-edge.webp">
+            <img class="step__img is-ready" src="img/process/finished-edge.jpg" alt=""
+                 width="720" height="1280"
+                 loading="lazy" decoding="async">
+          </picture>
         </figure>
         <div class="step__copy">
           <p class="eyebrow">Step six</p>

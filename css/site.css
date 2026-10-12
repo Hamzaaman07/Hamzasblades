@@ -973,7 +973,9 @@ html {
   z-index: 1;
 }
 
-/* Cleared by js/loops.js as soon as either one lands. */
+/* Cleared by js/loops.js once media lands. The pending block is also first
+   in the markup, so a still that is already there simply paints over it —
+   no selector support required, and nothing flashes before script runs. */
 .step__figure.is-ready .band__pending {
   display: none;
 }
@@ -1279,6 +1281,12 @@ html {
   aspect-ratio: auto;
 }
 
+/* The detail photograph is swipeable on a phone, so claim horizontal
+   gestures and leave vertical ones to the dialog's own scrolling. */
+.lightbox .piece__frame--large {
+  touch-action: pan-y;
+}
+
 /* Extra views of a piece, under the detail photo. */
 .views {
   display: flex;
@@ -1378,6 +1386,12 @@ body.is-locked {
   aspect-ratio: var(--ar);
   width: min(100%, calc(var(--band-cap) * var(--ar)));
   margin-inline: auto;
+  /* No frame once there is something in it. The border reads as a frame
+     around an empty band, but around edge-to-edge footage it is just a
+     line drawn on the picture. It also caused the thin letterbox above and
+     below: with border-box sizing the border eats 2px out of the content
+     box, so a contained video no longer matched the frame it was given. */
+  border: 0;
 }
 
 .band__figure img,
