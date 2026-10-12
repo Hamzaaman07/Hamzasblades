@@ -51,12 +51,64 @@ Where section 7's rules land in the build:
 | `img/hero-forge-1920.{jpg,webp}` | Derived — the loop's first frame. What the hero loads on wide viewports. |
 | `img/hero-forge-1000.{jpg,webp}` | Derived. Narrow viewports. |
 | `img/ChatGPT Image Aug 31, 2026, 06_20_20 PM.png` | Superseded by the real footage. No page references it. |
-| `video/retreat-location.mp4` | Not shot. Location footage, golden hour or after sunset, slow movement. The Experience hero. |
-| `img/retreat-still.jpg` | Not shot. Still frame from the above. Used by the Experience hero and the homepage teaser band. |
+| `video/hype video (1).mp4` | **Supplied.** 1080×1920, 60fps, 27s, 24 MB, with audio. The retreat film master — kept untouched. |
+| `video/retreat-teaser.mp4` | Derived. 608×1080, 24fps, 3.2 MB. The home page's retreats band. |
+| `img/retreat-teaser.{jpg,webp}` | Derived — the film's first frame. Its poster. |
+| `video/retreat-location.mp4` | Not shot. Location footage for the **Experience page hero**, which is still on its gradient. |
+| `img/retreat-still.jpg` | Not shot. Still frame from the above, for the Experience hero. |
 
-The retreat footage is still unshot; only the hero is done.
+### The retreats band on the home page
 
-The Experience hero shows its gradient until `img/retreat-still.jpg` lands —
+Hamza's retreat film — forest, the outdoor forge, sparks, animals, archery,
+a blade standing in a creek. It is the band's own subject rather than a stock
+mood shot, which is what section 10 asks for.
+
+**It is a montage, so it does not get a crossfade.** The hero and the Process
+stages are single continuous shots, where a dissolve at the repeat is what
+makes the loop invisible. This film already cuts about nine times; one more
+cut at the loop point is the edit's own language, and a dissolve there would
+read as a mistake rather than as a join. A crossfade was tried and removed:
+it put the closing dark-forge shot at frame zero, which also made the poster
+a black rectangle.
+
+**Nothing is cropped.** The film is vertical and the band's default frame is
+16:9, which would have taken two thirds of it. The band now takes the film's
+own 9:16, capped in height with the width following, and `.band--portrait`
+gives the copy the larger column since the frame is narrow. As on the Process
+page, `--ar` is in `index.html` rather than in script because it has to be
+right at first paint.
+
+One trap worth recording: the portrait column cannot be `auto`. The figure's
+width is a percentage of the column and the column would be sized from the
+figure — circular, and it resolves to zero. It collapsed the band to 2×4
+pixels. The column needs a definite `fr`.
+
+Audio is stripped, as it must be for an autoplaying band. If the music
+matters, this is the wrong place for the film.
+
+**Weight.** 3.2 MB, which is a lot for the home page and is the reason it is
+lazy: nothing is fetched until the band is within 300px of the viewport, and
+it pauses when scrolled away. Measured, the page is still 99 on Lighthouse
+mobile with CLS 0.003. VP9 was tried and lost badly — 5.7 MB against 3.2 —
+so this is MP4 only, and a browser without H.264 shows the poster. Trimming
+the 27 seconds would be the next lever if it ever needs to be lighter; the
+first ~12s already covers forest, forge, sparks, animals and archery.
+
+```
+ffmpeg -y -i "video/hype video (1).mp4" -an \
+  -vf "scale=608:1080,setsar=1,fps=24,format=yuv420p" \
+  -c:v libx264 -profile:v high -preset slower -crf 32 -g 48 -pix_fmt yuv420p \
+  -color_range tv -colorspace bt709 -color_primaries bt709 -color_trc bt709 \
+  -movflags +faststart video/retreat-teaser.mp4
+ffmpeg -y -i video/retreat-teaser.mp4 -vf "select='eq(n,0)',scale=iw/2:-2" \
+  -vsync 0 -frames:v 1 /tmp/rt.png
+python3 -c "from PIL import Image; im=Image.open('/tmp/rt.png').convert('RGB'); \
+im.save('img/retreat-teaser.jpg',quality=66,optimize=True,progressive=True); \
+im.save('img/retreat-teaser.webp',quality=58,method=6)"
+```
+
+The **Experience page hero** is a different slot and still unshot. It shows
+its gradient until `img/retreat-still.jpg` lands —
 the image removes itself while missing, so there is no broken frame. Drop the
 file in and it appears with no markup change; derivatives are worth generating
 for it the same way as the hero still.

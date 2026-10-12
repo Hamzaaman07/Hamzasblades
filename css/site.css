@@ -1270,16 +1270,63 @@ body.is-locked {
 
 .band__figure {
   position: relative;
+  /* The default for a band whose media has not been shot. A band that knows
+     its media's shape overrides this with --ar below. */
   aspect-ratio: 16 / 9;
+  --band-cap: min(72vh, 620px);
   border: var(--line);
   background: linear-gradient(160deg, #1d1811 0%, #100c08 100%);
   overflow: hidden;
 }
 
-.band__figure img {
+/* Same rule as the Process stages: the frame takes the footage's own shape
+   rather than a house 16:9, so nothing is cropped. The retreats film was
+   shot vertically, and a centre crop to 16:9 would take two thirds of it.
+   Height is capped and the width follows from the ratio. */
+.band__figure--sized {
+  aspect-ratio: var(--ar);
+  width: min(100%, calc(var(--band-cap) * var(--ar)));
+  margin-inline: auto;
+}
+
+.band__figure img,
+.band__loop {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+}
+
+/* The loop sits over its poster and fades up once it can play, so the band
+   is never an empty box while the film downloads. */
+.band__loop {
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 0.6s var(--ease);
+}
+
+.band__loop.is-ready {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .band__loop {
+    transition: none;
+  }
+}
+
+/* A portrait film next to the copy wants the columns the other way round:
+   the tall frame is narrow, so the copy takes the larger share.
+
+   The column must have a definite width. An `auto` column here collapses
+   the figure to nothing, because the figure's own width is a percentage of
+   the column and the column is sized from the figure — circular, and it
+   resolves to zero. */
+@media (min-width: 900px) {
+  .band--portrait {
+    grid-template-columns: minmax(0, 0.75fr) minmax(0, 1fr);
+  }
 }
 
 .band__pending {

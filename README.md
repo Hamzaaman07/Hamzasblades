@@ -29,7 +29,8 @@ _headers            cache policy, read by Cloudflare Pages and Netlify
 js/pieces.js        the catalogue — loading and card rendering, shared
 js/site.js          header, hero video loading, featured work
 js/gallery.js       filters, grid reflow, detail view
-js/loops.js         silent looping video where a photograph would go
+js/loops.js         silent looping video where a photograph would go —
+                    the Process stages and the home page's retreats band
 js/inquiry.js       the inquiry box component
 js/config.js        Formspree endpoint and Instagram URL — edit before launch
 js/embers.js        the ember continuum
@@ -174,6 +175,20 @@ the visitor typed.
 
 The email address appears nowhere in page text — it lives in the form service,
 per spec §5.
+
+## The retreats band on the home page
+
+Hamza's retreat film runs in it — forest, the outdoor forge, archery, a blade
+in a creek. It is vertical, so the band takes the film's own 9:16 rather than
+its default 16:9 and nothing is cropped, with the copy taking the larger
+column. Unlike the hero and the Process stages it gets no crossfade at the
+loop: it is a montage that already cuts about nine times, so a cut at the
+repeat is the edit's own language and a dissolve would read as a mistake.
+
+It is 3.2 MB, which is why it is lazy — nothing is fetched until the band is
+near the viewport, and it pauses when scrolled away. The page still measures
+99 on Lighthouse mobile, CLS 0.003. The Experience page's own hero is a
+separate slot and is still unshot.
 
 ## The retreats page
 

@@ -12,11 +12,18 @@
    is why these are aria-hidden and untabbable: there is nothing to operate,
    and the stage's heading and copy already say what is being shown.
 
-   What exists comes from data/process.json, never from guessing a path. A
-   <source> pointing at a missing file is committed to by the browser rather
-   than falling back, and a src that 404s is a failed request on every load
-   of the page. So a stage with nothing shot emits no markup at all and
-   keeps its "pending" frame — which is the state of all six today.
+   There are two ways a loop gets here.
+
+   The Process stages come from data/process.json, never from a guessed
+   path: a <source> pointing at a missing file is committed to by the
+   browser rather than falling back, and a src that 404s is a failed
+   request on every load. So a stage with nothing shot emits no markup at
+   all and keeps its "pending" frame.
+
+   Anything else — the home page's retreats band — declares itself in the
+   markup with data-loop and data-src. That is not a guessed path: the file
+   is committed alongside the markup that names it, and the alternative
+   would be a second manifest fetch on the home page for one video.
    ========================================================================== */
 
 (function () {
@@ -42,7 +49,8 @@
   }
 
   var figures = document.querySelectorAll(".step__figure[data-stage]");
-  if (!figures.length) return;
+  var declared = document.querySelectorAll("video[data-loop][data-src]");
+  if (!figures.length && !declared.length) return;
 
   var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -125,6 +133,25 @@
     figure.appendChild(video);
     observer.observe(video);
   }
+
+  /* Loops written straight into the markup. Same frugality as the stages:
+     nothing is fetched until it is nearly in view, and it pauses when it is
+     not. An autoplaying loop is motion, so reduced motion removes it and
+     leaves the poster still underneath. */
+  Array.prototype.forEach.call(declared, function (video) {
+    if (reduced || !observer) {
+      video.remove();
+      return;
+    }
+    video.addEventListener("canplay", function () {
+      video.classList.add("is-ready");
+    });
+    addSource(video, video.dataset.srcWebm, "video/webm");
+    addSource(video, video.dataset.src, video.dataset.type || "video/mp4");
+    observer.observe(video);
+  });
+
+  if (!figures.length) return;
 
   fetch("data/process.json")
     .then(function (res) {
