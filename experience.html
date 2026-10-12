@@ -52,6 +52,13 @@
       <div class="hero__type">
         <p class="eyebrow eyebrow--brass">Coming soon</p>
         <h1 class="t-hero">Under open sky</h1>
+        <!-- Goes to the waitlist at the foot of the page rather than opening
+             anything. A plain in-page link, so it works with JavaScript off,
+             middle-clicks and copies like any other link, and moves keyboard
+             focus into the band it scrolls to. -->
+        <div class="hero__actions">
+          <a class="btn btn--primary" href="#waitlist">Join the waitlist</a>
+        </div>
       </div>
     </div>
   </section>
@@ -104,7 +111,7 @@
 
   <!-- The most important element on this page. Centred, generous space, no
        modal and no popup. SPEC section 4. -->
-  <section class="section section--rule">
+  <section class="section section--rule" id="waitlist" tabindex="-1">
     <div class="shell notify-band">
       <p class="eyebrow">The waitlist</p>
       <h2 class="t-section">Join the waitlist</h2>

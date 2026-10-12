@@ -196,6 +196,22 @@ separate slot and is still unshot.
 bleed, muted, looping, dissolving to `--forge` at the bottom — and shows the
 gradient until the location footage exists.
 
+It is the one hero that does not pin its type to the bottom. The home page
+does that because the fire runs across the middle of the footage and the type
+has to stay clear of it; here there is no footage yet, so pinning low left
+most of a viewport of empty gradient above the title. The type is centred
+instead and the section is 74vh rather than a full screen.
+
+Under the title is a **Join the waitlist** link down to the band at the foot
+of the page. It is a plain in-page anchor, not script: it works with
+JavaScript off, middle-clicks and copies like any other link, and moves
+keyboard focus into the band so a Tab from there reaches the name field
+rather than starting again at the top of the page. The band carries
+`scroll-margin-top` so its eyebrow clears the fixed header on arrival, and no
+focus ring, since it is a scroll target rather than a control. Smooth
+scrolling is CSS, and the reduced-motion block at the end of the stylesheet
+already forces it back to `auto`.
+
 **The waitlist is the page's job.** A name, an email, and a button — centred,
 wired to the same endpoint as the inquiry boxes and tagged
 `source: retreats-waitlist` so it is distinguishable in the inbox. The subject

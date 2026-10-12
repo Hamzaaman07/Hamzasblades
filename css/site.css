@@ -740,8 +740,42 @@ a {
 /* --- Retreats ------------------------------------------------------------ */
 
 /* A hero with no logo mark: one row, type pinned low, same dissolve. */
+/* The home page pins its hero type low, because the fire runs across the
+   middle of the footage and the type has to stay out of it. This page has
+   no footage yet — just the gradient — so pinning low left most of a
+   viewport of empty space above the title. Centre it instead, and give the
+   section rather less than a full screen. */
+.hero--page {
+  min-height: 74vh;
+  min-height: 74svh;
+}
+
 .hero--page .hero__inner {
   grid-template-rows: 1fr;
+  padding-block: calc(72px + var(--s-5)) clamp(2.5rem, 7vh, 4.5rem);
+}
+
+.hero--page .hero__type {
+  align-self: center;
+}
+
+/* The hero's waitlist link scrolls rather than jumps. Reduced motion forces
+   this back to `auto` in the block at the end of this file. */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Clears the fixed header, so the band's eyebrow is not hidden under it when
+   the link lands. */
+#waitlist {
+  scroll-margin-top: calc(72px + var(--s-3));
+}
+
+/* The band takes focus when the link moves to it, so a keyboard carries on
+   from there rather than from the top of the page. It is a scroll target,
+   not a control, so it must not grow a focus ring. */
+#waitlist:focus {
+  outline: none;
 }
 
 .retreat-blocks {
