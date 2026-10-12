@@ -307,31 +307,48 @@
      no exit intent. Wired to the same endpoint as the inquiry boxes and
      tagged so the two are distinguishable in the inbox. */
 
+  /* The retreats waitlist. Deliberately two fields and nothing else: there
+     is nothing to book, no dates to pick and no deposit to take, so asking
+     for anything beyond a name and an address would be pretending otherwise
+     — which SPEC section 10 rules out. The name is here so Hamza can write
+     to people rather than at them when the dates land. */
   function createNotify() {
     seq += 1;
 
     var form = el("form", "inquiry notify");
     form.noValidate = true;
 
+    var name = field({
+      name: "name",
+      label: "Name",
+      autocomplete: "name",
+      placeholder: "Your name"
+    });
+    name.wrap.classList.add("notify__field");
+
     var email = field({
       name: "email",
-      label: "Get the dates when they're set.",
+      label: "Email",
       type: "email",
       autocomplete: "email",
       placeholder: "you@example.com"
     });
     email.wrap.classList.add("notify__field");
 
-    var row = el("div", "notify__row");
-    row.appendChild(email.wrap);
+    var fields = el("div", "notify__fields");
+    fields.appendChild(name.wrap);
+    fields.appendChild(email.wrap);
+    form.appendChild(fields);
 
-    var submit = el("button", "btn btn--primary", "Notify me");
+    var submit = el("button", "btn btn--primary notify__submit", "Join the waitlist");
     submit.type = "submit";
-    row.appendChild(submit);
-    form.appendChild(row);
+    form.appendChild(submit);
 
-    form.appendChild(hidden("source", "retreats-list"));
-    form.appendChild(hidden("_subject", "Retreat dates — sign-up"));
+    form.appendChild(hidden("source", "retreats-waitlist"));
+    /* Filled in at submit time so the inbox subject carries the name — a
+       list of identical subjects is useless to write back from. */
+    var subject = hidden("_subject", "Retreat waitlist");
+    form.appendChild(subject);
     var gotcha = hidden("_gotcha", "");
     gotcha.setAttribute("tabindex", "-1");
     gotcha.setAttribute("aria-hidden", "true");
@@ -341,30 +358,35 @@
     status.setAttribute("role", "status");
     form.appendChild(status);
 
-    var parts = { email: email };
-    email.input.addEventListener("input", function () {
-      clearError(email);
-    });
+    var parts = { name: name, email: email };
+    name.input.addEventListener("input", function () { clearError(name); });
+    email.input.addEventListener("input", function () { clearError(email); });
 
     form.addEventListener("submit", function (event) {
       event.preventDefault();
 
-      var value = email.input.value.trim();
+      var who = name.input.value.trim();
+      var address = email.input.value.trim();
       var errors = {};
-      if (!value) errors.email = "Enter an email address and I'll let you know.";
-      else if (!EMAIL.test(value)) {
+
+      if (!who) errors.name = "A name, so I know who I'm writing to.";
+      if (!address) errors.email = "Enter an email address and I'll let you know.";
+      else if (!EMAIL.test(address)) {
         errors.email = "That address looks incomplete. Check it and try again.";
       }
 
       if (showErrors(parts, errors)) return;
 
+      subject.value = "Retreat waitlist — " + who;
+
       send(form, status, submit, {
-        idleLabel: "Notify me",
+        idleLabel: "Join the waitlist",
         notConnected:
           "This form isn't connected yet, so that didn't send. Try again shortly.",
         dropped:
           "That didn't send — the connection dropped. Press the button again and it should go through.",
-        success: "You're on the list. I'll write when the dates are set."
+        success:
+          "You're on the waitlist. I'll write to you before any dates go public."
       });
     });
 

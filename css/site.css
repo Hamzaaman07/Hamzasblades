@@ -789,21 +789,33 @@ a {
   text-align: left;
 }
 
-.notify__row {
+/* Two fields, side by side once there is room for both to stay legible.
+   Below that they stack, because a name and an address squeezed into half a
+   phone each is worse than a second line. */
+.notify__fields {
   display: grid;
   gap: var(--s-2);
 }
 
 @media (min-width: 560px) {
-  .notify__row {
-    grid-template-columns: 1fr auto;
-    align-items: end;
+  .notify__fields {
+    grid-template-columns: 1fr 1fr;
   }
+}
 
-  .notify__row .btn {
-    /* Sits level with the input, not with its label. */
-    height: calc(0.75rem * 2 + 1.6 * var(--t-small) + 2px);
-    min-height: 48px;
+/* The button sits under the fields rather than beside them. With one field
+   it could ride alongside; with two there is no width left for it, and a
+   waitlist is worth its own full-width press. */
+.notify__submit {
+  width: 100%;
+  margin-top: var(--s-2);
+  min-height: 48px;
+}
+
+@media (min-width: 560px) {
+  .notify__submit {
+    width: auto;
+    justify-self: start;
   }
 }
 

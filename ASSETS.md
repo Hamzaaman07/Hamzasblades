@@ -434,7 +434,8 @@ section 8. These are not, and were written to the voice rules:
 - **Closing line** on About and Process — section 8 gives it as an example
   ("e.g."), so it is used as written but is not strictly approved.
 - **Experience page** — the title "Under open sky", the three block headings
-  and their descriptions, and the sign-up band's heading and line. The
+  and their descriptions, and the waitlist band's heading and line ("Join the
+  waitlist" / "Nothing is bookable yet and no dates are set…"). The
   paragraph under the hero is section 8's approved copy, verbatim. Note that
   section 8 warns the retreat forge is in the Sierra Nevada and distinct from
   the two working forges — the copy here says Sierra Nevada only and never

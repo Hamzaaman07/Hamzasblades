@@ -196,14 +196,24 @@ separate slot and is still unshot.
 bleed, muted, looping, dissolving to `--forge` at the bottom — and shows the
 gradient until the location footage exists.
 
-The email capture is the page's job. One field and a button, centred, wired to
-the same endpoint as the inquiry boxes and tagged `source: retreats-list` so
-the two are distinguishable in the inbox. It shares the inquiry box's
-validation and failure handling, so there is one set of rules for both:
-success replaces the field with a confirmation in `--brass`, failure says what
-went wrong and keeps what was typed.
+**The waitlist is the page's job.** A name, an email, and a button — centred,
+wired to the same endpoint as the inquiry boxes and tagged
+`source: retreats-waitlist` so it is distinguishable in the inbox. The subject
+carries the person's name (`Retreat waitlist — Yusuf`), because a list of
+identical subjects is useless to write back from.
+
+Two fields and no more is deliberate. There is nothing to book, no dates to
+pick and no deposit to take, so asking for anything further would imply
+otherwise — which spec §10 rules out. The name is there so Hamza can write to
+people rather than at them when the dates land.
+
+It shares the inquiry box's validation and failure handling, so there is one
+set of rules for both: success replaces the form with a confirmation in
+`--brass`, failure says what went wrong and keeps what was typed. Both fields
+are required, and an empty submit names both.
 
 Nothing on the page is bookable and no dates or prices appear, per spec §10.
+The heading says so outright before the form asks for anything.
 
 ## Copy and assets
 
