@@ -298,6 +298,23 @@ a {
 .brand {
   display: inline-flex;
   align-items: center;
+  gap: 0.55rem;
+}
+
+/* Capped at 32px and never upscaled, like the hero mark. The wordmark beside
+   it carries the name, so the mark does not have to be read — which is what
+   makes it usable below SPEC section 7's ~48px legibility floor. */
+.brand__mark {
+  width: 32px;
+  height: 32px;
+  flex: none;
+}
+
+@media (max-width: 420px) {
+  .brand__mark {
+    width: 26px;
+    height: 26px;
+  }
 }
 
 .brand__name {
@@ -555,6 +572,11 @@ a {
 
 .piece {
   position: relative;
+  /* Its own stacking context, so the glow below can sit at z-index -1 and
+     land behind the card's content but still in front of its background.
+     Without this the glow escapes into .page's context and disappears
+     behind the card entirely. */
+  isolation: isolate;
   display: grid;
   gap: var(--s-2);
   padding: var(--s-2);
@@ -564,9 +586,15 @@ a {
 }
 
 .piece::after {
-  /* The faint ember glow that rises behind the image on hover. */
+  /* The faint ember glow that rises behind the image on hover. Behind the
+     content rather than over it — it used to paint on top, which is why
+     .piece__meta carried a z-index to climb back out. That z-index needed
+     position: relative, which made .piece__meta the containing block for
+     the stretched hit area below, shrinking the clickable area from the
+     whole card to the title row. */
   content: "";
   position: absolute;
+  z-index: -1;
   inset: auto 0 0;
   height: 60%;
   background: linear-gradient(
@@ -622,9 +650,10 @@ a {
 
 /* Title over metadata, always stacked — side by side collapses unevenly once
    four cards share the row. */
+/* Deliberately not positioned. The hit area in .piece__open::after is
+   absolute, so it resolves against the nearest positioned ancestor — make
+   this one positioned and the whole card stops being clickable. */
 .piece__meta {
-  position: relative;
-  z-index: 1;
   display: grid;
   gap: 2px;
   padding-bottom: var(--s-1);
@@ -710,6 +739,9 @@ a {
   cursor: pointer;
 }
 
+/* Stretches the title's hit area over the whole card, so the photograph is
+   clickable and the accessible name is still the piece's name rather than
+   "image". This resolves against .piece — see the note on .piece__meta. */
 .piece__open::after {
   content: "";
   position: absolute;
@@ -740,8 +772,45 @@ a {
 /* --- Retreats ------------------------------------------------------------ */
 
 /* A hero with no logo mark: one row, type pinned low, same dissolve. */
+/* The home page pins its hero type low, because the fire runs across the
+   middle of the footage and the type has to stay out of it. This page has
+   no footage yet — just the gradient — so pinning low left most of a
+   viewport of empty space above the title. Centre it instead, and give the
+   section rather less than a full screen. */
+.hero--page {
+  /* Sized by its own content, not by the viewport. A fixed height here left
+     a third of a screen of empty gradient under the button before the copy
+     below could start, because there is no footage to fill it. The gradient
+     and the embers are unaffected — they paint whatever height this is. */
+  min-height: 0;
+}
+
 .hero--page .hero__inner {
-  grid-template-rows: 1fr;
+  grid-template-rows: auto;
+  padding-block: calc(72px + var(--s-5)) var(--s-6);
+}
+
+.hero--page .hero__type {
+  align-self: center;
+}
+
+/* The hero's waitlist link scrolls rather than jumps. Reduced motion forces
+   this back to `auto` in the block at the end of this file. */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Clears the fixed header, so the band's eyebrow is not hidden under it when
+   the link lands. */
+#waitlist {
+  scroll-margin-top: calc(72px + var(--s-3));
+}
+
+/* The band takes focus when the link moves to it, so a keyboard carries on
+   from there rather than from the top of the page. It is a scroll target,
+   not a control, so it must not grow a focus ring. */
+#waitlist:focus {
+  outline: none;
 }
 
 .retreat-blocks {
@@ -789,21 +858,33 @@ a {
   text-align: left;
 }
 
-.notify__row {
+/* Two fields, side by side once there is room for both to stay legible.
+   Below that they stack, because a name and an address squeezed into half a
+   phone each is worse than a second line. */
+.notify__fields {
   display: grid;
   gap: var(--s-2);
 }
 
 @media (min-width: 560px) {
-  .notify__row {
-    grid-template-columns: 1fr auto;
-    align-items: end;
+  .notify__fields {
+    grid-template-columns: 1fr 1fr;
   }
+}
 
-  .notify__row .btn {
-    /* Sits level with the input, not with its label. */
-    height: calc(0.75rem * 2 + 1.6 * var(--t-small) + 2px);
-    min-height: 48px;
+/* The button sits under the fields rather than beside them. With one field
+   it could ride alongside; with two there is no width left for it, and a
+   waitlist is worth its own full-width press. */
+.notify__submit {
+  width: 100%;
+  margin-top: var(--s-2);
+  min-height: 48px;
+}
+
+@media (min-width: 560px) {
+  .notify__submit {
+    width: auto;
+    justify-self: start;
   }
 }
 
@@ -892,7 +973,9 @@ a {
   z-index: 1;
 }
 
-/* Cleared by js/loops.js as soon as either one lands. */
+/* Cleared by js/loops.js once media lands. The pending block is also first
+   in the markup, so a still that is already there simply paints over it —
+   no selector support required, and nothing flashes before script runs. */
 .step__figure.is-ready .band__pending {
   display: none;
 }
@@ -943,10 +1026,20 @@ a {
   overflow: hidden;
 }
 
+/* Same rule as the Process stages and the retreats band: the frame takes the
+   photograph's own shape so nothing is cropped. The portrait is 9:16, and the
+   4:5 crop this used to do took a third of its height. Capped so a tall
+   photograph does not run away down the column. */
+.about__figure--sized {
+  aspect-ratio: var(--ar);
+  --about-cap: min(66vh, 580px);
+  width: min(100%, calc(var(--about-cap) * var(--ar)));
+}
+
 .about__figure img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 .about__meta {
@@ -1188,6 +1281,12 @@ a {
   aspect-ratio: auto;
 }
 
+/* The detail photograph is swipeable on a phone, so claim horizontal
+   gestures and leave vertical ones to the dialog's own scrolling. */
+.lightbox .piece__frame--large {
+  touch-action: pan-y;
+}
+
 /* Extra views of a piece, under the detail photo. */
 .views {
   display: flex;
@@ -1287,6 +1386,12 @@ body.is-locked {
   aspect-ratio: var(--ar);
   width: min(100%, calc(var(--band-cap) * var(--ar)));
   margin-inline: auto;
+  /* No frame once there is something in it. The border reads as a frame
+     around an empty band, but around edge-to-edge footage it is just a
+     line drawn on the picture. It also caused the thin letterbox above and
+     below: with border-box sizing the border eats 2px out of the content
+     box, so a contained video no longer matched the frame it was given. */
+  border: 0;
 }
 
 .band__figure img,

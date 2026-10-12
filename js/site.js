@@ -139,8 +139,14 @@
       var frag = document.createDocumentFragment();
       featured.forEach(function (p) {
         /* The detail view lives on the gallery page, so a featured card
-           sends you there rather than opening a lightbox of its own. */
-        frag.appendChild(HB.createCard(p, { interactive: "link", href: "gallery.html" }));
+           sends you there and names the piece in the URL. The gallery opens
+           that piece on arrival, so closing it leaves the visitor in the
+           collection with the rest of the work around them, rather than
+           back here. */
+        frag.appendChild(HB.createCard(p, {
+          interactive: "link",
+          href: "gallery.html?piece=" + encodeURIComponent(p.id)
+        }));
       });
       grid.textContent = "";
       grid.appendChild(frag);

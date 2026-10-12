@@ -54,33 +54,57 @@
 
   var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  /* Loading starts before the stage is on screen so the loop is already
-     running by the time it is looked at; playback is gated on actually
-     being visible, so scrolled-away stages cost no decode and no battery. */
+  /* Two observers, because fetching and decoding are different costs.
+
+     Loading runs early — 300px before a stage arrives — so the file is
+     there by the time it is looked at. Playing is gated much tighter, on a
+     stage being a quarter on screen, because video decode is what actually
+     makes a phone stutter. With one loose observer doing both, three
+     stages could be decoding at once during a scroll while only one was
+     being looked at. */
   var observer = "IntersectionObserver" in window
-    ? new IntersectionObserver(onIntersect, { rootMargin: "300px 0px", threshold: 0.01 })
+    ? new IntersectionObserver(onNear, { rootMargin: "300px 0px", threshold: 0 })
     : null;
 
-  function onIntersect(entries) {
+  var playWatcher = observer
+    ? new IntersectionObserver(onVisible, { rootMargin: "0px", threshold: 0.25 })
+    : null;
+
+  function onNear(entries) {
     entries.forEach(function (entry) {
       var video = entry.target;
-      if (!entry.isIntersecting) {
-        if (!video.paused) video.pause();
-        return;
-      }
-      if (!video.dataset.loaded) {
-        video.dataset.loaded = "1";
-        video.load();
-      }
-      /* play() rejects when the tab is backgrounded or the sources failed,
-         neither of which is worth reporting. */
-      var played = video.play();
-      if (played && played.catch) played.catch(function () {});
+      if (!entry.isIntersecting) return;
+      if (video.dataset.loaded) return;
+      video.dataset.loaded = "1";
+      video.load();
     });
+  }
+
+  function onVisible(entries) {
+    entries.forEach(function (entry) {
+      var video = entry.target;
+      if (entry.isIntersecting && entry.intersectionRatio >= 0.25) {
+        /* play() rejects when the tab is backgrounded or the sources
+           failed, neither of which is worth reporting. */
+        var played = video.play();
+        if (played && played.catch) played.catch(function () {});
+      } else if (!video.paused) {
+        video.pause();
+      }
+    });
+  }
+
+  function watch(video) {
+    observer.observe(video);
+    playWatcher.observe(video);
   }
 
   function buildStill(stage, figure) {
     if (!stage.image) return;
+    /* The Process stages carry their still in the markup so it paints
+       before this fetch resolves. Nothing to add when one is already
+       there. */
+    if (figure.querySelector(".step__img")) return;
 
     var img = document.createElement("img");
     img.className = "step__img";
@@ -131,7 +155,7 @@
     addSource(video, stage.loop.mp4, "video/mp4");
 
     figure.appendChild(video);
-    observer.observe(video);
+    watch(video);
   }
 
   /* Loops written straight into the markup. Same frugality as the stages:
@@ -146,9 +170,19 @@
     video.addEventListener("canplay", function () {
       video.classList.add("is-ready");
     });
-    addSource(video, video.dataset.srcWebm, "video/webm");
-    addSource(video, video.dataset.src, video.dataset.type || "video/mp4");
-    observer.observe(video);
+    /* A phone gets a smaller cut where one is offered. The frame is about
+       340px wide there, so the full-size file is mostly detail nobody can
+       see, paid for on a mobile connection. <source media> is no longer
+       honoured for video, so the choice is made here instead. */
+    var narrow = video.dataset.srcNarrow &&
+      window.matchMedia("(max-width: 700px)").matches;
+    if (narrow) {
+      addSource(video, video.dataset.srcNarrow, video.dataset.type || "video/mp4");
+    } else {
+      addSource(video, video.dataset.srcWebm, "video/webm");
+      addSource(video, video.dataset.src, video.dataset.type || "video/mp4");
+    }
+    watch(video);
   });
 
   if (!figures.length) return;

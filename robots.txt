@@ -1,0 +1,14 @@
+# Everything here is meant to be found.
+User-agent: *
+Allow: /
+
+# The masters are the originals behind the web copies. Nothing links to them
+# and they are large; keeping them out of the index saves crawl budget and
+# stops full-resolution photographs turning up in image search ahead of the
+# pages they belong to.
+Disallow: /img/Knives/
+Disallow: /img/Swords/
+Disallow: /img/Woodworking/
+Disallow: /video/*.mov$
+
+Sitemap: https://hamzasblades.com/sitemap.xml

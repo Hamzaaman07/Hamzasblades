@@ -11,6 +11,9 @@ noted.
 |---|---|
 | `img/logo.png` | Supplied. 618×618 RGBA. The master — kept untouched, not referenced by any page. |
 | `img/logo-240.png` | Derived. What the hero actually loads. |
+| `img/logo-64.png` | Derived. The header mark, displayed at 32px. |
+| `img/favicon-32.png` | Derived. The tab icon. |
+| `img/favicon-180.png` | Derived, composited onto `--forge`. Apple touch / home screen. |
 | `img/logo.svg` | Not made. Vector trace, needed for crisp scaling. |
 | `img/crescent.svg` | **Drawn, needs approval.** The simplified crescent variant section 7 lists as "not made". |
 
@@ -24,20 +27,47 @@ changes:
 python3 -c "from PIL import Image; \
 Image.open('img/logo.png').convert('RGBA').resize((240,240), Image.LANCZOS) \
 .quantize(colors=64, method=Image.FASTOCTREE).save('img/logo-240.png', optimize=True)"
+
+python3 -c "
+from PIL import Image
+src = Image.open('img/logo.png').convert('RGBA')
+src.resize((64,64), Image.LANCZOS).save('img/logo-64.png', optimize=True)
+src.resize((32,32), Image.LANCZOS).save('img/favicon-32.png', optimize=True)
+pad = Image.new('RGBA', (180,180), (10,9,8,255))
+m = src.resize((148,148), Image.LANCZOS)
+pad.paste(m, (16,16), m)
+pad.convert('RGB').save('img/favicon-180.png', optimize=True)
+"
 ```
 
 An SVG trace is still worth having — it would replace both files and drop the
 120px ceiling.
 
 `img/crescent.svg` is drawn to the supplied logo's geometry — brass disc,
-crescent in the dark maroon-brown the calligraphy reads as (`#3D1512`). It is
-the favicon and is the fallback for anything below the ~48px legibility floor.
-It is a proposal, not approved artwork; worth Hamza's eye against the original.
+crescent in the dark maroon-brown the calligraphy reads as (`#3D1512`). It
+**was** the favicon; Hamza asked for the real mark there instead, so it is now
+unused by any page. It is still the thing to reach for if anything ever needs
+the mark below ~24px. A proposal, not approved artwork.
+
+**The favicon is the real logo.** At 16px — which is what a browser tab
+actually paints — the calligraphy inside is not readable. That is accepted:
+a favicon's job is to be findable in a strip of tabs, and the brass disc with
+its crescent notch is distinctive at that size even when the script inside is
+not. The 180px copy is composited onto `--forge` rather than shipped with
+transparency, because iOS fills transparency with white when it squares an
+icon off for the home screen.
 
 Where section 7's rules land in the build:
 
-- The mark is **not** used in the header or the footer. Both would sit near
-  34px, under the ~48px floor, so they carry the wordmark in Amiri instead.
+- The mark **is** in the header now, at 32px, beside the wordmark. That is
+  below section 7's ~48px legibility floor, and it was left out for exactly
+  that reason until Hamza asked for it. What makes it workable is that it is
+  not carrying the name: the wordmark sits next to it in Amiri and does the
+  reading, so the mark only has to be recognised, not deciphered. Checked at
+  24, 28, 32, 40 and 56px — the calligraphy softens below about 40px but the
+  brass disc and crescent stay distinct. It drops to 26px under 420px wide.
+- The **footer** still has no mark. Nothing was asked for there, and it has
+  the same wordmark treatment as before.
 - The hero mark is capped at 120px and never upscaled.
 - The mark only ever sits on `--forge`.
 
@@ -52,7 +82,8 @@ Where section 7's rules land in the build:
 | `img/hero-forge-1000.{jpg,webp}` | Derived. Narrow viewports. |
 | `img/ChatGPT Image Aug 31, 2026, 06_20_20 PM.png` | Superseded by the real footage. No page references it. |
 | `video/hype video (1).mp4` | **Supplied.** 1080×1920, 60fps, 27s, 24 MB, with audio. The retreat film master — kept untouched. |
-| `video/retreat-teaser.mp4` | Derived. 608×1080, 24fps, 3.2 MB. The home page's retreats band. |
+| `video/retreat-teaser.mp4` | Derived. 608×1080, 24fps, 3.2 MB. The home page's retreats band on desktop. |
+| `video/retreat-teaser-sm.mp4` | Derived. 416×738, 1.5 MB. What a phone loads instead. |
 | `img/retreat-teaser.{jpg,webp}` | Derived — the film's first frame. Its poster. |
 | `video/retreat-location.mp4` | Not shot. Location footage for the **Experience page hero**, which is still on its gradient. |
 | `img/retreat-still.jpg` | Not shot. Still frame from the above, for the Experience hero. |
@@ -86,9 +117,18 @@ pixels. The column needs a definite `fr`.
 Audio is stripped, as it must be for an autoplaying band. If the music
 matters, this is the wrong place for the film.
 
-**Weight.** 3.2 MB, which is a lot for the home page and is the reason it is
+**Weight.** A phone gets a 416×738 cut at 1.5 MB rather than the 3.2 MB one;
+the frame is about 340px wide there, so the full-size file is mostly detail
+nobody can see, paid for on a mobile connection. `<source media>` is no longer
+honoured for video, so `js/loops.js` picks between them. Either way it is
 lazy: nothing is fetched until the band is within 300px of the viewport, and
-it pauses when scrolled away. Measured, the page is still 99 on Lighthouse
+it pauses when scrolled away.
+
+**The band has no border.** A 1px frame reads correctly around an empty band
+but around edge-to-edge footage it is a line drawn on the picture. It was also
+the cause of a thin letterbox: with border-box sizing the border eats 2px out
+of the content box, so a contained video no longer matched the frame it was
+given. Removing it closed a 3.5px gap to zero. Measured, the page is still 99 on Lighthouse
 mobile with CLS 0.003. VP9 was tried and lost badly — 5.7 MB against 3.2 —
 so this is MP4 only, and a browser without H.264 shows the poster. Trimming
 the 27 seconds would be the next lever if it ever needs to be lighter; the
@@ -113,9 +153,11 @@ the image removes itself while missing, so there is no broken frame. Drop the
 file in and it appears with no markup change; derivatives are worth generating
 for it the same way as the hero still.
 
-The About page uses the hero forge still in place of a portrait, which is what
-section 4 asks for when no portrait exists. Drop `img/portrait.jpg` in and swap
-the `<picture>` in `about.html` when it is shot.
+The About page has its real portrait now. Like the Process stages and the
+retreats band, the frame takes the photograph's own 9:16 rather than the 4:5
+it used to crop to — that crop was taking roughly a third of the height off a
+vertical photograph. Height is capped at `min(66vh, 580px)` so a tall picture
+does not run away down the column.
 
 **The AI-generated still is gone.** It stood in during the build, and section 7
 sanctions that, but this is a business whose whole proposition is that a real
@@ -159,9 +201,22 @@ src if w==src.width else src.resize((w,round(src.height*w/src.width)),Image.LANC
 for w in (1000,1920) ]"
 ```
 
-**The loop seam was measured, not eyeballed.** Frame-to-frame, the repeat point
-differs by a mean of 1.45/255 — where two ordinary consecutive frames mid-clip
-differ by 1.28. The join is within the clip's own flicker, so it is invisible.
+**There is no crossfade.** The loop is a hard cut, and it is cleaner for it.
+Rather than blending the ends together, the encode takes the 4.3s window of
+the master whose own ends already match — 6.0s to 10.3s. Measured against
+every ordinary frame-to-frame change in the clip, the cut sits at the 84th
+percentile: inside normal motion, so there is nothing to see. The crossfaded
+version it replaced sat at the 98th percentile, which is outside normal motion
+and was the faint pulse at the repeat. Shorter, smaller and better.
+
+```
+# 10.4s master -> the 4.3s stretch that loops on its own
+ffmpeg -y -ss 6.0 -t 4.3 -i "video/Forging Video.mov" \
+  -vf "scale=1920:1080:in_range=full:out_range=tv,format=yuv420p,setsar=1" -an \
+  -c:v libx264 -profile:v high -preset slower -crf 24 -g 60 -pix_fmt yuv420p \
+  -color_range tv -colorspace bt709 -color_primaries bt709 -color_trc bt709 \
+  -movflags +faststart video/hero-forge.mp4
+```
 
 **It must not look like a video.** No controls, muted, `playsinline`, autoplay,
 loop — it reads as a moving photograph, which is the whole point of not
@@ -189,11 +244,12 @@ entirely.
 
 | File | Status |
 |---|---|
-| `img/gallery/*` | **Complete.** 18 pieces, 63 photographs, derived from the masters under `img/Knives/`, `img/Swords/` and `img/Woodworking/`. |
+| `img/gallery/*` | **Complete.** 20 pieces, 71 photographs, derived from the masters under `img/Knives/`, `img/Swords/` and `img/Woodworking/`. |
 | `img/process-teaser.jpg` | Not shot. One wide cinematic frame for the homepage band. |
 | `video/*.mov` (six) | **Supplied.** The stage masters — `Raw Stock`, `heat`, `shaping`, `grinding`, `handle`, `finished edge`. Kept untouched. |
 | `video/process/*` and `img/process/*` | **Complete.** All six stages, derived from those masters. |
-| `img/portrait.jpg` | Not shot. Hamza at the forge, for About. |
+| `img/About photo.jpg` | **Supplied.** 1290×2295. Hamza at the forge — the master, kept untouched. |
+| `img/portrait-{600,1000}.{jpg,webp}` | Derived. What the About page loads. |
 
 Derived photographs go in `img/gallery/`, named `<piece-id>-<NN>`. Every piece
 shown is Hamza's own work — no stock photography. A card whose photograph is
@@ -373,9 +429,20 @@ Posters are deliberately cheap — they are on screen for a moment and then
 replaced.
 
 **Six loops on one page is the thing that would go wrong**, so `js/loops.js`
-is frugal by construction: nothing is fetched until a stage is within 300px of
-the viewport, and a loop that scrolls away is paused rather than left decoding.
-With all six in, the page measures 99 on Lighthouse mobile with CLS 0.001.
+separates the two costs. Fetching runs early, 300px before a stage arrives, so
+the file is there by the time it is looked at. Playing is gated much tighter,
+on a stage being at least a quarter on screen, because decode is what actually
+makes a phone stutter — with one loose observer doing both, three stages could
+be decoding at once mid-scroll while only one was being looked at. Measured on
+a 4× throttled phone, the worst case during a full scroll is now two.
+
+**The stills are in the markup, not fetched.** Waiting for the manifest before
+painting anything left the six frames empty for about 900ms on that same
+throttled phone, which was the flash on load; it is now about 300ms and shows
+the frame's own dark gradient rather than "photo pending" text. Step one is
+eager and high priority since it is above the fold. There is no pending block
+on this page any more: every stage has been shot, so that text could only ever
+appear for the moment before its own still arrived.
 
 Under `prefers-reduced-motion` no video element is ever created; the stage
 shows its poster still. There is nothing to operate — no controls, no sound,
@@ -389,19 +456,18 @@ tonal break worth knowing about.
 
 ## Data
 
-`data/gallery.json` is now the real catalogue: 18 pieces, no placeholders.
+`data/gallery.json` is now the real catalogue: 20 pieces, no placeholders.
 Titles come from the master folder names.
 
 **Two fields still need Hamza:**
 
-- `status` is `available` on every piece because there was no way to know
-  otherwise. Anything already sold needs changing to `sold` — those stay
+- `status` is `available` on all twenty pieces because there was no way to
+  know otherwise. Anything already sold needs changing to `sold` — those stay
   visible at 70% as portfolio, and their inquiry box switches to asking about
   a commission.
-- `featured` is set on four pieces (Al-Hajarah Dagger, Karambit, Zulfiqar
-  Sword, Wooden Palestine Map), chosen for a spread across the three
-  categories rather than by preference. The homepage shows the first four
-  flagged, in array order.
+- `featured` is set on four pieces — **Al-Waraqa Dagger, Batstars, Gladius,
+  Zulfiqar Sword** — and these are Hamza's own picks, not a category spread.
+  The homepage shows the first four flagged, in array order.
 
 Display order is the array order. Within a piece, view order follows the
 trailing number in the master filename.
@@ -434,7 +500,8 @@ section 8. These are not, and were written to the voice rules:
 - **Closing line** on About and Process — section 8 gives it as an example
   ("e.g."), so it is used as written but is not strictly approved.
 - **Experience page** — the title "Under open sky", the three block headings
-  and their descriptions, and the sign-up band's heading and line. The
+  and their descriptions, and the waitlist band's heading and line ("Join the
+  waitlist" / "Nothing is bookable yet and no dates are set…"). The
   paragraph under the hero is section 8's approved copy, verbatim. Note that
   section 8 warns the retreat forge is in the Sierra Nevada and distinct from
   the two working forges — the copy here says Sierra Nevada only and never

@@ -26,6 +26,8 @@ css/site.css        design tokens and every component
 css/fonts.css       @font-face for the self-hosted Amiri and Karla
 fonts/              the font files themselves, OFL — see fonts/OFL.txt
 _headers            cache policy, read by Cloudflare Pages and Netlify
+robots.txt          crawl rules; keeps the masters out of the index
+sitemap.xml         the six pages
 js/pieces.js        the catalogue — loading and card rendering, shared
 js/site.js          header, hero video loading, featured work
 js/gallery.js       filters, grid reflow, detail view
@@ -63,6 +65,29 @@ Every page in the spec is built, every internal link resolves, and the build
 order is complete. What is left is the assets and copy listed in ASSETS.md, and
 the launch step below.
 
+## The domain
+
+Every page carries a canonical URL and an Open Graph card at
+`https://hamzasblades.com`. Both have to be absolute: a relative `og:image`
+is ignored by every platform, and without a canonical the same page reachable
+at the apex, at `www.`, and at the `pages.dev` address counts as three copies
+to a search engine.
+
+**If the domain ever changes, those URLs are the one thing to update** — they
+appear in all six pages, in `robots.txt` and in `sitemap.xml`, and nowhere
+else. Everything the site loads at runtime is a relative path, so the site
+itself does not care what it is served from.
+
+`img/share-card.jpg` is the preview image, 1200×630 because that is the size
+every platform crops toward. It is a centre band of the hero still, chosen so
+the hot steel survives the crop — it sits in the lower third of the frame, and
+a naive crop would have cut it.
+
+`robots.txt` keeps `img/Knives/`, `img/Swords/`, `img/Woodworking/` and the
+`.mov` masters out of the index. Nothing links to them, they are large, and
+full-resolution photographs turning up in image search ahead of the pages they
+belong to is not what anyone wants.
+
 ## Before this can go live
 
 **Set `FORM_ENDPOINT` in `js/config.js`.** It ships as a placeholder, and
@@ -86,14 +111,38 @@ Filtering runs a FLIP pass: measure every visible card, apply the filter,
 measure again, then play the difference back as a transform. The grid moves
 instead of snapping. Under `prefers-reduced-motion` it just toggles.
 
-Clicking a piece opens the detail view. Escape closes it, focus is trapped
-inside while it is open and returns to the card that opened it. The card's
-title is the control and its hit area is stretched over the whole card, so the
-accessible name is the piece name rather than "image".
+Clicking anywhere on a piece opens the detail view — the photograph, the
+title, the padding around them. Inside it, a piece with several photographs
+can be swiped through on a phone and stepped through with the arrow keys on a
+desktop, both going through the same code as the thumbnail strip. The strip
+stays, because it is the only thing that says how many photographs there are,
+but nobody reaches for a 68px thumbnail when the photograph is under their
+thumb. A swipe has to be a decisive 48px and mostly sideways, so scrolling the
+dialog is never mistaken for changing view, and the arrows are left alone
+while someone is typing in the inquiry box. The card's title is the control and its hit
+area is stretched over the whole card, so the accessible name is the piece
+name rather than "image". Escape closes it, focus is trapped inside while it
+is open and returns to the card that opened it.
 
-The catalogue holds 18 real pieces across knives, swords and woodworking. The
-filter set is built from the data, so Axes & spears and Bows do not appear
-until there is something to put in them.
+That stretched hit area is absolutely positioned, so it resolves against the
+nearest positioned ancestor. `.piece__meta` used to be positioned, to climb
+above the hover glow, which quietly made *it* the containing block and shrank
+the clickable area to the title row — 9% of the card. The glow now sits at
+`z-index: -1` behind the content instead, with `isolation: isolate` on the
+card so it does not fall behind the card's own background, and `.piece__meta`
+is deliberately left unpositioned. **Do not add `position` to `.piece__meta`.**
+
+A featured card on the home page links to `gallery.html?piece=<id>`. The
+gallery scrolls to that card and opens its detail view on arrival, so closing
+it leaves the visitor standing in the collection at the piece they came for,
+rather than back on the home page. The query is dropped once the view is
+closed, so a reload or a Back does not put them through it again, and an
+unknown id does nothing at all.
+
+The catalogue holds 20 real pieces across knives, swords and woodworking —
+twelve knives, six swords, two woodworking. The filter set is built from the
+data, so Axes & spears and Bows do not appear until there is something to put
+in them.
 
 Photographs are never cropped — see ASSETS.md for why and how.
 
@@ -196,14 +245,43 @@ separate slot and is still unshot.
 bleed, muted, looping, dissolving to `--forge` at the bottom — and shows the
 gradient until the location footage exists.
 
-The email capture is the page's job. One field and a button, centred, wired to
-the same endpoint as the inquiry boxes and tagged `source: retreats-list` so
-the two are distinguishable in the inbox. It shares the inquiry box's
-validation and failure handling, so there is one set of rules for both:
-success replaces the field with a confirmation in `--brass`, failure says what
-went wrong and keeps what was typed.
+It is the one hero that is sized by its content rather than by the viewport.
+The home page pins its type to the bottom of a full screen because the fire
+runs across the middle of the footage and the type has to stay clear of it.
+Here there is no footage, so that left most of a viewport of empty gradient —
+first above the title, then below the button. The type is centred and the
+section is as tall as what is in it, which puts the copy below at the same
+spacing as any other section on the site. The gradient and the embers paint
+whatever height that is, so the background is unchanged.
+
+Under the title is a **Join the waitlist** link down to the band at the foot
+of the page. It is a plain in-page anchor, not script: it works with
+JavaScript off, middle-clicks and copies like any other link, and moves
+keyboard focus into the band so a Tab from there reaches the name field
+rather than starting again at the top of the page. The band carries
+`scroll-margin-top` so its eyebrow clears the fixed header on arrival, and no
+focus ring, since it is a scroll target rather than a control. Smooth
+scrolling is CSS, and the reduced-motion block at the end of the stylesheet
+already forces it back to `auto`.
+
+**The waitlist is the page's job.** A name, an email, and a button — centred,
+wired to the same endpoint as the inquiry boxes and tagged
+`source: retreats-waitlist` so it is distinguishable in the inbox. The subject
+carries the person's name (`Retreat waitlist — Yusuf`), because a list of
+identical subjects is useless to write back from.
+
+Two fields and no more is deliberate. There is nothing to book, no dates to
+pick and no deposit to take, so asking for anything further would imply
+otherwise — which spec §10 rules out. The name is there so Hamza can write to
+people rather than at them when the dates land.
+
+It shares the inquiry box's validation and failure handling, so there is one
+set of rules for both: success replaces the form with a confirmation in
+`--brass`, failure says what went wrong and keeps what was typed. Both fields
+are required, and an empty submit names both.
 
 Nothing on the page is bookable and no dates or prices appear, per spec §10.
+The heading says so outright before the form asks for anything.
 
 ## Copy and assets
 
@@ -216,11 +294,11 @@ than as a video. The still beneath it is the loop's own first frame, so the
 handoff is invisible and the AI-generated placeholder is gone from the site.
 See ASSETS.md for the encode and the measurements.
 
-The logo is in. Spec §7's rules on it shape where it appears: the hero mark is
-capped at 120px and never upscaled, and the header and footer carry the
-wordmark in Amiri instead of a mark, because at their size the calligraphy
-would fall under the ~48px legibility floor. The favicon uses the simplified
-crescent variant for the same reason.
+The logo is in. The hero mark is capped at 120px and never upscaled. The
+header carries the mark at 32px beside the wordmark — below spec §7's ~48px
+legibility floor, which is workable only because the wordmark next to it is
+doing the reading, so the mark has to be recognised rather than deciphered.
+The footer stays wordmark-only. The favicon is the real mark too.
 
 ASSETS.md tracks spec §7 against what is actually in the repo.
 
@@ -236,7 +314,7 @@ of 85:
 | process | 99 | 100 | 100 | 100 |
 | experience | 100 | 100 | 96 | 100 |
 
-The gallery figure is with all 18 pieces and their real photography loaded,
+The gallery figure is with all 20 pieces and their real photography loaded,
 the index figure is with the hero loop playing — measured with and without the
 video, it scores 99 either way — and the process figure is with all six stage
 loops in.

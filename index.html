@@ -6,9 +6,29 @@
 <title>Hamza's Blades — hand forged in California</title>
 <meta name="description" content="Hand-forged swords, knives, axes and spears, made one at a time between Sacramento and Huntington Beach, California.">
 
-<!-- The crescent-only variant, not the full logo — the calligraphy is
-     illegible at favicon sizes. -->
-<link rel="icon" href="img/crescent.svg" type="image/svg+xml">
+<!-- The canonical URL and the share card. Both have to be absolute: a
+     relative og:image is ignored, and without a canonical the same page
+     reachable at hamzasblades.com, www.hamzasblades.com and the pages.dev
+     address counts as three copies to a search engine. -->
+<link rel="canonical" href="https://hamzasblades.com/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Hamza's Blades">
+<meta property="og:url" content="https://hamzasblades.com/">
+<meta property="og:title" content="Hamza's Blades — hand forged in California">
+<meta property="og:description" content="Hand-forged swords, knives, axes and spears, made one at a time between Sacramento and Huntington Beach, California.">
+<meta property="og:image" content="https://hamzasblades.com/img/share-card.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Hot steel resting on the anvil in a darkened forge">
+<meta name="twitter:card" content="summary_large_image">
+
+<!-- The real mark. At 16px the calligraphy inside it is not readable, but
+     the brass disc and crescent are distinctive enough to find in a strip of
+     tabs, which is what a favicon is for. The 180 is composited onto --forge
+     because iOS fills transparency with white when it squares an icon off. -->
+<link rel="icon" href="img/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="img/favicon-180.png" sizes="180x180" type="image/png">
+<link rel="apple-touch-icon" href="img/favicon-180.png">
 
 <link rel="stylesheet" href="css/fonts.css">
 <link rel="stylesheet" href="css/site.css">
@@ -23,6 +43,12 @@
          render it illegibly. Type carries the brand until the simplified
          crescent variant exists. -->
     <a class="brand" href="index.html">
+      <!-- The mark sits beside the wordmark rather than instead of it. At
+           32px the calligraphy is below the legibility floor SPEC section 7
+           warns about, which is exactly why the name stays next to it in
+           type — the mark is recognition, the wordmark is the reading. -->
+      <img class="brand__mark" src="img/logo-64.png" alt="" width="32" height="32"
+           decoding="async">
       <span class="brand__name">Hamza's Blades</span>
     </a>
     <nav class="nav" aria-label="Primary">
@@ -148,6 +174,7 @@
         </picture>
         <video class="band__loop" data-loop muted playsinline loop
                preload="none" aria-hidden="true" tabindex="-1"
+               data-src-narrow="video/retreat-teaser-sm.mp4"
                data-src="video/retreat-teaser.mp4" data-type="video/mp4"></video>
       </figure>
       <div class="band__copy">
@@ -168,8 +195,18 @@
   <!-- Process teaser ----------------------------------------------------- -->
   <section class="section section--rule" id="process">
     <div class="shell band">
+      <!-- 16:9 already, so it fills the band's default frame with no crop. -->
       <figure class="band__figure">
-        <div class="band__pending"><span class="eyebrow">Photo pending</span></div>
+        <picture>
+          <source type="image/webp" sizes="(min-width: 900px) 58vw, 100vw"
+                  srcset="img/hero-forge-1000.webp 1000w,
+                          img/hero-forge-1920.webp 1920w">
+          <img src="img/hero-forge-1920.jpg" alt="" width="1920" height="1080"
+               loading="lazy" decoding="async"
+               sizes="(min-width: 900px) 58vw, 100vw"
+               srcset="img/hero-forge-1000.jpg 1000w,
+                       img/hero-forge-1920.jpg 1920w">
+        </picture>
       </figure>
       <div class="band__copy">
         <p class="eyebrow">The forging process</p>

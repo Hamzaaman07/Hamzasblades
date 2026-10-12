@@ -6,7 +6,29 @@
 <title>Process — Hamza's Blades</title>
 <meta name="description" content="How a blade is made, in order: raw stock, heat, shaping, grinding, handle, finished edge.">
 
-<link rel="icon" href="img/crescent.svg" type="image/svg+xml">
+<!-- The canonical URL and the share card. Both have to be absolute: a
+     relative og:image is ignored, and without a canonical the same page
+     reachable at hamzasblades.com, www.hamzasblades.com and the pages.dev
+     address counts as three copies to a search engine. -->
+<link rel="canonical" href="https://hamzasblades.com/process.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Hamza's Blades">
+<meta property="og:url" content="https://hamzasblades.com/process.html">
+<meta property="og:title" content="Process — Hamza's Blades">
+<meta property="og:description" content="How a blade is made, in order: raw stock, heat, shaping, grinding, handle, finished edge.">
+<meta property="og:image" content="https://hamzasblades.com/img/share-card.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Hot steel resting on the anvil in a darkened forge">
+<meta name="twitter:card" content="summary_large_image">
+
+<!-- The real mark. At 16px the calligraphy inside it is not readable, but
+     the brass disc and crescent are distinctive enough to find in a strip of
+     tabs, which is what a favicon is for. The 180 is composited onto --forge
+     because iOS fills transparency with white when it squares an icon off. -->
+<link rel="icon" href="img/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="img/favicon-180.png" sizes="180x180" type="image/png">
+<link rel="apple-touch-icon" href="img/favicon-180.png">
 
 <link rel="stylesheet" href="css/fonts.css">
 <link rel="stylesheet" href="css/site.css">
@@ -17,6 +39,12 @@
 <header class="header is-stuck">
   <div class="shell header__inner">
     <a class="brand" href="index.html">
+      <!-- The mark sits beside the wordmark rather than instead of it. At
+           32px the calligraphy is below the legibility floor SPEC section 7
+           warns about, which is exactly why the name stays next to it in
+           type — the mark is recognition, the wordmark is the reading. -->
+      <img class="brand__mark" src="img/logo-64.png" alt="" width="32" height="32"
+           decoding="async">
       <span class="brand__name">Hamza's Blades</span>
     </a>
     <nav class="nav" aria-label="Primary">
@@ -50,6 +78,18 @@
          is worse than showing nothing — see data/process.json. Each figure
          names its stage; js/loops.js fills in whatever that stage has.
 
+         The still is in the markup, not fetched. Waiting for
+         data/process.json to resolve before painting anything left the six
+         "pending" frames on screen for about 900ms on a throttled phone,
+         which was the flash on load. The still is committed next to the
+         markup that names it, so there is nothing to guess at.
+
+         There is no "photo pending" block any more either: every stage has
+         been shot, so that text could only ever appear for the moment
+         before its own still arrived. The frame's own dark gradient is the
+         right thing to show while an image loads. js/loops.js still handles
+         a stage with nothing, for whenever a seventh is added.
+
          --ar is the frame's shape, and it is here rather than in the
          manifest on purpose: it has to be right at first paint. Setting it
          from the fetched JSON instead reshaped every frame once the data
@@ -62,7 +102,15 @@
 
       <li class="step">
         <figure class="step__figure step__figure--sized" data-stage="raw-stock" style="--ar: 720 / 1280">
-          <div class="band__pending"><span class="eyebrow">Photo pending</span></div>
+          <picture>
+            <source type="image/webp" srcset="img/process/raw-stock.webp">
+            <!-- Step one is above the fold, so it is eager and high
+                 priority. Lazy-loading an image that is already on screen
+                 only delays it. -->
+            <img class="step__img is-ready" src="img/process/raw-stock.jpg" alt=""
+                 width="720" height="1280"
+                 fetchpriority="high" decoding="async">
+          </picture>
         </figure>
         <div class="step__copy">
           <p class="eyebrow">Step one</p>
@@ -77,7 +125,12 @@
 
       <li class="step">
         <figure class="step__figure step__figure--sized" data-stage="heat" style="--ar: 720 / 1280">
-          <div class="band__pending"><span class="eyebrow">Photo pending</span></div>
+          <picture>
+            <source type="image/webp" srcset="img/process/heat.webp">
+            <img class="step__img is-ready" src="img/process/heat.jpg" alt=""
+                 width="720" height="1280"
+                 loading="lazy" decoding="async">
+          </picture>
         </figure>
         <div class="step__copy">
           <p class="eyebrow">Step two</p>
@@ -92,7 +145,12 @@
 
       <li class="step">
         <figure class="step__figure step__figure--sized" data-stage="shaping" style="--ar: 1280 / 720">
-          <div class="band__pending"><span class="eyebrow">Photo pending</span></div>
+          <picture>
+            <source type="image/webp" srcset="img/process/shaping.webp">
+            <img class="step__img is-ready" src="img/process/shaping.jpg" alt=""
+                 width="1280" height="720"
+                 loading="lazy" decoding="async">
+          </picture>
         </figure>
         <div class="step__copy">
           <p class="eyebrow">Step three</p>
@@ -107,7 +165,12 @@
 
       <li class="step">
         <figure class="step__figure step__figure--sized" data-stage="grinding" style="--ar: 720 / 1280">
-          <div class="band__pending"><span class="eyebrow">Photo pending</span></div>
+          <picture>
+            <source type="image/webp" srcset="img/process/grinding.webp">
+            <img class="step__img is-ready" src="img/process/grinding.jpg" alt=""
+                 width="720" height="1280"
+                 loading="lazy" decoding="async">
+          </picture>
         </figure>
         <div class="step__copy">
           <p class="eyebrow">Step four</p>
@@ -122,7 +185,12 @@
 
       <li class="step">
         <figure class="step__figure step__figure--sized" data-stage="handle" style="--ar: 720 / 1280">
-          <div class="band__pending"><span class="eyebrow">Photo pending</span></div>
+          <picture>
+            <source type="image/webp" srcset="img/process/handle.webp">
+            <img class="step__img is-ready" src="img/process/handle.jpg" alt=""
+                 width="720" height="1280"
+                 loading="lazy" decoding="async">
+          </picture>
         </figure>
         <div class="step__copy">
           <p class="eyebrow">Step five</p>
@@ -137,7 +205,12 @@
 
       <li class="step">
         <figure class="step__figure step__figure--sized" data-stage="finished-edge" style="--ar: 720 / 1280">
-          <div class="band__pending"><span class="eyebrow">Photo pending</span></div>
+          <picture>
+            <source type="image/webp" srcset="img/process/finished-edge.webp">
+            <img class="step__img is-ready" src="img/process/finished-edge.jpg" alt=""
+                 width="720" height="1280"
+                 loading="lazy" decoding="async">
+          </picture>
         </figure>
         <div class="step__copy">
           <p class="eyebrow">Step six</p>
