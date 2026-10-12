@@ -21,7 +21,7 @@ window.HB_CONFIG = {
      Formspree outright. Cloudflare Pages and Vercel have no equivalent, so
      on those this endpoint is required.
      ---------------------------------------------------------------------- */
-  FORM_ENDPOINT: "https://formspree.io/f/YOUR_ID_HERE",
+  FORM_ENDPOINT: "https://formspree.io/f/xrpeldpj",
 
   /* Hamza's Instagram, e.g. "https://instagram.com/hamzasblades". Leave empty
      and the link simply does not render — no dead link on the page. */
