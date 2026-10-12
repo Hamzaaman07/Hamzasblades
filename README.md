@@ -91,9 +91,10 @@ inside while it is open and returns to the card that opened it. The card's
 title is the control and its hit area is stretched over the whole card, so the
 accessible name is the piece name rather than "image".
 
-The catalogue holds 18 real pieces across knives, swords and woodworking. The
-filter set is built from the data, so Axes & spears and Bows do not appear
-until there is something to put in them.
+The catalogue holds 20 real pieces across knives, swords and woodworking —
+twelve knives, six swords, two woodworking. The filter set is built from the
+data, so Axes & spears and Bows do not appear until there is something to put
+in them.
 
 Photographs are never cropped — see ASSETS.md for why and how.
 
@@ -265,7 +266,7 @@ of 85:
 | process | 99 | 100 | 100 | 100 |
 | experience | 100 | 100 | 96 | 100 |
 
-The gallery figure is with all 18 pieces and their real photography loaded,
+The gallery figure is with all 20 pieces and their real photography loaded,
 the index figure is with the hero loop playing — measured with and without the
 video, it scores 99 either way — and the process figure is with all six stage
 loops in.

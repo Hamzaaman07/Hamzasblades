@@ -143,9 +143,11 @@ the image removes itself while missing, so there is no broken frame. Drop the
 file in and it appears with no markup change; derivatives are worth generating
 for it the same way as the hero still.
 
-The About page uses the hero forge still in place of a portrait, which is what
-section 4 asks for when no portrait exists. Drop `img/portrait.jpg` in and swap
-the `<picture>` in `about.html` when it is shot.
+The About page has its real portrait now. Like the Process stages and the
+retreats band, the frame takes the photograph's own 9:16 rather than the 4:5
+it used to crop to — that crop was taking roughly a third of the height off a
+vertical photograph. Height is capped at `min(66vh, 580px)` so a tall picture
+does not run away down the column.
 
 **The AI-generated still is gone.** It stood in during the build, and section 7
 sanctions that, but this is a business whose whole proposition is that a real
@@ -219,11 +221,12 @@ entirely.
 
 | File | Status |
 |---|---|
-| `img/gallery/*` | **Complete.** 18 pieces, 63 photographs, derived from the masters under `img/Knives/`, `img/Swords/` and `img/Woodworking/`. |
+| `img/gallery/*` | **Complete.** 20 pieces, 71 photographs, derived from the masters under `img/Knives/`, `img/Swords/` and `img/Woodworking/`. |
 | `img/process-teaser.jpg` | Not shot. One wide cinematic frame for the homepage band. |
 | `video/*.mov` (six) | **Supplied.** The stage masters — `Raw Stock`, `heat`, `shaping`, `grinding`, `handle`, `finished edge`. Kept untouched. |
 | `video/process/*` and `img/process/*` | **Complete.** All six stages, derived from those masters. |
-| `img/portrait.jpg` | Not shot. Hamza at the forge, for About. |
+| `img/About photo.jpg` | **Supplied.** 1290×2295. Hamza at the forge — the master, kept untouched. |
+| `img/portrait-{600,1000}.{jpg,webp}` | Derived. What the About page loads. |
 
 Derived photographs go in `img/gallery/`, named `<piece-id>-<NN>`. Every piece
 shown is Hamza's own work — no stock photography. A card whose photograph is
@@ -419,19 +422,18 @@ tonal break worth knowing about.
 
 ## Data
 
-`data/gallery.json` is now the real catalogue: 18 pieces, no placeholders.
+`data/gallery.json` is now the real catalogue: 20 pieces, no placeholders.
 Titles come from the master folder names.
 
 **Two fields still need Hamza:**
 
-- `status` is `available` on every piece because there was no way to know
-  otherwise. Anything already sold needs changing to `sold` — those stay
+- `status` is `available` on all twenty pieces because there was no way to
+  know otherwise. Anything already sold needs changing to `sold` — those stay
   visible at 70% as portfolio, and their inquiry box switches to asking about
   a commission.
-- `featured` is set on four pieces (Al-Hajarah Dagger, Karambit, Zulfiqar
-  Sword, Wooden Palestine Map), chosen for a spread across the three
-  categories rather than by preference. The homepage shows the first four
-  flagged, in array order.
+- `featured` is set on four pieces — **Al-Waraqa Dagger, Batstars, Gladius,
+  Zulfiqar Sword** — and these are Hamza's own picks, not a category spread.
+  The homepage shows the first four flagged, in array order.
 
 Display order is the array order. Within a piece, view order follows the
 trailing number in the master filename.

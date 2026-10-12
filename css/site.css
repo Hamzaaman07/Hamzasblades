@@ -1009,10 +1009,20 @@ html {
   overflow: hidden;
 }
 
+/* Same rule as the Process stages and the retreats band: the frame takes the
+   photograph's own shape so nothing is cropped. The portrait is 9:16, and the
+   4:5 crop this used to do took a third of its height. Capped so a tall
+   photograph does not run away down the column. */
+.about__figure--sized {
+  aspect-ratio: var(--ar);
+  --about-cap: min(66vh, 580px);
+  width: min(100%, calc(var(--about-cap) * var(--ar)));
+}
+
 .about__figure img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 .about__meta {

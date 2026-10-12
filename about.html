@@ -45,25 +45,27 @@
 
     <div class="page__head">
       <p class="eyebrow">About</p>
-      <h1 class="t-page">The forge and the hands</h1>
+      <h1 class="t-page">Hamza</h1>
     </div>
 
     <div class="about">
       <div class="about__media">
-        <!-- A portrait of Hamza at the forge replaces this when it is shot.
-             Until then the forge still stands in, which is what SPEC section 4
-             asks for. -->
-        <figure class="about__figure">
+        <!-- Hamza at the forge. The frame takes the photograph's own 9:16
+             rather than the 4:5 it used to crop to, so nothing is cut off;
+             --ar is in the markup because it has to be right at first paint.
+             This replaces the forge still that stood in while there was no
+             portrait. -->
+        <figure class="about__figure about__figure--sized" style="--ar: 1290 / 2295">
           <picture>
-            <source type="image/webp" sizes="(min-width: 900px) 40vw, 100vw"
-                    srcset="img/hero-forge-1000.webp 1000w,
-                            img/hero-forge-1920.webp 1920w">
-            <img alt="Hot steel being struck on the anvil"
-                 width="1920" height="1080" loading="lazy" decoding="async"
-                 sizes="(min-width: 900px) 40vw, 100vw"
-                 src="img/hero-forge-1920.jpg"
-                 srcset="img/hero-forge-1000.jpg 1000w,
-                         img/hero-forge-1920.jpg 1920w">
+            <source type="image/webp" sizes="(min-width: 900px) 34vw, 100vw"
+                    srcset="img/portrait-600.webp 600w,
+                            img/portrait-1000.webp 1000w">
+            <img alt="Hamza working hot steel at the forge"
+                 width="1290" height="2295" loading="lazy" decoding="async"
+                 sizes="(min-width: 900px) 34vw, 100vw"
+                 src="img/portrait-1000.jpg"
+                 srcset="img/portrait-600.jpg 600w,
+                         img/portrait-1000.jpg 1000w">
           </picture>
         </figure>
 
