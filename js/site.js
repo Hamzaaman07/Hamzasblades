@@ -84,9 +84,10 @@
   }
 
   /* --- Standalone inquiry box -------------------------------------------- */
-  /* The contact page. `?about=custom` — where the "Custom order" call to
-     action points — gets the commission opener; anything else gets the plain
-     one. SPEC section 5. */
+  /* The contact page. `?about=custom` gets the commission opener; anything
+     else gets the plain one. SPEC section 5. The "Send an inquiry" buttons
+     at the foot of the Process and About pages are what point there — the
+     home page hero used to as well, and no longer does. */
 
   var inquiryMount = document.querySelector("[data-inquiry]");
   if (inquiryMount && window.HB && HB.createInquiry) {

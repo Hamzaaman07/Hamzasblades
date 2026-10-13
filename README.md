@@ -215,6 +215,21 @@ A gallery inquiry carries the piece title and id as hidden fields, so an email
 is never ambiguous about which piece it is about, and every inquiry is tagged
 with a `source` so submissions are distinguishable in the inbox.
 
+**Formspree is slow.** It regularly takes many seconds to answer, and that
+is the endpoint, not this code — measured against an endpoint that replies
+instantly, the whole round trip from click to confirmation is 24ms. Three
+things follow from that, all in `send()`:
+
+- **One submission at a time.** Nothing used to stop a second click during
+  the wait, so an impatient visitor posted twice: a duplicate in the inbox,
+  and two of the free tier's fifty a month spent on one person. The button
+  stays pressable, it just will not start a second request.
+- **The wait says what it is.** After four seconds the status line reads
+  "Still sending", because a button that says "Sending" for fifteen seconds
+  reads as broken.
+- **It gives up at 25 seconds.** A stalled request used to hang on "Sending"
+  indefinitely and the visitor never learned their message had not gone.
+
 Validation runs on submit: empty name, empty or malformed email, empty
 message. Errors show inline against the offending field in `--ember` and clear
 the moment that field is edited. The submit button is never disabled — it can

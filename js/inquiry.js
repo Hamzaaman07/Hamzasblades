@@ -270,18 +270,54 @@
       return;
     }
 
+    /* One at a time. Formspree regularly takes several seconds to answer,
+       and nothing here used to stop a second click during that wait — so an
+       impatient visitor posted twice, which means a duplicate in the inbox
+       and two of the free tier's fifty submissions a month spent on one
+       person. The button stays pressable, as the note above says; it just
+       does not start a second request. */
+    if (form.dataset.sending === "1") return;
+    form.dataset.sending = "1";
+
     submit.textContent = "Sending";
+    submit.setAttribute("aria-busy", "true");
+
+    /* A button that says "Sending" for fifteen seconds reads as broken. Say
+       what is happening instead of leaving it to look frozen. role="status"
+       on the element means this is announced, not just shown. */
+    var slow = setTimeout(function () {
+      status.className = "inquiry__status";
+      status.textContent = "Still sending — this can take a few seconds.";
+    }, 4000);
+
+    /* Without this a stalled request hangs on "Sending" for as long as the
+       browser feels like, and the visitor never learns their message did
+       not go. Generous, because the endpoint really is slow sometimes. */
+    var controller = window.AbortController ? new AbortController() : null;
+    var giveUp = setTimeout(function () {
+      if (controller) controller.abort();
+    }, 25000);
+
+    function settle() {
+      clearTimeout(slow);
+      clearTimeout(giveUp);
+      form.dataset.sending = "";
+      submit.removeAttribute("aria-busy");
+    }
 
     fetch(endpoint, {
       method: "POST",
       headers: { Accept: "application/json" },
-      body: new FormData(form)
+      body: new FormData(form),
+      signal: controller ? controller.signal : undefined
     })
       .then(function (res) {
         if (!res.ok) throw new Error("rejected");
+        settle();
         succeed(form, copy.success);
       })
       .catch(function () {
+        settle();
         submit.textContent = copy.idleLabel;
         fail(status, copy.dropped);
       });
