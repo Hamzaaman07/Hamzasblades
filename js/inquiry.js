@@ -392,7 +392,10 @@
       type: "tel",
       autocomplete: "tel",
       inputmode: "tel",
-      placeholder: "So I can text you the dates"
+      /* 555-01xx is the range reserved for fictional numbers, so this can
+         never be somebody's real phone — the same reason the email field
+         says example.com. 916 is Sacramento, which is where the forge is. */
+      placeholder: "(916) 555-0142"
     });
     phone.wrap.classList.add("notify__field", "notify__field--wide");
 
