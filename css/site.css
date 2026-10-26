@@ -870,6 +870,13 @@ html {
   .notify__fields {
     grid-template-columns: 1fr 1fr;
   }
+
+  /* Name and email share the first row; the phone takes the whole of the
+     second. Three equal columns inside a 32rem form gives each about 160px,
+     which is too narrow for a label and a number both. */
+  .notify__field--wide {
+    grid-column: 1 / -1;
+  }
 }
 
 /* The button sits under the fields rather than beside them. With one field

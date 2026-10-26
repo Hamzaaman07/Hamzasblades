@@ -50,6 +50,15 @@
 
   var EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+  /* Phone numbers are written every way there is — +1, (916), dots, spaces,
+     dashes, extensions. Anything stricter than "has a plausible number of
+     digits" rejects real people, and a waitlist is the last place to do
+     that. Count the digits and let the rest through. */
+  function looksLikePhone(value) {
+    var digits = value.replace(/\D/g, "");
+    return digits.length >= 7 && digits.length <= 15;
+  }
+
   function validate(fields) {
     var errors = {};
 
@@ -91,6 +100,7 @@
     input.name = opts.name;
     if (opts.type) input.type = opts.type;
     if (opts.autocomplete) input.autocomplete = opts.autocomplete;
+    if (opts.inputmode) input.setAttribute("inputmode", opts.inputmode);
     if (opts.rows) input.rows = opts.rows;
     if (opts.placeholder) input.placeholder = opts.placeholder;
 
@@ -371,9 +381,25 @@
     });
     email.wrap.classList.add("notify__field");
 
+    /* Optional on purpose. A number is more useful than an address when the
+       dates land, but requiring one costs sign-ups from everybody who will
+       not give a stranger their phone — and the whole point of this band is
+       to catch people while they are interested. Asking and accepting "no"
+       collects more numbers than demanding one. */
+    var phone = field({
+      name: "phone",
+      label: "Phone (optional)",
+      type: "tel",
+      autocomplete: "tel",
+      inputmode: "tel",
+      placeholder: "So I can text you the dates"
+    });
+    phone.wrap.classList.add("notify__field", "notify__field--wide");
+
     var fields = el("div", "notify__fields");
     fields.appendChild(name.wrap);
     fields.appendChild(email.wrap);
+    fields.appendChild(phone.wrap);
     form.appendChild(fields);
 
     var submit = el("button", "btn btn--primary notify__submit", "Join the waitlist");
@@ -394,21 +420,27 @@
     status.setAttribute("role", "status");
     form.appendChild(status);
 
-    var parts = { name: name, email: email };
+    var parts = { name: name, email: email, phone: phone };
     name.input.addEventListener("input", function () { clearError(name); });
     email.input.addEventListener("input", function () { clearError(email); });
+    phone.input.addEventListener("input", function () { clearError(phone); });
 
     form.addEventListener("submit", function (event) {
       event.preventDefault();
 
       var who = name.input.value.trim();
       var address = email.input.value.trim();
+      var number = phone.input.value.trim();
       var errors = {};
 
       if (!who) errors.name = "A name, so I know who I'm writing to.";
       if (!address) errors.email = "Enter an email address and I'll let you know.";
       else if (!EMAIL.test(address)) {
         errors.email = "That address looks incomplete. Check it and try again.";
+      }
+      /* Empty is fine. Only a number that cannot be one is worth stopping. */
+      if (number && !looksLikePhone(number)) {
+        errors.phone = "That doesn't look like a phone number. Leave it blank if you'd rather.";
       }
 
       if (showErrors(parts, errors)) return;
