@@ -279,16 +279,25 @@ focus ring, since it is a scroll target rather than a control. Smooth
 scrolling is CSS, and the reduced-motion block at the end of the stylesheet
 already forces it back to `auto`.
 
-**The waitlist is the page's job.** A name, an email, and a button — centred,
+**The waitlist is the page's job.** A name, an email, an optional phone
+number, and a button — centred,
 wired to the same endpoint as the inquiry boxes and tagged
 `source: retreats-waitlist` so it is distinguishable in the inbox. The subject
 carries the person's name (`Retreat waitlist — Yusuf`), because a list of
 identical subjects is useless to write back from.
 
-Two fields and no more is deliberate. There is nothing to book, no dates to
-pick and no deposit to take, so asking for anything further would imply
-otherwise — which spec §10 rules out. The name is there so Hamza can write to
-people rather than at them when the dates land.
+The phone number is **optional on purpose**. A number is more useful than an
+address when the dates land, but requiring one costs sign-ups from everyone
+who will not hand a stranger their phone — and the point of this band is to
+catch people while they are interested. Asking and accepting no collects more
+numbers than demanding one. Nothing else is asked for: there is nothing to
+book, no dates to pick and no deposit to take, so anything further would imply
+otherwise, which spec §10 rules out.
+
+Phone validation is deliberately permissive — it counts digits (7 to 15) and
+lets every format through. People write `(916) 555-0142`, `+1 916-555-0142`,
+`916.555.0142` and `9165550142`, and anything stricter rejects real people at
+the one moment you least want to.
 
 It shares the inquiry box's validation and failure handling, so there is one
 set of rules for both: success replaces the form with a confirmation in
