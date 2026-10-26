@@ -371,6 +371,17 @@ the grid went from one line of fallback text to several thousand pixels of
 cards, shoving the page down — a 0.373 layout shift that put the page at 71,
 below the spec's floor. The grid now reserves its height until the cards land.
 
+**Caching.** Pages, CSS, JavaScript and the catalogue all revalidate on every
+visit; images and video cache for 30 days. The code used to cache for a day,
+which was fine while nobody was visiting and wrong the moment somebody was —
+a fix shipped and a returning visitor kept the old script for up to 24 hours.
+That happened: the waitlist's phone field went live and did not appear,
+because the browser still held the previous `js/inquiry.js`. Nothing here is
+content-hashed, so there is no filename change to bust a cache with, and
+revalidating is the only honest option. It costs almost nothing — all the CSS
+and JS together is 31 KB gzipped, the catalogue 2 KB, and a revalidation that
+finds nothing new is a 304 with an empty body.
+
 Remaining Lighthouse notes, all judged not worth acting on: "minify
 CSS/JS" measures uncompressed bytes, and all the CSS and JS together gzip to
 21 KB, so a build step would buy little against the complexity; cache lifetimes
