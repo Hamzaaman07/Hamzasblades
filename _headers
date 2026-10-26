@@ -18,15 +18,32 @@
 /video/*
   Cache-Control: public, max-age=2592000
 
-# Code and styles. A day, so a fix is live tomorrow at worst.
+# Code, styles and the catalogue always revalidate, exactly like the pages.
+#
+# These used to cache for a day, which was defensible while nobody was
+# visiting and indefensible the moment somebody was: a returning visitor kept
+# yesterday's JavaScript for up to 24 hours after a fix shipped. That is not
+# theoretical — adding the phone field to the waitlist went live and did not
+# appear, because the browser still held the old js/inquiry.js. The page
+# revalidated, the script it depends on did not.
+#
+# Nothing here is content-hashed, so there is no filename change to bust the
+# cache with. Revalidating is the only honest option. It is close to free:
+# all the CSS and JS together is 31 KB gzipped and the catalogue is a few more,
+# and a revalidation that finds nothing new is a 304 with an empty body. The
+# files are still cached — the browser just asks first.
+#
+# If a build step that fingerprints filenames ever lands, these can go to a
+# year with `immutable`.
 /css/*
-  Cache-Control: public, max-age=86400
+  Cache-Control: public, max-age=0, must-revalidate
 /js/*
-  Cache-Control: public, max-age=86400
+  Cache-Control: public, max-age=0, must-revalidate
 
-# The catalogue changes whenever a piece is added or sold.
+# The catalogue changes whenever a piece is added or sold. A piece marked sold
+# should read as sold immediately, not within the hour.
 /data/*
-  Cache-Control: public, max-age=3600
+  Cache-Control: public, max-age=0, must-revalidate
 
 # Crawlers should not hold a stale sitemap, and robots.txt is read often.
 /robots.txt
