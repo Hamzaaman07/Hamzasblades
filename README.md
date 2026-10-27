@@ -388,6 +388,20 @@ CSS/JS" measures uncompressed bytes, and all the CSS and JS together gzip to
 are handled by `_headers`, which the local test server ignores but Cloudflare
 reads.
 
+**When autoplay is refused, the video is removed.** Safari draws its own play
+button over any video it will not autoplay, and that happens for reasons the
+site cannot control — Low Power Mode on an iPhone is the common one, and a
+data saver or a per-site setting will do it too. These videos stand in for
+photographs, so a player control on top of the hero is worse than no motion at
+all. A `NotAllowedError` or `NotSupportedError` from `play()` drops the
+element and the still underneath is what shows. Transient rejections, like a
+pause interrupting a play, are left alone — the next scroll tries again.
+
+The hero also has to *ask* to play. Its `autoplay` attribute is evaluated when
+the element still has no source, since the source is attached later to keep it
+off the critical path, so the attribute alone cannot be relied on.
+
+
 ## The ember continuum
 
 One system, one canvas, fixed to the viewport. The site is complete without it:
