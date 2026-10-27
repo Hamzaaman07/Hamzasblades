@@ -84,10 +84,26 @@
     entries.forEach(function (entry) {
       var video = entry.target;
       if (entry.isIntersecting && entry.intersectionRatio >= 0.25) {
-        /* play() rejects when the tab is backgrounded or the sources
-           failed, neither of which is worth reporting. */
         var played = video.play();
-        if (played && played.catch) played.catch(function () {});
+        if (played && played.catch) {
+          played.catch(function (err) {
+            /* Most rejections are transient — the tab went to the
+               background, or a pause interrupted the play. Those are not
+               worth reporting and the next scroll will try again.
+
+               Being refused outright is different. Safari draws its own
+               play button over a video it will not autoplay, and that
+               happens for reasons the site cannot control: Low Power Mode
+               on an iPhone, a data saver, a per-site setting. These loops
+               stand in for photographs, so a player control is worse than
+               no motion at all. Drop the element and the still underneath
+               is what shows. */
+            var why = err && err.name;
+            if (why === "NotAllowedError" || why === "NotSupportedError") {
+              video.remove();
+            }
+          });
+        }
       } else if (!video.paused) {
         video.pause();
       }

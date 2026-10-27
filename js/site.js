@@ -64,6 +64,27 @@
       addSource(hero, hero.dataset.srcWebm, "video/webm");
       addSource(hero, hero.dataset.src, hero.dataset.type || "video/mp4");
       hero.load();
+
+      /* The autoplay attribute was evaluated when the element had no source
+         at all, so it cannot be relied on to fire now that one has been
+         attached. Ask explicitly.
+
+         If the answer is no, drop the element. A hero video is decoration —
+         when it cannot play silently it must not become a video player, and
+         Safari draws its own play button over any video it has refused to
+         autoplay. That happens for reasons the site cannot control: Low
+         Power Mode on an iPhone, a data saver, a per-site setting. Removing
+         it leaves the still, which is what the hero is designed to fall back
+         to anyway. */
+      var played = hero.play();
+      if (played && played.catch) {
+        played.catch(function (err) {
+          var why = err && err.name;
+          if (why === "NotAllowedError" || why === "NotSupportedError") {
+            hero.remove();
+          }
+        });
+      }
     };
     if (document.readyState === "complete") loadHero();
     else window.addEventListener("load", loadHero);
